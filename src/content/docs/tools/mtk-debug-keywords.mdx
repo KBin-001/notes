@@ -1,0 +1,53 @@
+---
+title: "MTK debug 关键词"
+description: "屏幕背光关键词：BrightnessEvent、setDisplayBrightness"
+category: "tools"
+tags: ["tools", "mtk"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# MTK debug 关键词
+
+屏幕背光关键词：BrightnessEvent、setDisplayBrightness
+
+1. 背光 100%
+  - sys_log_2026_0327_174501.curf 里 2026-03-27 17:44:57 和 17:45:08 明确有 BrightnessEvent: brt=1.0 (100.0%)
+  - main_log_1__2026_0327_174501 里还有 setDisplayBrightness 1.000000
+音量关键词：volume_changed
+
+2.音量 100%
+
+- events_log_2026_0327_174501.curf 里 2026-03-27 17:58:58，音量一路从 5->6->...->15，最终到 volume_changed: [3,14,15,15,android]
+也就是：
+
+- `3`：音频流类型
+- `14`：变化前音量
+- `15`：变化后音量
+- `15`：该流的最大音量
+- `android`：触发方
+1. 本地视频播放关键词：com.google.android.apps.photos
+1. 本地视频播放
+  - 2026-03-27 17:58:54 打开了 com.google.android.apps.photos
+  - 后续整晚都有 ExoPlayer:MediaCodecAsyncAdapter:Audio/Video、ExoPlayer:Playback、MediaCodec_looper 活动，时间点覆盖 20:20、21:34、22:24、00:00、01:35、02:38、08:57
+  - 这能比较强地侧面证明 Google Photos 一直在跑本地媒体播放流程。严格说，日志里没直接打印“某个本地视频文件名”，但“本地视频播放中”这个结论基本成立
+1. 5V 充电
+  - 有大量 VBUS = 4568mV, IBUS = 1195mA、vbus:4550/4568 ibus:1242/1195 之类日志，说明确实存在长时间 5V 档位充电
+  - 但日志里也反复出现 pd_tcp_notifier_call sink vbus 9000mV 2000mA，说明中途也协商到过 9V
+  - 所以更准确的说法是：日志能体现 5V 充电状态，但不能证明整晚始终固定在纯 5V
+电池
+
+healthd: battery l=80 v=4073 t=30.0 h=2 st=2 c=-294100 fc=7500000 cc=1 chg=a
+
+可以这样拆：
+
+- `l=80`：电量 80%
+- `v=4073`：电池电压 4073 mV
+- `t=30.0`：电池温度 30.0°C
+- `h=2`：电池健康状态 2，也就是 `BATTERY_HEALTH_GOOD`
+- `st=2`：电池状态 2，也就是 `BATTERY_STATUS_CHARGING`
+- `c=-294100`：瞬时电流 -294100 µA，约 **294 mA**
+- `fc=7500000`：满充容量 7,500,000 µAh，约 **7500 mAh**
+- `cc=1`：循环次数 1
+- `chg=a`：`a` 表示 AC charger 在线；源码里 `a/u/w/d` 分别对应 AC、USB、无线、dock。

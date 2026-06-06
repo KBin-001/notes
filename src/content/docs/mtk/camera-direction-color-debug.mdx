@@ -1,0 +1,237 @@
+---
+title: "[MTK]Camera**方向与颜色异常排查复盘**"
+description: "一开始修改方向的点放到这个函数上"
+category: "mtk"
+tags: ["mtk", "camera"]
+topics: ["camera"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [MTK]Camera**方向与颜色异常排查复盘**
+
+## 一、最初现象
+```markdown
+- 相机画面方向不对
+- 必须把画面旋转 180 度，显示才正常
+- 怀疑点放在 sensor driver 的 `mirror/flip` 配置
+```
+一开始修改方向的点放到这个函数上
+
+```text
+static struct imgsensor_struct imgsensor = {
+	.mirror = IMAGE_NORMAL,
+```
+后面画面一直是需要旋转180°的，是有地方覆盖掉了。
+
+```c
+在这个驱动里，几个场景函数原来都在调用：
+
+set_mirror_flip(IMAGE_V_MIRROR);
+
+包括：
+
+- `preview()`
+- `capture()`
+- `normal_video()`
+- `hs_video()`
+- `slim_video()`
+
+- 现在跑的是 `IMAGE_V_MIRROR`
+- 画面需要再转 180 度才对
+- 那是不是应该改成 `IMAGE_H_MIRROR` 或 `IMAGE_HV_MIRROR`
+
+进一步推导：
+
+- 如果当前运行的是 `IMAGE_V_MIRROR`
+- 而你观察到“在当前画面基础上再旋转 180 度才对”
+- 那目标值并不是 `IMAGE_HV_MIRROR`
+- 而是 `IMAGE_H_MIRROR`
+
+因为：
+
+- 当前状态是 `V`
+- 再叠加一个 180 度，相当于 `V + HV = H`
+```
+二、排查
+
+**第二阶段验证：为什么改了 IMAGE_* 也没有效果**
+
+```markdown
+- 试过 `IMAGE_V_MIRROR`
+- 试过 `IMAGE_HV_MIRROR`
+- 都没有解决问题
+- 后来甚至改成 `IMAGE_NORMAL`
+- 画面仍然和 `IMAGE_HV_MIRROR` 的表现一样
+
+- 场景函数里写入的 `set_mirror_flip()`，不是最终生效值
+
+如果 `IMAGE_NORMAL` 都和 `IMAGE_HV_MIRROR` 看起来一样，就不能再继续怀疑“选错了哪个枚举”，而应该立刻转向：
+
+- 后面是不是还有地方把 `0x0101` 覆盖掉了
+```
+**真正的可疑点：streaming_control()**
+
+```markdown
+驱动中的 `streaming_control()` 有这样一段代码：
+
+``\`c
+if (enable)
+{
+    while (1)
+    {
+        write_cmos_sensor(0x0100, 0x0103);
+        framecnt = read_cmos_sensor_byte(0x0005);
+        ...
+    }
+}
+else
+{
+    while (1)
+    {
+        write_cmos_sensor_byte(0x0100, 0x00);
+        framecnt = read_cmos_sensor_byte(0x0005);
+        ...
+    }
+}
+``\`
+
+这里最可疑的地方有两个：
+
+- `stream off` 用的是 `write_cmos_sensor_byte(0x0100, 0x00)`
+- `stream on` 却用的是 `write_cmos_sensor(0x0100, 0x0103)`
+
+也就是说，开流和关流的寄存器写法不对称。
+
+## 6. 为什么 `write_cmos_sensor(0x0100, 0x0103)` 很可疑
+
+### 6.1 两种写寄存器接口的区别
+
+本驱动里：
+
+``\`c
+static void write_cmos_sensor_byte(kal_uint32 addr, kal_uint32 para)
+{
+    char pu_send_cmd[3] = {
+        (char)(addr >> 8),
+        (char)(addr & 0xFF),
+        (char)(para & 0xFF)
+    };
+    iWriteRegI2C(pu_send_cmd, 3, imgsensor.i2c_write_id);
+}
+``\`
+
+这是 8-bit data 写法。
+
+``\`c
+static void write_cmos_sensor(kal_uint16 addr, kal_uint16 para)
+{
+    char pusendcmd[4] = {
+        (char)(addr >> 8),
+        (char)(addr & 0xFF),
+        (char)(para >> 8),
+        (char)(para & 0xFF)
+    };
+    iWriteRegI2C(pusendcmd, 4, imgsensor.i2c_write_id);
+}
+``\`
+
+这是 16-bit data 写法。
+
+### 6.2 为什么这会影响 mirror/flip
+
+`set_mirror_flip()` 写的是：
+
+- `0x0101`
+
+而 `stream on` 写的是：
+
+- `0x0100, 0x0103`
+
+如果这颗 sensor 的 `0x0100`、`0x0101` 是连续 8-bit 寄存器，那么：
+
+``\`c
+write_cmos_sensor(0x0100, 0x0103);
+``\`
+
+非常像是在一次 transaction 里顺手写成：
+
+- `0x0100 = 0x01`
+- `0x0101 = 0x03`
+
+这就意味着：
+
+- 刚刚通过 `set_mirror_flip()` 设置的方向
+- 会在 `stream on` 时被强制改回 `0x03`
+- 也就是 `IMAGE_HV_MIRROR`
+
+这正好解释了为什么：
+
+- 你改成 `IMAGE_NORMAL`
+- 实际画面却还是 `HV` 的效果
+
+这是本次排查最关键的根因判断。
+```
+三、方向修复
+
+```markdown
+### 7.1 方向修复
+
+最终的思路不是继续尝试 `IMAGE_H`、`IMAGE_V`、`IMAGE_HV`，而是先保证：
+
+- `stream on` 只控制 `0x0100`
+- `mirror/flip` 只由 `set_mirror_flip()` 控制
+
+因此开流逻辑改成只写：
+
+``\`c
+write_cmos_sensor_byte(0x0100, 0x01);
+``\`
+
+然后场景函数统一保留：
+
+``\`c
+set_mirror_flip(IMAGE_NORMAL);
+``\`
+
+验证结果：
+
+- 方向恢复正常
+```
+```markdown
+### 7.2 颜色修复
+
+方向修好以后，颜色异常。
+
+这时要联想到第二条经验：
+
+- 改了 mirror/flip
+- Bayer 首像素顺序也可能变了
+
+驱动中原来配置的是：
+
+``\`c
+.sensor_output_dataformat = SENSOR_OUTPUT_FORMAT_RAW_Gb
+``\`
+
+但根据 `set_mirror_flip()` 的注释映射：
+
+- `IMAGE_NORMAL` 对应 `0x0101 = 0x00`，注释是 `GR`
+
+所以最终把：
+
+``\`c
+SENSOR_OUTPUT_FORMAT_RAW_Gb
+``\`
+
+改成：
+
+``\`c
+SENSOR_OUTPUT_FORMAT_RAW_Gr
+``\`
+
+验证结果：
+
+- 颜色恢复正常
+```

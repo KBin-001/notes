@@ -1,0 +1,262 @@
+---
+title: "ADB TOOL使用指南"
+description: "一、先看 getprop.txt：认识设备环境"
+category: "tools"
+tags: ["tools", "adb"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# ADB TOOL使用指南
+
+**一、先看 getprop.txt：认识设备环境**
+
+getprop.txt 是 Android 系统属性快照。它回答的是：
+
+`这台设备是什么系统？
+是什么 build？
+什么平台？
+是否方便调试？`
+
+你这份文件有 1347 行，不需要全读。新人只先看这些字段：
+
+`ro.build.version.release
+ro.build.version.sdk
+ro.build.type
+ro.debuggable
+ro.secure
+ro.board.platform
+ro.boot.hardware
+ro.boot.verifiedbootstate
+ro.boot.veritymode
+ro.bootimage.build.type`
+
+我已经从你的文件里看到几个关键事实：
+
+`ro.board.platform = mt6789
+ro.boot.hardware = mt8781
+ro.bootimage.build.version.release = 12
+ro.bootimage.build.version.sdk = 31
+ro.bootimage.build.type = userdebug
+ro.boot.verifiedbootstate = green
+ro.boot.veritymode = enforcing`
+
+Android 版本：Android 12
+SDK：31
+build 类型：userdebug
+平台信息：MTK 平台相关
+verified boot：green
+verity：enforcing
+
+**二、再看 dmesg.txt：认识 kernel log 格式**
+
+你的 dmesg.txt 有 1269 行。
+
+先看一行典型日志：
+
+`[ 8628.396623] binder:524_1: [name:sipo_seri_kb&]sipo_drv[DBG]: sipo_suspend:513: >>> Entering suspend...`
+
+我们拆开看：
+
+`[ 8628.396623]`
+
+这是 kernel 启动后的时间，单位是秒。
+
+不是现实时间，不是 15:20:09。
+
+它表示系统启动后大约 8628 秒，也就是设备已经运行一段时间了。
+
+`binder:524_1:`
+
+这是打印日志的进程或线程上下文。
+
+说明这条日志是在某个 binder 线程上下文里打出来的。
+
+`[name:sipo_seri_kb&]`
+
+这是模块/驱动名信息。
+
+这里明显和 sipo 键盘相关。
+
+`sipo_drv[DBG]:`
+
+这是驱动自己的 log tag。
+
+DBG 一般表示 debug 级别，不一定是错误。
+
+`sipo_suspend:513:`
+
+这是函数名和代码行号。
+
+说明日志来自 sipo_suspend() 函数附近。
+
+`>>> Entering suspend...`
+
+这是具体事件：进入 suspend。
+
+所以这一行的真正含义是：
+
+`sipo 键盘驱动进入 suspend 流程。`
+
+这不是错误。
+
+这是正常的电源管理流程日志。
+
+**三、判断这份 dmesg 的时间窗口**
+
+你这份 dmesg.txt 开头是：
+
+`[ 8626.xxxxxx]`
+
+这说明它不是完整开机日志。
+
+如果是完整 boot log，通常会从类似下面开始：
+
+`[    0.000000] Booting Linux
+[    0.000000] Linux version ...`
+
+但你的日志从 8626 秒开始，说明 kernel ring buffer 里只保留了较新的日志。
+
+所以这份 dmesg 当前主要适合分析：
+
+`运行期问题
+休眠唤醒问题
+按键/霍尔/充电状态变化
+当前 module/sysfs 状态`
+
+它不太适合完整分析：
+
+`开机早期 probe 顺序
+第一次驱动加载全过程
+bootloader 到 kernel 的早期问题`
+
+这是第一条非常重要的经验：
+
+`看 dmesg 之前，先判断它是不是从 0 秒开始。`
+
+**四、从你的 dmesg 里识别正常日志**
+
+你这里有一组 sipo 日志：
+
+`sipo_suspend: >>> Entering suspend...
+Enable IRQ wake for ID
+Switched RX pin to GPIO (sleep) mode
+RX IRQ Enabled
+Enabled IRQ wake for RX (Success Path)
+sipo_suspend: &lt;&lt;&lt; Suspend OK`
+
+这组日志说明：
+
+`sipo 驱动进入休眠
+切换 RX pin 到 GPIO sleep 状态
+打开 IRQ wake
+suspend 成功`
+
+这看起来是正常路径。
+
+后面 resume：
+
+`sipo_resume: >>> Entering resume...
+Switched RX pin to UART (default) mode
+Disabled IRQ wake for ID
+Disabled IRQ wake for RX
+RX IRQ Disabled`
+
+这说明：
+
+`sipo 驱动从休眠恢复
+RX pin 切回 UART 默认状态
+关闭 wake IRQ`
+
+这也像正常路径。
+
+所以你现在要养成一个习惯：
+
+`看到 fail/error 之前，先看上下文是在初始化、suspend、resume、还是事件处理。`
+
+suspend OK、resume、Enabled IRQ wake 这些不是问题。
+
+好，进入第二课。
+
+这一节你要学会看这一条链路：
+
+`ko 文件是否存在
+-> module 是否加载
+-> device 是否注册
+-> driver 是否注册
+-> dmesg 有没有运行痕迹`
+
+我会用你真实目录里的 sipo 来讲。你之前举的是键盘例子，这次正好日志里有完整证据。
+
+---
+
+**第二课：ko、module、device、driver 怎么看**
+
+我们今天重点看这些文件：
+
+`module_ko_files_keyword.txt
+lsmod_driver_keyword.txt
+platform_devices_keyword.txt
+platform_drivers_keyword.txt
+dmesg_driver_keyword.txt
+i2c_devices.txt
+i2c_drivers.txt`
+
+先记住一句话：
+
+`有 ko 不代表驱动已经运行。
+有 driver 不代表 device 匹配成功。
+有 dmesg 运行日志，才说明代码真的执行过。`
+
+---
+
+**一、第一步：看 ko 文件是否存在**
+
+文件：
+
+`module_ko_files_keyword.txt`
+
+你这里有：
+
+`/vendor_dlkm/lib/modules/sipo_seri_kb.ko
+/vendor_dlkm/lib/modules/hall.ko
+/vendor_dlkm/lib/modules/sensorhub.ko`
+
+这说明什么？
+
+说明系统镜像里确实有这些驱动模块文件。
+
+对 sipo 来说：
+
+`sipo_seri_kb.ko 存在`
+
+这是第一层正常。
+
+但注意，只能说明：
+
+`这个 ko 被打包进系统了`
+
+不能说明：
+
+`它已经加载了
+它 probe 成功了
+它功能正常了`
+
+新人最容易犯的错就是看到 .ko 存在，就以为驱动已经生效。
+
+这是不对的。
+
+---
+
+**二、第二步：看 module 是否已加载**
+
+文件：
+
+`lsmod_driver_keyword.txt`
+
+你这里有：
+
+`sipo_seri_kb           40960  0
+hall                   20480  0
+sensorhub              98304  0`

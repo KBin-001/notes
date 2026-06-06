@@ -1,0 +1,75 @@
+---
+title: "[MTK]添加摄像头最高分辨率"
+description: "查阅 S5K3M5SX 摄像头规格书后，确认该 sensor 最高支持约 13MP 分辨率。"
+category: "mtk"
+tags: ["mtk", "camera"]
+topics: ["camera"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [MTK]添加摄像头最高分辨率
+
+### 修改背景
+查阅 S5K3M5SX 摄像头规格书后，确认该 sensor 最高支持约 **13MP** 分辨率。
+
+本次根据规格书中的最高像素能力，换算出对应的屏幕比例后，将该分辨率添加到 MTK 摄像头的专属 metadata 配置中，使上层 Camera HAL 可以识别并输出 13MP 尺寸。
+
+### 分辨率计算
+```c
+按照 13MP 和 3:2 比例计算：
+width = 3x
+height = 2x
+
+总像素数：
+3x * 2x = 6x²
+6x² = 13,000,000
+x = √(13,000,000 / 6)
+x ≈ 1471.96
+
+width  = 3 * 1471.96 ≈ 4415.88
+height = 2 * 1471.96 ≈ 2943.92
+
+向下取整后得到：
+4415 x 2943
+
+验证：
+4415 * 2943 = 12,993,345 ≈ 13MP
+4415 / 2943 ≈ 1.50017 ≈ 3:2
+```
+### 本次修改内容
+在 `config_static_metadata_project.h` 中，分别为以下两类输出格式添加 13MP 分辨率：
+
+#### 1. BLOB / JPEG 输出
+```c
+CONFIG_ENTRY_VALUE(HAL_PIXEL_FORMAT_BLOB, MINT64) //13mp 3:2
+CONFIG_ENTRY_VALUE(4415, MINT64)        // width
+CONFIG_ENTRY_VALUE(2943, MINT64)        // height
+CONFIG_ENTRY_VALUE(MTK_SCALER_AVAILABLE_STREAM_CONFIGURATIONS_OUTPUT, MINT64)   // output
+CONFIG_ENTRY_VALUE(66666666, MINT64)    // frame duration
+CONFIG_ENTRY_VALUE(33333333, MINT64)    // stall duration
+```
+该部分主要用于 JPEG 拍照输出。
+
+#### 2. YCbCr_420_888 / Preview 或 YUV 输出
+```c
+CONFIG_ENTRY_VALUE(HAL_PIXEL_FORMAT_YCbCr_420_888, MINT64) //13mp 3:2
+CONFIG_ENTRY_VALUE(4415, MINT64)        // width
+CONFIG_ENTRY_VALUE(2943, MINT64)        // height
+CONFIG_ENTRY_VALUE(MTK_SCALER_AVAILABLE_STREAM_CONFIGURATIONS_OUTPUT, MINT64)   // output
+CONFIG_ENTRY_VALUE(100000000, MINT64)   // frame duration
+CONFIG_ENTRY_VALUE(0, MINT64)           // stall duration
+```
+该部分主要用于 YUV 输出能力声明。
+
+### 注意点
+当前添加的尺寸 `4415 x 2943` 是奇数宽高。
+
+对于 `HAL_PIXEL_FORMAT_BLOB`，问题一般不大；但对于 `HAL_PIXEL_FORMAT_YCbCr_420_888`，由于 YUV420 涉及 UV 分量采样，实际使用时可能会有宽高对齐要求，建议后续验证以下内容：
+
+1. Camera 是否可以正常打开；
+1. 13MP 尺寸是否能被上层枚举出来；
+1. 拍照是否正常生成 JPEG；
+1. YUV 13MP 输出是否存在花屏、崩溃或 buffer 对齐问题；
+1. CTS 或 camera app 是否对奇数宽高有兼容性问题。

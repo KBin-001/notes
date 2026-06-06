@@ -1,0 +1,267 @@
+---
+title: "[MTK]前置摄像头"
+description: "本文档记录了在MTK平台上配置GC08A3前置摄像头驱动的完整流程，包括vendor修改、device配置和kernel修改。"
+category: "mtk"
+tags: ["mtk", "camera"]
+topics: ["camera"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [MTK]前置摄像头
+
+## MTK 前置摄像头 GC08A3 驱动配置流程
+### 📋 概述
+本文档记录了在MTK平台上配置GC08A3前置摄像头驱动的完整流程，包括vendor修改、device配置和kernel修改。
+
+---
+
+### 🔧 Vendor 修改
+#### 摄像头驱动路径
+需要修改以下三个摄像头驱动路径：
+
+- `Z:\mt8391_a\mt8391_u\vendor\mediatek\proprietary\custom\common\hal\imgsensor_metadata\sensor`
+- `Z:\mt8391_a\mt8391_u\vendor\mediatek\proprietary\custom\mt8189\hal\imgsensor\ver1`
+- `Z:\mt8391_a\mt8391_u\vendor\mediatek\proprietary\custom\mt8189\hal\imgsensor_metadata`
+#### 1. Sensor 元数据配置
+**路径**: `mediatek/proprietary/custom/common/hal/imgsensor_metadata/sensor/gc08a3_mipi_raw/`
+
+```c
++#if defined(GC08A3_MIPI_RAW)
++    RAW_INFO_M(GC08A3_SENSOR_ID, DEFAULT_MODULE_INDEX, DEFAULT_MODULE_ID, SENSOR_DRVNAME_GC08A3_MIPI_RAW, CAM_CALGetCalData),
++#endif
+```
+> **注意**: 前置摄像头不需要加入马达驱动
+#### 2. [Android.mk](http://Android.mk) 配置
+**路径**: `mediatek/proprietary/hardware/mtkcam3/main/hal/device/3.x/device/``[Android.mk](http://Android.mk)`
+
+```makefile
+#LOCAL_CFLAGS += -DSUPPORT_ASYNC_CLOSING
+```
+#### 3. MTK Camera 变量配置
+**路径**: `mediatek/proprietary/scripts/soong/mtkcam/mtkcamvars.go`
+
+#### Tuning 模块添加
+```go
+"s5k4e6_mipi_raw_tuning",
+"s5kgd1sp_mipi_raw_tuning",
+"s5kjd1_mipi_raw_tuning",
+-                               "ov16880_mipi_raw_tuning",
+-                               "ov8856_mipi_raw_tuning",
++               "ov16880_mipi_raw_tuning",
++               "ov8856_mipi_raw_tuning",
++        "gc08a3_mipi_raw_tuning",
+```
+#### GC08A3 完整模块列表添加
+```go
++        "gc08a3_mipi_raw_IdxMgr",
++        "libCamera_gc08a3mipiraw_E2EHDR_Preview",
++        "libCamera_gc08a3mipiraw_E2EHDR_Video",
++        "libCamera_gc08a3mipiraw_Face_Capture",
++        "libCamera_gc08a3mipiraw_Flash_Capture",
++        "libCamera_gc08a3mipiraw_HDR_Capture",
++        "libCamera_gc08a3mipiraw_HDR_Preview",
++        "libCamera_gc08a3mipiraw_HDR_Reconfig_Preview",
++        "libCamera_gc08a3mipiraw_HDR_Reconfig_Video",
++        "libCamera_gc08a3mipiraw_HDR_Video",
++        "libCamera_gc08a3mipiraw_N3D_Capture",
++        "libCamera_gc08a3mipiraw_N3D_Preview",
++        "libCamera_gc08a3mipiraw_N3D_Video",
++        "libCamera_gc08a3mipiraw_P1_YUV",
++        "libCamera_gc08a3mipiraw_Scene_Capture",
++        "libCamera_gc08a3mipiraw_Scene_Capture_4cell",
++        "libCamera_gc08a3mipiraw_Scene_Preview",
++        "libCamera_gc08a3mipiraw_Scene_Preview_4k",
++        "libCamera_gc08a3mipiraw_Scene_Preview_ZSD_Flash",
++        "libCamera_gc08a3mipiraw_Video_1080",
++        "libCamera_gc08a3mipiraw_Video_4k",
+```
+#### ISP 映射和参数配置
+```go
+// ISP 映射添加
++               "ISP_mapping_gc08a3_mipi_raw",
+
+// ISP 参数添加
++        "ISP_param_gc08a3_mipi_raw",
+
+// 高级功能模块添加
++        //"gc08a3_mipi_raw_tuning",
++        "libCamera_gc08a3mipiraw_Face_Capture_4cell",
++        "libCamera_gc08a3mipiraw_Face_Capture_lpnr",
++        "libCamera_gc08a3mipiraw_Flash_Capture_lpnr",
++        "libCamera_gc08a3mipiraw_HDR_Capture_lpnr",
++        "libCamera_gc08a3mipiraw_N3D_Capture_lpnr",
++        "libCamera_gc08a3mipiraw_Scene_Capture_lpnr",
++        "libCamera_gc08a3mipiraw_Zoom_Capture",
+```
+---
+
+### 🔌 Device 配置
+#### 1. [CameraConfig.mk](http://CameraConfig.mk) 配置
+**路径**: `mediatek/mt8189/``[CameraConfig.mk](http://CameraConfig.mk)`
+
+```c
+-CUSTOM_HAL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw
++CUSTOM_HAL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw gc08a3_mipi_raw
+ CUSTOM_HAL_MAIN2_IMGSENSOR =
+ CUSTOM_HAL_MAIN_IMGSENSOR = ov16880_mipi_raw s5k3m5sx_mipi_raw
+ CUSTOM_HAL_SENSORS = sensor
+-CUSTOM_HAL_SUB_IMGSENSOR = ov8856_mipi_raw
++CUSTOM_HAL_SUB_IMGSENSOR = ov8856_mipi_raw gc08a3_mipi_raw
+ CUSTOM_KERNEL_CAMERA = camera
+-CUSTOM_KERNEL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw
++CUSTOM_KERNEL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw gc08a3_mipi_raw
+ CUSTOM_KERNEL_MAIN2_IMGSENSOR =
+ CUSTOM_KERNEL_MAIN_IMGSENSOR = ov16880_mipi_raw s5k3m5sx_mipi_raw
+-CUSTOM_KERNEL_SUB_IMGSENSOR = ov8856_mipi_raw
++CUSTOM_KERNEL_SUB_IMGSENSOR = ov8856_mipi_raw gc08a3_mipi_raw
+```
+#### 2. [device-camera.mk](http://device-camera.mk) 配置
+**路径**: `mediatek/mt8189/``[device-camera.mk](http://device-camera.mk)`
+
+```makefile
+-CUSTOM_HAL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw
++CUSTOM_HAL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw gc08a3_mipi_raw
+```
+#### 3. Kernel Headers 配置
+**路径**: `mediatek/vendor/camera/kernel-headers/kd_imgsensor.h`
+
+```c
++#define GC08A3_SENSOR_ID                         0x08a3
+```
+#### 4. [ProjectConfig.mk](http://ProjectConfig.mk) 配置
+**路径**: `mediateksample/aiot8391p3_64_bsp/``[ProjectConfig.mk](http://ProjectConfig.mk)`
+
+```makefile
+-CUSTOM_KERNEL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw
++CUSTOM_KERNEL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw gc08a3_mipi_raw
+```
+---
+
+### 🐧 Kernel 修改
+#### 驱动文件路径
+`kernel_device_modules-6.1/drivers/misc/mediatek/imgsensor/src/common/v1_1/gc08a3_mipi_raw/`
+
+#### ⚠️ 前置摄像头 I2C 通信问题解决
+**问题现象**:
+
+```text
+[15:03:45:165][  122.513673][ T4317] NOTICE: I2C write failed (-6)! speed(100) (0x3)
+[15:03:45:165][  122.515182][ T4317] NOTICE: I2C write failed (-6)! speed(100) (0x4)
+```
+**解决方案**: 修改I2C写入方式，将批量写入改为单次写入
+
+在驱动的 `.h` 文件中设置：
+
+```c
+#define MULTI_WRITE  0
+```
+修改 `table_write_cmos_sensor` 函数：
+
+```c
+static void table_write_cmos_sensor(kal_uint16 *para, kal_uint32 len)
+{
+    char puSendCmd[I2C_BUFFER_LEN];
+    kal_uint32 tosend = 0, idx = 0;
+    kal_uint16 addr = 0, data = 0;
+
+    while (len > idx) {
+        addr = para[idx];
+        puSendCmd[tosend++] = (char)((addr >> 8) & 0xff);
+        puSendCmd[tosend++] = (char)(addr & 0xff);
+        data = para[idx + 1];
+        puSendCmd[tosend++] = (char)(data & 0xff);
+        idx += 2;
+#if MULTI_WRITE
+        if (tosend >= I2C_BUFFER_LEN || idx == len) {
+            iBurstWriteReg_multi(puSendCmd, tosend, imgsensor.i2c_write_id,
+                    3, imgsensor_info.i2c_speed);
+            tosend = 0;
+        }
+#else
+        iWriteRegI2CTiming(puSendCmd, 3, imgsensor.i2c_write_id, imgsensor_info.i2c_speed);
+        tosend = 0;
+        udelay(100);    //加入延时
+#endif
+    }
+}
+```
+#### 1. DTS 配置
+**路径**: `kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/cust_mt8189_p1_camera.dtsi`
+
+```text
+cam1-pin-vcamio = "regulator";
+
+cam0_enable_sensor = "ov16880_mipi_raw s5k3m5sx_mipi_raw";
+-       cam1_enable_sensor = "ov8856_mipi_raw";
++       cam1_enable_sensor = "ov8856_mipi_raw gc08a3_mipi_raw";
+```
+#### 2. Defconfig 配置
+**路径**: `kernel_device_modules-6.1/arch/arm64/configs/mgk_64_k61_defconfig`
+
+```text
+-CONFIG_CUSTOM_KERNEL_IMGSENSOR="s5k3m5sx_mipi_raw ov16880_mipi_raw ov8856_mipi_raw"
++CONFIG_CUSTOM_KERNEL_IMGSENSOR="s5k3m5sx_mipi_raw ov16880_mipi_raw ov8856_mipi_raw gc08a3_mipi_raw"
+```
+#### 3. Sensor 头文件配置
+**路径**: `kernel_device_modules-6.1/drivers/misc/mediatek/imgsensor/inc/kd_imgsensor.h`
+
+```c
++#define GC08A3_SENSOR_ID                        0x08a3
++#define SENSOR_DRVNAME_GC08A3_MIPI_RAW          "gc08a3_mipi_raw"
+```
+#### 4. 电源序列配置
+**路径**: `kernel_device_modules-6.1/drivers/misc/mediatek/imgsensor/src/common/v1_1/imgsensor_pwr_seq.c`
+
+```c
++#if defined(GC08A3_MIPI_RAW)
+      {
+              SENSOR_DRVNAME_GC08A3_MIPI_RAW,
+              {
+                      {SensorMCLK, Vol_High, 0},
+                      {PDN, Vol_Low, 0},
+                      {RST, Vol_Low, 0},
+                      {DOVDD, Vol_1800, 5},
+                      {DVDD, Vol_1200, 5},
+                      {AVDD, Vol_2800, 5},
+                      {AFVDD, Vol_2800, 5},
+                      {PDN, Vol_High, 5},
+                      {RST, Vol_High, 5}
+              },
+      },
++#endif
+```
+#### 5. Sensor 列表配置
+**路径**: `kernel_device_modules-6.1/drivers/misc/mediatek/imgsensor/src/common/v1_1/imgsensor_sensor_list.c`
+
+```c
++#if defined(GC08A3_MIPI_RAW)
++{GC08A3_SENSOR_ID, SENSOR_DRVNAME_GC08A3_MIPI_RAW,GC08A3_MIPI_RAW_SensorInit},
++#endif
+```
+#### 6. Sensor 列表头文件
+**路径**: `kernel_device_modules-6.1/drivers/misc/mediatek/imgsensor/src/common/v1_1/imgsensor_sensor_list.h`
+
+```c
++UINT32 GC08A3_MIPI_RAW_SensorInit(struct SENSOR_FUNCTION_STRUCT **pfFunc);
+```
+---
+
+### 🔍 调试注意事项
+> **⚠️ 重要提醒**: 记得恢复debug模式！
+**调试路径**: `Z:\mt8391_a\mt8391_u\kernel\kernel_device_modules-6.1\drivers\misc\mediatek\imgsensor\src\common\v1_1\`imgsensor_common.h
+
+图片附件
+---
+
+### ✅ 配置完成检查清单
+- [ ] Vendor 路径下的sensor元数据配置完成
+- [ ] MTK Camera变量配置完成
+- [ ] [Device层CameraConfig.mk](http://Device层CameraConfig.mk)配置完成
+- [ ] Kernel DTS配置完成
+- [ ] Kernel defconfig配置完成
+- [ ] I2C通信问题已修复（MULTI_WRITE = 0）
+- [ ] 电源序列配置完成
+- [ ] 调试模式恢复完成
+**配置完成后，GC08A3前置摄像头应该可以正常工作！** 🎉

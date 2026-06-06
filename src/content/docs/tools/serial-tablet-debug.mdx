@@ -1,0 +1,21 @@
+---
+title: "串口平板调试"
+description: "adb命令"
+category: "tools"
+tags: ["tools", "uart"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# 串口平板调试
+
+adb命令
+
+```c
+#查询串口2的信息
+cat /proc/tty/driver/serial | grep "^2:"
+
+#发送命令
+printf "123" > /dev/ttyS2
+```

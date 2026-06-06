@@ -1,0 +1,255 @@
+---
+title: "[MTK]亮度调整记录：压低高亮段峰值，保留中低亮手感"
+description: "路径如下："
+category: "mtk"
+tags: ["mtk", "display"]
+topics: ["display_tp"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [MTK]亮度调整记录：压低高亮段峰值，保留中低亮手感
+
+### 一、修改文件
+路径如下：
+
+```text
+kernel_device_modules-6.1/drivers/leds/leds-mtk.c
+```
+这次改动主要有三块：
+
+1. 新增一个高亮段重映射函数 `brightness_remap_highlight()`
+1. 在 `brightness_maptolevel()` 里接入这层 remap
+1. 在 `mtk_leds_brightness_set()` 里使用转换后的亮度值下发
+### 二、先说结论：这次改的不是“亮度值”，而是“亮度曲线”
+很多时候看 patch，第一眼会以为只是把最大亮度改小了。
+
+其实不是。
+
+这次的做法更像是：
+
+- **低亮到中亮**：基本保持原来的线性关系
+- **高亮段**：开始压缩
+- **满亮**：不再直接冲到原始最大值，而是限制到一个更低的上限
+也就是说，这不是简单粗暴地“整体变暗”。
+
+而是做了一条**分段映射曲线**。
+
+这个思路在项目里很常见。
+
+因为用户最敏感的，往往不是 10% 或 20% 的亮度。
+
+而是 80% 往上那一段是不是太炸，是不是刺眼，是不是发热上来太快。
+
+### 三、修改点 1：新增高亮压缩函数
+新增代码如下：
+
+```text
+staticintbrightness_remap_highlight(intlevel,intinput_max)
+{
+intknee;
+intout_max;
+
+if (level<=0||input_max<=0)
+return0;
+
+if (level>=input_max)
+level=input_max;
+
+/*
+* Keep the lower 70% linear so normal indoor brightness feels the same,
+* then compress the top-end to about 85.5% to reduce peak nits.
+*/
+knee=input_max*70/100;
+out_max=input_max*830/1000;
+if (out_max<=knee||input_max<=knee)
+returnlevel;
+
+if (level<=knee)
+returnlevel;
+
+returnknee+ (level-knee)* (out_max-knee)/
+               (input_max-knee);
+}
+```
+#### 这段代码在干什么？
+先说几个关键点：
+
+#### 1）`knee` 是拐点
+```text
+knee=input_max*70/100;
+```
+这里把输入最大值的 **70%** 当成一个分界点。
+
+含义很直接：
+
+- 0 ~ 70%：亮度不动，保持线性
+- 70% ~ 100%：开始压缩
+这个思路挺稳。
+
+因为室内常用亮度大多就在中低段。
+
+把 70% 以下保持原样，用户平时手感基本不会变。
+
+#### 2）`out_max` 是压缩后的最高输出
+```text
+out_max=input_max*830/1000;
+```
+这个值等于原始最大值的 **83%**。
+
+注意这里有个细节：
+
+代码注释写的是：
+
+```text
+compressthetop-endtoabout85.5%
+```
+但实际代码算出来是：
+
+```text
+830/1000=83%
+```
+也就是说，**注释和代码现在并不一致**。
+
+真正生效的是代码，不是注释。
+
+这一点发帖时最好写清。
+
+不然后面别人照着看，会以为你压的是 85.5%，实际上你压的是 83%。
+
+#### 3）70% 以下不变，70% 以上重新拉一条线
+如果亮度还没到 `knee`：
+
+```text
+if (level<=knee)
+returnlevel;
+```
+那就原样返回。
+
+不做任何处理。
+
+如果超过了 `knee`，就用下面这条公式重新映射：
+
+```text
+returnknee+ (level-knee)* (out_max-knee)/
+       (input_max-knee);
+```
+这个公式本质上就是：
+
+**把原来 [70%, 100%] 这一段，线性压缩到 [70%, 83%] 这一段。**
+
+所以最终效果就是：
+
+- 中低亮不变
+- 高亮越来越“收”
+- 满亮不再顶到最上面
+### 四、修改点 2：在 `brightness_maptolevel()` 里接入 remap
+改动前：
+
+```text
+staticintbrightness_maptolevel(structled_conf_info*led_conf,intbrightness)
+{
+return (((led_conf->max_hw_brightness)*brightness
++ ((led_conf->cdev.max_brightness)/2))
+/ (led_conf->cdev.max_brightness));
+}
+```
+改动后：
+
+```text
+staticintbrightness_maptolevel(structled_conf_info*led_conf,intbrightness)
+{
+intlevel;
+
+level= (((led_conf->max_hw_brightness)*brightness
++ ((led_conf->cdev.max_brightness)/2))
+/ (led_conf->cdev.max_brightness));
+
+returnbrightness_remap_highlight(level,led_conf->max_hw_brightness);
+}
+```
+#### 这里的变化很关键
+原来这函数只做一件事：
+
+**把上层传下来的亮度值，按比例映射到硬件亮度范围。**
+
+比如：
+
+- Android 亮度是 0 ~ 2047
+- 硬件亮度是 0 ~ 4095
+那这里就是做一次普通线性缩放。
+
+现在多了一步：
+
+- 先做原始线性映射
+- 再做高亮段压缩
+也就是说，从这个函数返回出去的值，已经不是“纯线性结果”了。
+
+而是**带曲线修正后的硬件亮度值**。
+
+这一步一接进去，整个背光输出逻辑就变了。
+
+不是局部修一下。
+
+而是把高亮段整体重塑了。
+
+---
+
+### 五、修改点 3：在 `mtk_leds_brightness_set()` 里下发转换后的亮度
+改动如下：
+
+```text
+intmtk_leds_brightness_set(intconnector_id,intlevel,
+{
+structmt_led_data*led_dat;
+intindex;
+inttrans_level;
+
+       ...
+
+if (!led_dat->conf.aal_enable) {
+//pr_debug("aal not enable, set %s %d return", name, level);
+       }else {
+trans_level=brightness_maptolevel(&led_dat->conf,level);
+mtk_set_hw_brightness(led_dat,trans_level,params,params_flag);
+led_dat->last_hw_brightness=trans_level;
+       }
+
+       ...
+}
+```
+#### 这里要看两个点
+#### 1）增加了 `trans_level`
+这个变量名字起得还可以。
+
+意思很直接，就是：
+
+**把用户输入亮度转换后的实际下发值。**
+
+所以这里已经不是直接拿 `level` 往下写了。
+
+而是先过一遍 `brightness_maptolevel()`，再写给硬件。
+
+#### 2）`last_hw_brightness` 记录的也变了
+原来是：
+
+```text
+led_dat->last_hw_brightness=level;
+```
+现在变成：
+
+```text
+led_dat->last_hw_brightness=trans_level;
+```
+这个变化不大，但语义变了。
+
+原来它记的更像是“请求亮度”。
+
+现在它记的是“实际硬件亮度”。
+
+这点挺重要。
+
+因为后面如果有人拿 `last_hw_brightness` 做日志、对比、补偿或者恢复，就要知道它现在存的是**转换后的值**，不是原始输入值。
+
+---

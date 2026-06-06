@@ -1,0 +1,65 @@
+---
+title: "[MTK]合入屏幕色彩饱和度"
+description: "屏厂给的是色彩/色温/饱和度参数，本质是写 panel IC 的 vendor register，不是改 Android 上层显示效果，也不是改 DRM color matrix。合入位置应该在 LCM 初始化 DSI 命令里，也就是 LK"
+category: "mtk"
+tags: ["mtk", "display"]
+topics: ["display_tp"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [MTK]合入屏幕色彩饱和度
+
+屏厂给的是色彩/色温/饱和度参数，本质是写 panel IC 的 vendor register，不是改 Android 上层显示效果，也不是改 DRM color matrix。合入位置应该在 LCM 初始化 DSI 命令里，也就是 LK 的 lcm_init_setting[] 和 kernel 的 lmibe127119272_panel_init()。
+
+屏厂原始格式类似：
+
+```c
+MIPI_WR(0x39, 0xBD, 0x00);
+MIPI_WR(0x39, 0xC1, 0x01);
+MIPI_WR(0x39, 0xBD, 0x01);
+MIPI_WR(0x39, 0xC1, ...);
+```
+这里第一个 0x39 是 MIPI DSI packet type，表示 long write。合入现有驱动时不要把 0x39 当作寄存器写进去，因为当前 LK/kernel 的写接口已经负责封装 DSI packet。真正要写给屏的是后面的寄存器和数据：
+
+```c
+BD 00
+C1 01
+BD 01
+C1 ...
+BD 02
+C1 ...
+BD 03
+C1 ...
+BD 00
+```
+0xBD 是切换寄存器页，也可以理解为 page select/bank select。0xC1 是当前页下的色彩参数表。所以 BD 和 C1 的顺序必须保留，不能只拷贝 C1，也不能把三页参数混在一起。
+
+LK 合入方式是放进 lcm_init_setting[]：
+
+```c
+{0xBD, 1, {0x00}},
+{0xC1, 1, {0x01}},
+{0xBD, 1, {0x01}},
+{0xC1, 58, {...}},
+{0xBD, 1, {0x02}},
+{0xC1, 58, {...}},
+{0xBD, 1, {0x03}},
+{0xC1, 58, {...}},
+{0xBD, 1, {0x00}},
+```
+kernel 合入方式是放进 lmibe127119272_panel_init()：
+
+```c
+lmibe127119272_dcs_write_seq_static(ctx, 0xBD, 0x00);
+lmibe127119272_dcs_write_seq_static(ctx, 0xC1, 0x01);
+lmibe127119272_dcs_write_seq_static(ctx, 0xBD, 0x01);
+lmibe127119272_dcs_write_seq_static(ctx, 0xC1, ...);
+lmibe127119272_dcs_write_seq_static(ctx, 0xBD, 0x02);
+lmibe127119272_dcs_write_seq_static(ctx, 0xC1, ...);
+lmibe127119272_dcs_write_seq_static(ctx, 0xBD, 0x03);
+lmibe127119272_dcs_write_seq_static(ctx, 0xC1, ...);
+lmibe127119272_dcs_write_seq_static(ctx, 0xBD, 0x00)
+```
+放置位置建议在原始初始化参数末尾、B9 00 00 00 00 锁寄存器之前，0x11 Sleep Out 和 0x29 Display On 之前。

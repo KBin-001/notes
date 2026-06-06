@@ -1,0 +1,26 @@
+---
+title: "Camera 知识点"
+description: "相机打开预览"
+category: "camera"
+tags: ["camera"]
+topics: ["camera"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# Camera 知识点
+
+相机打开预览
+
+```c
+[   42.723788][ T4038] [ISP][ISP_WaitIrq] VF off IRQ 3A  irq3a_wait_cnt++ =2 Clear(1) Type(0) StType(0) Status(0x00000001) WaitStatus(0x00000040) Timeout(5000000) key(1)
+[   42.732052][  T955] [ISP][ISP_ioctl] CAM_0 viewFinder is ON (SecOn:0x0)
+[   42.732903][  T955] [ISP][ISP_ioctl] CAM_0_REG_TG_VF_CON 0x00000001
+```
+- `CAM_0 viewFinder is ON`
+- `CAM_0_REG_TG_VF_CON 0x00000001`
+这里基本就是在说：
+
+- `viewFinder is ON`：ISP 这边把 **preview/viewfinder 路径打开了**
+- `TG_VF_CON = 0x1`：对应的 **VF 控制寄存器被置 1**，通常就是 enable

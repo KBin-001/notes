@@ -1,0 +1,128 @@
+---
+title: "[MTK]充电相关节点查询"
+description: "“充电相关查询节点”在这个项目里，指的是能反映或控制以下状态的运行时接口："
+category: "mtk"
+tags: ["mtk", "charging"]
+topics: ["charging"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [MTK]充电相关节点查询
+
+## 一、排查目标定义
+“充电相关查询节点”在这个项目里，指的是能反映或控制以下状态的运行时接口：
+
+- 电池状态：`capacity`、`status`、`health`、`temp`、`voltage_now`、`current_now`
+- 充电器状态：`online`、`usb_type`、`input_current_limit`、`constant_charge_current`
+- 快充链路状态：分压充电泵、主充电器、PD/Type-C 相关状态
+- 控制接口：停充、限流、电源路径、安全定时器
+在 Android/MTK 项目里，这类节点通常落在 4 层：
+
+- `power_supply class`：`/sys/class/power_supply/...`
+- 驱动私有 `sysfs`：比如 `mtk-gauge/*`、I2C 设备私有属性
+- `procfs`：MTK 常见 `/proc/mtk_battery_cmd/*`
+- Framework/Health：`dumpsys battery`、BatteryService、health HAL
+这次排查的目标，不是泛泛看电池信息，而是把 Kamvas_Pad_12 这个项目里的“真实节点地图”建立起来，并确认：
+
+- 哪些 `power_supply` 节点真的被注册出来了
+- `battery / charger / usb_type / gauge / charge pump` 分别对应谁
+- `online/status/current_now/capacity/temp` 的值是否可信
+- Framework 看到的状态是不是来自这些内核节点
+- 节点异常时，到底是 DTS、驱动注册、属性实现、权限，还是硬件状态没上来
+---
+
+## 二、第一阶段：先从源码侧建立“节点地图”
+### 1. DTS / DTSI
+#### 【排查目标】
+确认这个项目理论上会有哪些 charger/gauge/typec 设备，以及它们分别挂在哪条总线、哪个地址、是什么角色。
+
+#### 【为什么查这里】
+DTS 决定“项目里接了什么芯片”和“驱动最终会 probe 谁”。如果 DTS 没有设备，后面所有节点都不可能出现。
+
+#### 【本项目先看这些文件】
+- [aiot8391p2_64_bsp.dts](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/aiot8391p2_64_bsp.dts)
+- [Kamvas_Pad_12_ROW.dts](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/Kamvas_Pad_12_ROW.dts)
+- [sgm41600s.dtsi](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/sgm41600s.dtsi)
+- [mt8189.dts](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/mt8189.dts)
+- 还要扫 `tcpc_config.dtsi`、`mt6375` 相关 dtsi
+#### 【从这些文件里要确认什么】
+- `charger`、`mtk_gauge`、`typec`、`tcpc` 是否启用
+- `compatible` 是谁
+- I2C 总线号和地址
+- `charger_name`、`gauge` phandle、PD/Type-C 关联关系
+- 是否有 `disable-charger`、`disable-mtkbattery`
+#### 【本项目已经确认到的关键点】
+- [aiot8391p2_64_bsp.dts](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/aiot8391p2_64_bsp.dts#L1154) 包含 [sgm41600s.dtsi](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/sgm41600s.dtsi)
+- [sgm41600s.dtsi](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/sgm41600s.dtsi#L14) 指定 `compatible = "sgm,sgm41600-master"`
+- 同文件挂在 `i2c5`、地址 `0x6e`
+- [mt8189.dts](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/mt8189.dts#L10383) 等位置能看到 `gauge = &lt;&mtk_gauge>`
+#### 【要执行的命令】
+```bash
+rg -n "sgm41600|mt6375|mtk_gauge|&charger|typec|tcpc|gauge = <&mtk_gauge>|disable-charger|disable-mtkbattery" Z:\\kp1202_v16\\mt8391_u\\kernel\\kernel_device_modules-6.1\\arch\\arm64\\boot\\dts\\mediatek
+```
+#### 【正常现象】
+- 能明确看到 charger/gauge/typec 芯片实例
+- 能对上 I2C 设备，如 `4-0034`、`5-006e`
+- 没有把当前板级配置禁用掉
+#### 【异常现象】
+- 找不到 charger/gauge 设备
+- 板级 dts 有 `disable-charger`
+- `mtk_gauge` 被删或未引用
+#### 【如何根据现象继续缩小范围】
+- 如果 DTS 没设备：优先查板级 dts include 链和 `.dtsi` 是否被正确包含
+- 如果 DTS 有设备但运行时没有节点：进入驱动 probe / register 排查
+---
+
+### 2. kernel 驱动源码
+#### 【排查目标】
+把“理论节点名”和“支持的属性名”从源码直接抠出来，建立节点地图。
+
+#### 【为什么查这里】
+最终目录名是谁，不是猜出来的，是 `power_supply_desc.name` 定义的；最终文件名有哪些，是 `POWER_SUPPLY_PROP_*` 决定的。
+
+#### 【本项目先看这些文件】
+- [sgm41600s.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/sgm41600s.c)
+- [mtk_battery.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mtk_battery.c)
+- [mtk_charger.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mtk_charger.c)
+- [mt6375-gauge.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mt6375-gauge.c)
+- [mt6359p-gauge.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mt6359p-gauge.c)
+- [mtk_charger_intf.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mtk_charger_intf.c)
+#### 【从这些文件里要确认什么】
+- 谁调用了 `power_supply_register` / `devm_power_supply_register`
+- `power_supply_desc.name` 是什么
+- `POWER_SUPPLY_PROP_*` 枚举里有哪些属性
+- `get_property()` 实现里每个属性从哪来
+- 有没有私有 `DEVICE_ATTR` / `sysfs_create_group` / `proc_create_data`
+#### 【本项目已经确认到的关键点】
+- [mtk_battery.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mtk_battery.c#L1055) 把电池节点名定为 `"battery"`
+- [mtk_battery.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mtk_battery.c#L595) 起支持 `capacity/current_now/current_avg/temp`
+- [mtk_charger.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mtk_charger.c#L3877) 注册 `"mtk-master-charger"`
+- [mtk_charger.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mtk_charger.c#L3930) 注册 `"mtk-mst-div-chg"`
+- [sgm41600s.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/sgm41600s.c#L65) 定义 `"sgm-cp-master"`
+- [mt6375-gauge.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mt6375-gauge.c#L3962) 定义 `"mtk-gauge"`
+- [sgm41600s.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/sgm41600s.c#L1230) 有私有 `registers`
+- [mtk_charger.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mtk_charger.c#L3277) 创建 `/proc/mtk_battery_cmd/*`
+#### 【要执行的命令】
+```bash
+rg -n "power_supply_register|devm_power_supply_register|POWER_SUPPLY_PROP_|psy_desc.name|DEVICE_ATTR|sysfs_create_group|proc_create_data|proc_mkdir" Z:\\kp1202_v16\\mt8391_u\\kernel\\kernel_device_modules-6.1\\drivers\\power\\supply
+```
+#### 【正常现象】
+- 每条查询链都能找到明确的注册点
+- 能把目录名和属性名完整列出来
+#### 【异常现象】
+- 找到节点名但找不到属性实现
+- 找到属性枚举但 `get_property` 没处理
+- 有目录但没有标准属性，只有私有属性
+#### 【如何根据现象继续缩小范围】
+- 有枚举没实现：属性可能读错或报 `EINVAL`
+- 有实现但运行时没文件：可能节点不是标准 power_supply，而是私有 sysfs/proc
+- 有私有节点但权限不足：继续看 init/ueventd/sepolicy
+---
+
+### 3. 设备初始化/权限相关文件
+#### 【排查目标】
+确认节点读不到时，是“没创建”还是“权限拦住”。
+
+#### 【为什么查这里】

@@ -1,0 +1,31 @@
+---
+title: "[MTK]解决camera上下电顺序问题"
+description: "关闭了 Camera HAL 的异步关闭机制（ASYNCCLOSING）"
+category: "mtk"
+tags: ["mtk", "camera"]
+topics: ["camera"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [MTK]解决camera上下电顺序问题
+
+**关闭了 Camera HAL 的异步关闭机制（ASYNC_CLOSING）**
+
+关闭之后，camera power off 会变成**同步执行**，从而避免上下电顺序错乱的问题。
+
+vendor下
+
+```c
+--- a/mediatek/proprietary/hardware/mtkcam3/main/hal/device/3.x/device/Android.mk
++++ b/mediatek/proprietary/hardware/mtkcam3/main/hal/device/3.x/device/Android.mk
+@@ -93,7 +93,7 @@ else
+ endif
+
+ ifneq (,$(filter $(strip $(MTKCAM_TARGET_BOARD_PLATFORM)), mt6855 mt6789 mt8189 mt8169))
+-  LOCAL_CFLAGS += -DSUPPORT_ASYNC_CLOSING
++  #LOCAL_CFLAGS += -DSUPPORT_ASYNC_CLOSING
+ endif
+```
+附件：0001-update-kp1202-camera.patch

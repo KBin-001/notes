@@ -1,0 +1,84 @@
+---
+title: "[MTK]解决状态栏没有闪光灯图标"
+description: "---"
+category: "mtk"
+tags: ["mtk"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [MTK]解决状态栏没有闪光灯图标
+
+### 📌 现象
+- 平板下拉状态栏**没有手电筒图标**
+- 但相机 App 中**闪光灯功能正常**
+---
+
+### 🔍 排查过程
+#### 1. 追踪 `FlashlightTile.java`
+图标是否显示，取决于 `isAvailable()` 的返回值：
+
+```java
+@Override
+public boolean isAvailable() {
+    return mFlashlightController.hasFlashlight();
+}
+```
+#### 2. 追踪 `FlashlightControllerImpl.java`
+**第一次判断（主检查）** — 第 98 行：
+
+```java
+mHasFlashlight = packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+```
+`**hasFlashlight()**`** 方法** — 第 144 行：
+
+```java
+public boolean hasFlashlight() {
+    return mHasFlashlight;
+}
+```
+> **关键发现：** 手电筒图标是否显示，取决于 `FEATURE_CAMERA_FLASH` 系统特性是否已声明。
+**第二次判断（备用检查）** — 第 177–189 行：
+
+```java
+private String getCameraId() throws CameraAccessException {
+    String[] ids = mCameraManager.getCameraIdList();
+    for (String id : ids) {
+        CameraCharacteristics c = mCameraManager.getCameraCharacteristics(id);
+        Boolean flashAvailable = c.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+        Integer lensFacing = c.get(CameraCharacteristics.LENS_FACING);
+        if (flashAvailable != null && flashAvailable
+                && lensFacing != null && lensFacing == CameraCharacteristics.LENS_FACING_BACK) {
+            return id;
+        }
+    }
+    return null;
+}
+```
+> 
+即使存在第二次检查（通过 Camera2 API），若第一次 `FEATURE_CAMERA_FLASH` 检查失败，`mHasFlashlight` 就为 `false`，整个初始化流程会被跳过。
+
+#### 3. 检查设备特性声明
+查看 `tablet_core_hardware.xml`，注释中提到：
+
+```xml
+<!-- devices with a rear-facing camera must include one of these as appropriate:
+     android.hardware.camera.xml or
+     android.hardware.camera.autofocus.xml or
+     android.hardware.camera.autofocus-flash.xml -->
+```
+**发现：平板的默认配置中没有包含 **`**android.hardware.camera.flash**`** 特性！**
+
+#### 4. 检查项目配置
+搜索项目目录下的 `device-vext.mk`，确认**没有声明** camera flash feature。
+
+---
+
+### ✅ 解决方案
+在 `device-vext.mk` 中添加以下声明：
+
+```makefile
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.flash-autofocus.xml
+```

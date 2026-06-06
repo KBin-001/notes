@@ -1,0 +1,255 @@
+---
+title: "[MTK] SIPO 串口键盘驱动接入"
+description: "无法进行串口键盘的连接"
+category: "mtk"
+tags: ["mtk", "uart"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [MTK] SIPO 串口键盘驱动接入
+
+## 一、初步现象
+无法进行串口键盘的连接
+
+以为是sipo_seri_kb.ko 没有加载
+
+但日志有，证明不是没有加载。
+
+```c
+modprobe: calling ... [sipo_seri_kb]
+modprobe: initcall ... [sipo_seri_kb] returned 0
+```
+说明ko加载了，但是驱动没有加载，log没有发现驱动probe了！
+
+## **二、 为什么驱动加载了却不 probe**
+Linux platform driver 要 probe，必须同时满足两个条件：
+
+```c
+1. 驱动已经注册
+2. device tree 里有 compatible 匹配的 platform device
+```
+驱动里是：
+
+```c
+.compatible = "sipo,sipo_seri_kb"
+```
+所以设备树里必须有：
+
+```c
+compatible = "sipo,sipo_seri_kb";
+```
+失败时板子上查：
+
+```c
+find /proc/device-tree -name "*sipo*"
+find /proc/device-tree -name "sipo_keyboard"
+ls /sys/bus/platform/devices | grep -i sipo
+```
+都没有输出。
+
+这说明：
+
+`运行时 device tree 里没有 sipo_keyboard`
+
+所以驱动不会 probe。
+
+## **三、 当时容易误判的地方**
+我们看到：
+
+`strings /dev/block/by-name/dtbo_a | grep -i sipo`
+
+有输出：
+
+`sipo_kb_pins_default
+sipo_kb_pins_sleep
+sipo_keyboard
+sipo,sipo_seri_kb`
+
+这说明：
+
+`dtbo_a 里面确实有 sipo 字符串`
+
+但这不等于运行时 device tree 生效。
+
+因为 DTBO 是 overlay，它要“套”到主 DTB 上。如果 overlay 的目标节点不存在，最终 /proc/device-tree 里还是不会有。
+
+## **四、失败的根因**
+当时 tb8781p1_64_wifi.dts 里用了：
+
+```c
+&sipo_keyboard {
+    ...
+};
+```
+这表示：
+
+`我要修改一个已经存在的 sipo_keyboard 节点`
+
+但是我们查：
+
+`strings /dev/block/by-name/lk_a | grep -i sipo`
+
+没有输出。
+
+说明主 DTB 里没有：
+
+```c
+sipo_keyboard: sipo_keyboard {
+    ...
+};
+```
+所以 DTBO 里的：
+
+`&sipo_keyboard`
+
+找不到目标节点，overlay 没真正生效。
+
+## **五、 正确做法**
+在：
+
+`kernel-5.10/arch/arm64/boot/dts/mediatek/mt6789.dts`
+
+加基础节点：
+
+```c
+sipo_keyboard: sipo_keyboard {
+    compatible = "sipo,sipo_seri_kb";
+};
+```
+然后在：
+
+`kernel-5.10/arch/arm64/boot/dts/mediatek/tb8781p1_64_wifi.dts`
+
+补资源：
+
+```c
+&sipo_keyboard {
+    pinctrl-names = "default", "sleep";
+    pinctrl-0 = <&sipo_kb_pins_default>;
+    pinctrl-1 = <&sipo_kb_pins_sleep>;
+
+    detect-gpios = <&pio 107 0>;
+    docking_5v_en-gpios = <&pio 106 0>;
+    rxirq-gpios = <&pio 89 0>;
+
+    wakeup-source;
+    status = "okay";
+};
+```
+## **六、这几个 GPIO 是什么**
+这次设备树里主要有：
+
+`GPIO107：detect，插拔检测
+GPIO106：docking_5v_en，驱动控制键盘供电
+GPIO89：rxirq，休眠时做 RX 唤醒
+GPIO100：LDO 3.3V enable，通过 pinctrl output-high
+GPIO88：UART2 TX
+GPIO89：UART2 RX`
+
+正常工作时：
+
+`PINMUX_GPIO89__FUNC_URXD2
+PINMUX_GPIO88__FUNC_UTXD2`
+
+休眠唤醒时：
+
+`PINMUX_GPIO89__FUNC_GPIO89`
+
+这就是：
+
+`正常时 GPIO89 是 UART RX
+休眠时 GPIO89 切成 GPIO 中断
+唤醒后再切回 UART RX`
+
+## **七、编译加载也要完整**
+驱动目录是：
+
+```c
+kernel-5.10/drivers/misc/mediatek/sipo_seri_kb/
+```
+子目录 Makefile：
+
+```c
+obj-$(CONFIG_SIPO_SERI_KB) += sipo_seri_kb.o
+```
+父级 Makefile：
+
+```c
+obj-$(CONFIG_SIPO_SERI_KB) += sipo_seri_kb/
+```
+父级 Kconfig：
+
+```c
+config SIPO_SERI_KB
+    tristate "SIPO serial keyboard helper driver"
+```
+defconfig：
+
+```c
+CONFIG_SIPO_SERI_KB=m
+```
+如果是模块，还要确保 ko 被打包加载。成功时日志有：
+
+```c
+modprobe: calling ... [sipo_seri_kb]
+modprobe: initcall ... [sipo_seri_kb] returned 0
+```
+## **八、怎么验证每一层**
+验证 ko 是否加载：
+
+```c
+lsmod | grep sipo
+dmesg | grep -i sipo
+```
+验证驱动是否注册：
+
+```c
+ls /sys/bus/platform/drivers/sipo_drv
+```
+验证 device tree 是否存在：
+
+```c
+find /proc/device-tree -name "sipo_keyboard"
+cat /proc/device-tree/sipo_keyboard/compatible
+```
+验证 platform device 是否创建：
+
+```c
+ls /sys/bus/platform/devices | grep -i sipo
+```
+验证 dtbo 分区有没有 sipo：
+
+```c
+strings /dev/block/by-name/dtbo_a | grep -i sipo
+```
+验证主 DTB 有没有 sipo：
+
+```c
+strings /dev/block/by-name/lk_a | grep -i sipo
+```
+当前槽位：
+
+`getprop ro.boot.slot_suffix`
+
+## **九、 成功时日志长什么样**
+成功日志是：
+
+```c
+sipo_drv sipo_keyboard: probe SIPO Driver 3.3.0-20260428
+sipo_drv[DBG]: sipo_probe:455: Pinctrl dynamically initialized to 'default' (UART) state.
+sipo_drv[DBG]: sipo_set_rx_irq_state:134: RX IRQ Disabled (depth 0 -> +1)
+input: sipo_kb as /devices/platform/sipo_keyboard/input/input5
+probe of sipo_keyboard returned 1 after 5675 usecs
+```
+这些说明：
+
+```c
+ko 加载成功
+compatible 匹配成功
+platform device 创建成功
+probe 执行成功
+pinctrl default 生效
+input 设备 sipo_kb 注册成功
+```

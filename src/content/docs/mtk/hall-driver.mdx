@@ -1,0 +1,132 @@
+---
+title: "[MTK] 霍尔驱动（hall）"
+description: "kernel"
+category: "mtk"
+tags: ["mtk", "hall"]
+topics: ["sensor"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [MTK] 霍尔驱动（hall）
+
+kernel
+
+路径：kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/aiot8391p3_64_bsp.dts
+
+```c
+kpd_gpio: kpd-gpio {
+                pins-cols {
+-                       pinmux = <PINMUX_GPIO44__FUNC_KPCOL0>;
++                       pinmux = <PINMUX_GPIO44__FUNC_KPCOL0>, // 保持原有列0
++                                <PINMUX_GPIO45__FUNC_KPCOL1>; // 新增列1
+                        input-enable;
+                        bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+                };
+@@ -623,10 +624,6 @@ bootargs_ext = "";
+                                <PINMUX_GPIO72__FUNC_SPIM0_MI>;
+                                drive-strength = <MTK_DRIVE_6mA>;
+                };
+-               pin-can-standby {
+-                       pinmux = <PINMUX_GPIO45__FUNC_GPIO45>;
+-                       output-low;
+-               };
+        };
+ };
+
+@@ -1152,6 +1149,11 @@ status = "okay";
+        status = "disabled";
+ };
+
++&hall {
++  hall_eint = <&pio 12 0>;         // GPIO12作为外部中断引脚
++};
+```
+路径：kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/mt8189.dts
+
+```c
++  hall: hall {
++    compatible = "mediatek,hall";
++  };
++
+        touch_panel0: touch-panel0 {
+                compatible = "mediatek,touch-panel";
+        };
+```
+路径： kernel_device_modules-6.1/arch/arm64/configs/mgk_64_k61_defconfig
+
+```c
++CONFIG_MTK_HALL=m           // 将霍尔驱动编译为模块(.ko)
+```
+路径：kernel_device_modules-6.1/drivers/misc/mediatek/Kconfig
+
+```c
++config MTK_HALL
++  tristate "MTK HALL driver"              // 三态选择：y/n/m
++       help
++               driver for mtk hall project gpio control driver
+```
+路径： kernel_device_modules-6.1/drivers/misc/mediatek/Makefile
+
+```c
++obj-$(CONFIG_MTK_HALL) += hall/
+```
+路径：  kernel_device_modules-6.1/drivers/misc/mediatek/hall/Makefile
+
+```c
++ccflags-$(CONFIG_DRM_MEDIATEK_V2)      += -I$(DEVICE_MODULES_PATH)/drivers/gpu/drm/mediatek/mediatek_v2/
++
++$(warning "--->hall makefile")
++
++obj-m = hall.o
+```
+路径：kernel_device_modules-6.1/drivers/misc/mediatek/hall/hall.c
+
+附件：hall.c
+路径： kernel_device_modules-6.1/kernel/kleaf/mgk_64_k61.bzl
+
+```c
++    "drivers/misc/mediatek/hall/hall.ko",      // 将hall.ko加入模块列表
+```
+vendor
+
+MTK软件生成
+
+路径：mediatek/proprietary/tools/dct/dws/mt8189/aiot8391p3_64_bsp.dws
+
+```c
+-                <eint_mode>false</eint_mode>
++                <eint_mode>true</eint_mode>
+                 <def_mode>0</def_mode>
+                 <inpull_en>true</inpull_en>
+-                <inpull_selhigh>false</inpull_selhigh>
+-                <def_dir>OUT</def_dir>
+-                <out_high>true</out_high>
++                <inpull_selhigh>true</inpull_selhigh>
++                <def_dir>IN</def_dir>
++                <out_high>false</out_high>
+```
+路径：mediatek/proprietary/bootable/bootloader/preloader/custom/aiot8391p3_64_bsp/dct/dct/codegen.dws
+
+```c
+-                <eint_mode>false</eint_mode>
++                <eint_mode>true</eint_mode>
+                 <def_mode>0</def_mode>
+                 <inpull_en>true</inpull_en>
+-                <inpull_selhigh>false</inpull_selhigh>
++                <inpull_selhigh>true</inpull_selhigh>
+```
+客制化文件同步
+
+```c
+mediatek/proprietary/bootable/bootloader/preloader/custom/Kamvas_Pad_12_EEA/dct/dct/codegen.dws
+mediatek/proprietary/bootable/bootloader/preloader/custom/Kamvas_Pad_12_ROW/dct/dct/codegen.dws
+```
+device
+
+路径：mediateksample/aiot8391p3_64_bsp/ko_order_table.csv
+
+```c
++hall.ko,/../kernel_device_modules-6.1/drivers/misc/mediatek/hall/hall.ko,vendor,Y,N,user/userdebug/eng
+```

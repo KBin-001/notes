@@ -1,0 +1,34 @@
+---
+title: "[GMS]去掉距离传感器声明"
+description: "CTS 测试中，CtsAppTestCases 报错如下："
+category: "gms"
+tags: ["gms"]
+topics: ["sensor"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [GMS]去掉距离传感器声明
+
+### 问题背景
+CTS 测试中，`CtsAppTestCases` 报错如下：
+
+> **fix：** `PackageManager#hasSystemFeature(android.hardware.sensor.proximity)` returns `true` but `SensorManager#getSensorList(8)` shows sensors `[]`
+> expected: `&lt;true>` but was: `&lt;false>`
+---
+
+### 解决方案
+修改 `ProjectConfig.mk`，去掉距离传感器（ALSPS）的声明，单独保留 ALS（环境光传感器）：
+
+```c
+--- a/mediateksample/Kamvas_Pad_12_ROW/ProjectConfig.mk
++++ b/mediateksample/Kamvas_Pad_12_ROW/ProjectConfig.mk
+@@ -5,8 +5,9 @@ BUILD_PRELOADER = yes
+-CUSTOM_KERNEL_ALSPS = yes
++CUSTOM_KERNEL_ALSPS =
++CUSTOM_KERNEL_ALS = yes
+```
+#### 说明
+- `CUSTOM_KERNEL_ALSPS`：同时声明了 **ALS**（环境光）和 **Proximity**（距离）传感器。若硬件上实际不存在距离传感器，CTS 会因声明与实际不符而报错。
+- 解决方式：将 `ALSPS` 拆分，仅保留 `CUSTOM_KERNEL_ALS = yes`，不再声明 Proximity 特性。

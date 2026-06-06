@@ -1,0 +1,67 @@
+---
+title: "[MTK]DSI 动态刷新率的设置"
+description: "static struct mtkpanelparams extparams = {"
+category: "mtk"
+tags: ["mtk"]
+topics: ["display_tp"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [MTK]DSI 动态刷新率的设置
+
+## kernel屏驱动设置
+```c
+static struct mtk_panel_params ext_params = {
+      .pll_clk = 485,
+      .data_rate = 485*2,
+      .vfp_low_power = 2986,  // 改这里！从1410改为2986
+      .wait_sof_before_dec_vfp = 1,
+      .vdo_per_frame_lp_enable = 1,  // 确保这个是1
+      ...
+  }
+```
+## 计算方式
+```c
+1. 当前90Hz配置参数
+
+  #define HAC 1600    // 水平有效像素
+  #define HFP 60      // 水平前肩
+  #define HSA 20      // 水平同步
+  #define HBP 40      // 水平后肩
+
+  #define VAC 2400    // 垂直有效像素
+  #define VFP 270     // 垂直前肩
+  #define VSA 8       // 垂直同步
+  #define VBP 38      // 垂直后肩
+
+  2. 计算当前总像素数
+
+  Htotal = HAC + HFP + HSA + HBP
+         = 1600 + 60 + 20 + 40
+         = 1720 像素
+
+  Vtotal = VAC + VFP + VSA + VBP
+         = 2400 + 270 + 8 + 38
+         = 2716 行
+
+  3. 计算像素时钟(PCLK)
+
+  PCLK = Htotal × Vtotal × 刷新率
+       = 1720 × 2716 × 90
+       ≈ 420,652,800 Hz ≈ 421 MHz
+  4. 计算45Hz需要的Vtotal
+
+  PCLK保持不变，刷新率降为45Hz：
+  45 = 421,000,000 / (1720 × Vtotal_45Hz)
+
+  Vtotal_45Hz = 421,000,000 / (1720 × 45)
+              = 5432 行
+ 
+  5. 计算需要的VFP值
+
+  VFP_45Hz = Vtotal_45Hz - VAC - VSA - VBP
+           = 5432 - 2400 - 8 - 38
+           = 2986
+```

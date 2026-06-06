@@ -1,0 +1,33 @@
+---
+title: "[MTK]修改物理分辨率"
+description: "在lk和kernel屏幕参数修改以下参数"
+category: "mtk"
+tags: ["mtk"]
+topics: ["display_tp"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [MTK]修改物理分辨率
+
+**在lk和kernel屏幕参数修改以下参数**
+
+## vendor
+```c
++#define PHYSICAL_WIDTH_MM                               (172)
++#define PHYSICAL_HEIGHT_MM                              (258)
+
++       params->physical_width = PHYSICAL_WIDTH_MM;
++       params->physical_height = PHYSICAL_HEIGHT_MM;
+```
+## kernel
+```c
++#define PHYSICAL_WIDTH_MM              172
++#define PHYSICAL_HEIGHT_MM             258
++#define PHYSICAL_WIDTH_UM              (PHYSICAL_WIDTH_MM * 1000)
++#define PHYSICAL_HEIGHT_UM             (PHYSICAL_HEIGHT_MM * 1000)
+
++       connector->display_info.width_mm = PHYSICAL_WIDTH_MM;
++       connector->display_info.height_mm = PHYSICAL_HEIGHT_MM;
+```

@@ -1,0 +1,108 @@
+---
+title: "**[MTK]EMR & TP 互斥功能实现**"
+description: "解决手写笔（EMR）与手指触摸（TP）同时操作时的干扰问题。"
+category: "mtk"
+tags: ["mtk", "emr", "tp"]
+topics: ["display_tp"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# **[MTK]EMR & TP 互斥功能实现**
+
+## 问题
+解决手写笔（EMR）与手指触摸（TP）同时操作时的干扰问题。
+
+## **修改模块概览**
+1. **Huion 驱动 (EMR)**：作为控制端，检测笔的状态并通知 TP 驱动。
+1. **Himax 驱动 (TP)**：作为接收端，根据笔的状态决定是否拦截触摸信号。
+## **详细逻辑分解**
+A. 建立通信桥梁 (Himax Common)
+补丁在 himax_common.c 中定义了全局变量和强制释放函数，供 Huion 驱动调用。
+
+```c
+unsigned int himax_pen_state = 0; // 0: PEN_NOT_BUSY, 1: PEN_BUSY
+EXPORT_SYMBOL_GPL(himax_pen_state); // 导出符号，让其他驱动能访问
+```
+**A.强制抬起函数 (himax_force_touch_up)**：
+
+当笔突然靠近时，如果手指正按在屏幕上，该函数会发送一个假的所有手指“抬起”事件，清空系统当前的触摸状态。
+
+**B. 笔状态监测 (Huion Tablet)**
+
+在 huiontablet.c 的工作队列函数 huion_ts_work_func 中添加了状态机逻辑：
+
+1. **读取状态**：通过 state & 0x10 判断笔是否在感应范围内。
+1. **状态转换**：
+  - **笔进入/存在**：
+    - 设置 himax_pen_state = PEN_BUSY。
+    - 如果是**刚进入**（pre_pen_status == 0），调用 himax_force_touch_up() 立即掐断当前的触摸。
+  - **笔离开**：
+    - 设置 himax_pen_state = PEN_NOT_BUSY，释放互斥锁。
+```c
+@@ -237,6 +246,35 @@ static void huion_ts_work_func(struct work_struct *work)
+ 
+ 	HW_DEBUG("after map: x,y,p %d %d %d", input_x, input_y, input_p);
+ 
++     #if defined(CONFIG_TOUCHSCREEN_HIMAX_CHIPSET) || defined(CONFIG_TOUCHSCREEN_HIMAX_HX83102)
++        {
++                static int pre_pen_status = 0;
++                int cur_pen_status = 0;
++
++                if (state & 0x10) {
++                        cur_pen_status = 1;  
++                } else {
++                        cur_pen_status = 0;  
++                }
++
++                if (cur_pen_status == 0 && pre_pen_status == 1) { //刚才还在，现在走了
++                        HW_DEBUG("Pen hover up, release mutex\n");
++                        himax_pen_state = PEN_NOT_BUSY;    //空闲！
++                }
++                else if (cur_pen_status == 1) {
++                        himax_pen_state = PEN_BUSY;
++
++                        if (pre_pen_status == 0) {
++                                HW_DEBUG("Pen hover down, force TP up\n");
++                                himax_force_touch_up();
++                        }
++                }
++
++                pre_pen_status = cur_pen_status;
++        }
++        #endif
++
++    //zlt-end
+```
+**C. 触摸上报拦截 (Himax Report)**
+
+在 Himax 驱动的数据上报入口 himax_report_data 中插入拦截逻辑：
+
+```c
+if (get_pen_state() == PEN_BUSY) {
+    if (g_ts_dbg != 0)
+        I("%s: EMR pen busy, skip touch report\n", __func__);
+    return ts_status; // 直接返回，不执行后面的 input_report 逻辑
+}
+```
+**关键点**：只要笔在忙，TP 驱动依然在运行和读取数据，但它采集到的坐标永远不会提交给 Android 系统。
+
+```c
++  void himax_force_touch_up(void)
++  {
++      struct himax_ts_data *ts = hx_s_ts;
++
++      if (!ts || !g_tp_status)
++          return;
++
++      if (gtp_report_status) {
++          himax_report_all_leave_event(ts);
++          gtp_report_status = 0;
++          I("%s: Force release all touch points\n", __func__);
++      }
++  }
++  EXPORT_SYMBOL_GPL(himax_force_touch_up);
+```
+## patch
+附件：0001-erm-tp-ok.patch

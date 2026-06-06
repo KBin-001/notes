@@ -1,0 +1,23 @@
+---
+title: "[GMS]ITS测试开启脚本"
+description: "路径：Z:\\kp1202v16\\project\\code\\android-cts-verifier-16r4-linuxx86-arm\\android-cts-verifier\\CameraITS"
+category: "gms"
+tags: ["gms"]
+status: "整理中"
+date: "2026-06-06"
+updated: "2026-06-06"
+---
+
+# [GMS]ITS测试开启脚本
+
+路径：Z:\kp1202_v16\project\code\android-cts-verifier-16_r4-linux_x86-arm\android-cts-verifier\CameraITS
+
+机器号需要在**config.yml**文件进行更改
+
+```c
+#激活脚本
+source build/envsetup.sh
+
+#执行脚本 （camera 0/1 后面可以跟具体测试项目）
+python3 tools/run_all_tests.py camera=0 scene_flash
+```
