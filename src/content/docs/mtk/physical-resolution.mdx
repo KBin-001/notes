@@ -4,6 +4,7 @@ description: "在lk和kernel屏幕参数修改以下参数"
 category: "mtk"
 tags: ["mtk"]
 topics: ["display_tp"]
+visibility: "public"
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -14,7 +15,7 @@ updated: "2026-06-06"
 **在lk和kernel屏幕参数修改以下参数**
 
 ## vendor
-```c
+```diff
 +#define PHYSICAL_WIDTH_MM                               (172)
 +#define PHYSICAL_HEIGHT_MM                              (258)
 
@@ -22,7 +23,7 @@ updated: "2026-06-06"
 +       params->physical_height = PHYSICAL_HEIGHT_MM;
 ```
 ## kernel
-```c
+```diff
 +#define PHYSICAL_WIDTH_MM              172
 +#define PHYSICAL_HEIGHT_MM             258
 +#define PHYSICAL_WIDTH_UM              (PHYSICAL_WIDTH_MM * 1000)

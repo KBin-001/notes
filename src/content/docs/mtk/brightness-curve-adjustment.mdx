@@ -4,6 +4,7 @@ description: "路径如下："
 category: "mtk"
 tags: ["mtk", "display"]
 topics: ["display_tp"]
+visibility: "public"
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -11,7 +12,7 @@ updated: "2026-06-06"
 
 # [MTK]亮度调整记录：压低高亮段峰值，保留中低亮手感
 
-### 一、修改文件
+## 一、修改文件
 路径如下：
 
 ```text
@@ -19,10 +20,10 @@ kernel_device_modules-6.1/drivers/leds/leds-mtk.c
 ```
 这次改动主要有三块：
 
-1. 新增一个高亮段重映射函数 `brightness_remap_highlight()`
-1. 在 `brightness_maptolevel()` 里接入这层 remap
-1. 在 `mtk_leds_brightness_set()` 里使用转换后的亮度值下发
-### 二、先说结论：这次改的不是“亮度值”，而是“亮度曲线”
+## 新增一个高亮段重映射函数 `brightness_remap_highlight()`
+## 在 `brightness_maptolevel()` 里接入这层 remap
+## 在 `mtk_leds_brightness_set()` 里使用转换后的亮度值下发
+## 二、先说结论：这次改的不是“亮度值”，而是“亮度曲线”
 很多时候看 patch，第一眼会以为只是把最大亮度改小了。
 
 其实不是。
@@ -42,7 +43,7 @@ kernel_device_modules-6.1/drivers/leds/leds-mtk.c
 
 而是 80% 往上那一段是不是太炸，是不是刺眼，是不是发热上来太快。
 
-### 三、修改点 1：新增高亮压缩函数
+## 三、修改点 1：新增高亮压缩函数
 新增代码如下：
 
 ```text
@@ -144,10 +145,10 @@ returnknee+ (level-knee)* (out_max-knee)/
 - 中低亮不变
 - 高亮越来越“收”
 - 满亮不再顶到最上面
-### 四、修改点 2：在 `brightness_maptolevel()` 里接入 remap
+## 四、修改点 2：在 `brightness_maptolevel()` 里接入 remap
 改动前：
 
-```text
+```diff
 staticintbrightness_maptolevel(structled_conf_info*led_conf,intbrightness)
 {
 return (((led_conf->max_hw_brightness)*brightness
@@ -157,7 +158,7 @@ return (((led_conf->max_hw_brightness)*brightness
 ```
 改动后：
 
-```text
+```diff
 staticintbrightness_maptolevel(structled_conf_info*led_conf,intbrightness)
 {
 intlevel;
@@ -196,7 +197,7 @@ returnbrightness_remap_highlight(level,led_conf->max_hw_brightness);
 
 ---
 
-### 五、修改点 3：在 `mtk_leds_brightness_set()` 里下发转换后的亮度
+## 五、修改点 3：在 `mtk_leds_brightness_set()` 里下发转换后的亮度
 改动如下：
 
 ```text

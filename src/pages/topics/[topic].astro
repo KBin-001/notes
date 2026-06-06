@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import StatusBadge from '@/components/StatusBadge.astro';
 import Layout from '@/layouts/Layout.astro';
-import { categoryMeta, formatDate, isIndexDoc, topicDocUrl, topicMeta, topicOrder } from '@/lib/navigation';
+import { categoryMeta, displayTitle, formatDate, isIndexDoc, publicDocs, topicDocUrl, topicMeta, topicOrder } from '@/lib/navigation';
 import type { TopicId } from '@/lib/navigation';
 
 export async function getStaticPaths() {
@@ -18,7 +18,7 @@ interface Props {
 
 const { topic } = Astro.props;
 const meta = topicMeta[topic];
-const docs = await getCollection('docs');
+const docs = publicDocs(await getCollection('docs'));
 const notes = docs
   .filter((doc) => !isIndexDoc(doc.id) && doc.data.topics.includes(topic))
   .sort((a, b) => b.data.updated.getTime() - a.data.updated.getTime());
@@ -49,7 +49,7 @@ const notes = docs
       {notes.map((doc) => (
         <a href={topicDocUrl(doc.id, topic)} class="block rounded-lg border border-slate-800 bg-slate-950/45 p-5 transition hover:border-cyan-400/35 hover:bg-slate-900/70">
           <div class="flex flex-wrap items-center gap-3">
-            <h2 class="min-w-0 flex-1 text-base font-semibold text-slate-100">{doc.data.title}</h2>
+            <h2 class="min-w-0 flex-1 text-base font-semibold text-slate-100">{displayTitle(doc.data.title)}</h2>
             <StatusBadge status={doc.data.status} />
           </div>
           <p class="mt-2 text-sm leading-6 text-slate-500">{doc.data.description}</p>

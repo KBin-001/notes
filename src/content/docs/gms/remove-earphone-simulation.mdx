@@ -4,6 +4,7 @@ description: "补丁涉及多个音频策略 XML 文件（如 audiopolicyconfigu
 category: "gms"
 tags: ["gms"]
 topics: ["audio"]
+visibility: "public"
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -15,7 +16,7 @@ updated: "2026-06-06"
 
 ---
 
-### 🔧 补丁改动说明
+## 🔧 补丁改动说明
 #### A. 移除设备定义（`devicePort`）
 删除了以下物理端口的定义：
 
@@ -47,7 +48,7 @@ updated: "2026-06-06"
 
 ---
 
-### ✅ 验证方法
+## ✅ 验证方法
 确认配置是否已生效：
 
 ```bash
@@ -55,5 +56,5 @@ dumpsys media.audio_policy | grep -A 20 "Available output devices"
 ```
 ---
 
-### 📎 附件
+## 📎 附件
 附件：0001-.patch

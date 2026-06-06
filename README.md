@@ -36,6 +36,16 @@ npm run new:note -- --category gms --title "Camera FOV 复测" --topics camera,s
 
 脚本会自动创建 MDX 文件、生成 frontmatter 和正文模板。目标文件已存在时不会覆盖。
 
+## 清洗导入笔记
+
+从 Notion、Markdown 或 MacDown 导入内容后，可以运行：
+
+```bash
+npm run normalize:notes
+```
+
+清洗脚本会补齐 frontmatter、清理标题里的 Markdown 符号、补充 `visibility`、转换常见中文编号标题、识别代码块语言，并把 `#mtk#hall` 这类标签写入 `tags` 数组。
+
 ## 目录规范
 
 ```text
@@ -61,6 +71,7 @@ description: ""
 category: ""
 tags: []
 topics: []
+visibility: "public"
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -79,6 +90,12 @@ updated: "2026-06-06"
 - `audio`：音频
 - `sensor`：Sensor
 
+`visibility` 可选值：
+
+- `public`：正常构建、出现在导航、首页和搜索索引
+- `private`：保留源码内容，但不构建页面、不进入导航和搜索
+- `draft`：草稿内容，不构建页面、不进入导航和搜索
+
 `status` 可选值：
 
 - `整理中`
@@ -95,7 +112,7 @@ updated: "2026-06-06"
 npm run build
 ```
 
-构建产物位于 `dist/`，可以部署到任意静态托管平台，例如 GitHub Pages、Netlify、Vercel、Cloudflare Pages 或内部 Nginx 静态目录。
+构建产物位于 `dist/`，同时会生成 Pagefind 静态搜索索引。可以部署到任意静态托管平台，例如 GitHub Pages、Netlify、Vercel、Cloudflare Pages 或内部 Nginx 静态目录。
 
 ## 后续规划
 

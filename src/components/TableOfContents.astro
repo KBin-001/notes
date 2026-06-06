@@ -13,7 +13,7 @@ const { headings = [] } = Astro.props;
 const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
 ---
 
-<aside class="hidden w-64 shrink-0 xl:block">
+<aside class="hidden w-64 shrink-0 xl:block" data-pagefind-ignore>
   <div class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto px-4 py-6">
     {tocHeadings.length > 0 ? (
       <nav aria-label="当前页面大纲">

@@ -93,6 +93,29 @@ export function sortDocsByUpdated(docs: CollectionEntry<'docs'>[]) {
   return [...docs].sort((a, b) => b.data.updated.getTime() - a.data.updated.getTime());
 }
 
+export function isPublicDoc(doc: CollectionEntry<'docs'>) {
+  return doc.data.visibility === 'public';
+}
+
+export function publicDocs(docs: CollectionEntry<'docs'>[]) {
+  return docs.filter(isPublicDoc);
+}
+
+export function isDocInCategory(doc: CollectionEntry<'docs'>, category: string) {
+  return doc.data.category === category || (category === 'display' && doc.data.topics.includes('display_tp'));
+}
+
+export function displayTitle(title: string) {
+  return title
+    .replace(/\\([\\`*_[\]{}()#+\-.!>])/g, '$1')
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/__(.*?)__/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/~~(.*?)~~/g, '$1')
+    .replace(/^[#>*\-\s]+/, '')
+    .trim();
+}
+
 export function isIndexDoc(id: string) {
   return id === 'index' || id.endsWith('/index') || categoryOrder.includes(id);
 }

@@ -1,8 +1,10 @@
 ---
 title: "[MTK]解决状态栏没有闪光灯图标"
-description: "---"
+description: "记录 [MTK]解决状态栏没有闪光灯图标 的问题现象、排查过程、修改方案和验证方法。"
 category: "mtk"
 tags: ["mtk"]
+topics: []
+visibility: "public"
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -10,12 +12,12 @@ updated: "2026-06-06"
 
 # [MTK]解决状态栏没有闪光灯图标
 
-### 📌 现象
+## 📌 现象
 - 平板下拉状态栏**没有手电筒图标**
 - 但相机 App 中**闪光灯功能正常**
 ---
 
-### 🔍 排查过程
+## 🔍 排查过程
 #### 1. 追踪 `FlashlightTile.java`
 图标是否显示，取决于 `isAvailable()` 的返回值：
 
@@ -41,7 +43,7 @@ public boolean hasFlashlight() {
 > **关键发现：** 手电筒图标是否显示，取决于 `FEATURE_CAMERA_FLASH` 系统特性是否已声明。
 **第二次判断（备用检查）** — 第 177–189 行：
 
-```java
+```log
 private String getCameraId() throws CameraAccessException {
     String[] ids = mCameraManager.getCameraIdList();
     for (String id : ids) {
@@ -75,10 +77,10 @@ private String getCameraId() throws CameraAccessException {
 
 ---
 
-### ✅ 解决方案
+## ✅ 解决方案
 在 `device-vext.mk` 中添加以下声明：
 
-```makefile
+```log
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.flash-autofocus.xml
 ```

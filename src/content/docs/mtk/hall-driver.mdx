@@ -4,6 +4,7 @@ description: "kernel"
 category: "mtk"
 tags: ["mtk", "hall"]
 topics: ["sensor"]
+visibility: "public"
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -11,11 +12,13 @@ updated: "2026-06-06"
 
 # [MTK] 霍尔驱动（hall）
 
+## 笔记内容
+
 kernel
 
 路径：kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/aiot8391p3_64_bsp.dts
 
-```c
+```diff
 kpd_gpio: kpd-gpio {
                 pins-cols {
 -                       pinmux = <PINMUX_GPIO44__FUNC_KPCOL0>;
@@ -45,7 +48,7 @@ kpd_gpio: kpd-gpio {
 ```
 路径：kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/mt8189.dts
 
-```c
+```diff
 +  hall: hall {
 +    compatible = "mediatek,hall";
 +  };
@@ -56,12 +59,12 @@ kpd_gpio: kpd-gpio {
 ```
 路径： kernel_device_modules-6.1/arch/arm64/configs/mgk_64_k61_defconfig
 
-```c
+```diff
 +CONFIG_MTK_HALL=m           // 将霍尔驱动编译为模块(.ko)
 ```
 路径：kernel_device_modules-6.1/drivers/misc/mediatek/Kconfig
 
-```c
+```diff
 +config MTK_HALL
 +  tristate "MTK HALL driver"              // 三态选择：y/n/m
 +       help
@@ -69,12 +72,12 @@ kpd_gpio: kpd-gpio {
 ```
 路径： kernel_device_modules-6.1/drivers/misc/mediatek/Makefile
 
-```c
+```diff
 +obj-$(CONFIG_MTK_HALL) += hall/
 ```
 路径：  kernel_device_modules-6.1/drivers/misc/mediatek/hall/Makefile
 
-```c
+```diff
 +ccflags-$(CONFIG_DRM_MEDIATEK_V2)      += -I$(DEVICE_MODULES_PATH)/drivers/gpu/drm/mediatek/mediatek_v2/
 +
 +$(warning "--->hall makefile")
@@ -86,7 +89,7 @@ kpd_gpio: kpd-gpio {
 附件：hall.c
 路径： kernel_device_modules-6.1/kernel/kleaf/mgk_64_k61.bzl
 
-```c
+```diff
 +    "drivers/misc/mediatek/hall/hall.ko",      // 将hall.ko加入模块列表
 ```
 vendor
@@ -95,7 +98,7 @@ MTK软件生成
 
 路径：mediatek/proprietary/tools/dct/dws/mt8189/aiot8391p3_64_bsp.dws
 
-```c
+```diff
 -                <eint_mode>false</eint_mode>
 +                <eint_mode>true</eint_mode>
                  <def_mode>0</def_mode>
@@ -109,7 +112,7 @@ MTK软件生成
 ```
 路径：mediatek/proprietary/bootable/bootloader/preloader/custom/aiot8391p3_64_bsp/dct/dct/codegen.dws
 
-```c
+```diff
 -                <eint_mode>false</eint_mode>
 +                <eint_mode>true</eint_mode>
                  <def_mode>0</def_mode>
@@ -119,7 +122,7 @@ MTK软件生成
 ```
 客制化文件同步
 
-```c
+```log
 mediatek/proprietary/bootable/bootloader/preloader/custom/Kamvas_Pad_12_EEA/dct/dct/codegen.dws
 mediatek/proprietary/bootable/bootloader/preloader/custom/Kamvas_Pad_12_ROW/dct/dct/codegen.dws
 ```
@@ -127,6 +130,6 @@ device
 
 路径：mediateksample/aiot8391p3_64_bsp/ko_order_table.csv
 
-```c
+```diff
 +hall.ko,/../kernel_device_modules-6.1/drivers/misc/mediatek/hall/hall.ko,vendor,Y,N,user/userdebug/eng
 ```

@@ -2,21 +2,23 @@
 import { Search, X } from '@lucide/astro';
 ---
 
-<div id="search-dialog" class="fixed inset-0 z-50 hidden items-start justify-center bg-black/60 px-4 pt-20 backdrop-blur-sm">
+<div id="search-dialog" class="fixed inset-0 z-50 hidden items-start justify-center bg-black/60 px-4 pt-20 backdrop-blur-sm" data-pagefind-ignore>
   <div class="w-full max-w-2xl rounded-lg border border-slate-800 bg-slate-950 shadow-2xl">
     <div class="flex items-center gap-3 border-b border-slate-800 px-4 py-3">
       <Search size={18} class="text-cyan-200" aria-hidden="true" />
       <input
         class="h-10 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
-        placeholder="搜索功能预留：后续可接入本地索引"
+        placeholder="搜索标题、日志、代码路径..."
         type="search"
       />
       <button id="search-close" class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-400 hover:bg-slate-900 hover:text-white" type="button" aria-label="关闭搜索" title="关闭">
         <X size={18} aria-hidden="true" />
       </button>
     </div>
-    <div class="p-4 text-sm leading-7 text-slate-400">
-      当前先保留搜索交互结构。后续可以基于标题、描述、标签和正文摘要生成静态 JSON 索引。
+    <div id="search-status" class="border-b border-slate-800 px-4 py-3 text-xs text-slate-500">
+      输入关键词开始搜索。
+    </div>
+    <div id="search-results" class="max-h-[60vh] overflow-y-auto p-2">
     </div>
   </div>
 </div>
@@ -25,11 +27,86 @@ import { Search, X } from '@lucide/astro';
   const dialog = document.getElementById('search-dialog');
   const open = document.getElementById('search-open');
   const close = document.getElementById('search-close');
+  const input = dialog?.querySelector<HTMLInputElement>('input[type="search"]');
+  const status = document.getElementById('search-status');
+  const results = document.getElementById('search-results');
+  let pagefind: any;
+  let searchTimer: number | undefined;
+
+  function setStatus(message: string) {
+    if (status) status.textContent = message;
+  }
+
+  function clearResults() {
+    if (results) results.innerHTML = '';
+  }
+
+  async function loadPagefind() {
+    if (pagefind) return pagefind;
+    try {
+      const load = new Function('return import("/pagefind/pagefind.js")') as () => Promise<any>;
+      pagefind = await load();
+      await pagefind.options({
+        excerptLength: 24,
+        highlightParam: 'highlight',
+      });
+      return pagefind;
+    } catch {
+      setStatus('搜索索引尚未生成。请先运行 npm run build，或访问部署后的站点。');
+      return undefined;
+    }
+  }
+
+  function renderResult(result: any) {
+    if (!results) return;
+
+    const item = document.createElement('a');
+    item.href = result.url;
+    item.className = 'block rounded-md px-3 py-3 text-sm transition hover:bg-slate-900';
+
+    const title = document.createElement('div');
+    title.className = 'font-medium text-slate-100';
+    title.innerHTML = result.meta?.title || result.url;
+
+    const excerpt = document.createElement('p');
+    excerpt.className = 'mt-1 text-xs leading-6 text-slate-500';
+    excerpt.innerHTML = result.excerpt || result.url;
+
+    item.append(title, excerpt);
+    results.append(item);
+  }
+
+  async function runSearch(query: string) {
+    const keyword = query.trim();
+    clearResults();
+
+    if (!keyword) {
+      setStatus('输入关键词开始搜索。');
+      return;
+    }
+
+    const api = await loadPagefind();
+    if (!api) return;
+
+    setStatus('搜索中...');
+    const search = await api.search(keyword);
+    const resultData = await Promise.all(search.results.slice(0, 12).map((result: any) => result.data()));
+
+    clearResults();
+    if (resultData.length === 0) {
+      setStatus('没有找到匹配结果。');
+      return;
+    }
+
+    setStatus(`找到 ${search.results.length} 条结果，显示前 ${resultData.length} 条。`);
+    resultData.forEach(renderResult);
+  }
 
   function openSearch() {
     dialog?.classList.remove('hidden');
     dialog?.classList.add('flex');
-    dialog?.querySelector('input')?.focus();
+    input?.focus();
+    input?.select();
     document.body.classList.add('overflow-hidden');
   }
 
@@ -41,6 +118,10 @@ import { Search, X } from '@lucide/astro';
 
   open?.addEventListener('click', openSearch);
   close?.addEventListener('click', closeSearch);
+  input?.addEventListener('input', () => {
+    window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => runSearch(input.value), 180);
+  });
   dialog?.addEventListener('click', (event) => {
     if (event.target === dialog) closeSearch();
   });

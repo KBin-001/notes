@@ -1,22 +1,23 @@
 ---
-title: "**[MTK]EMR & TP 互斥功能实现**"
+title: "[MTK]EMR & TP 互斥功能实现"
 description: "解决手写笔（EMR）与手指触摸（TP）同时操作时的干扰问题。"
 category: "mtk"
-tags: ["mtk", "emr", "tp"]
+tags: ["mtk", "emr", "tp", "if", "endif"]
 topics: ["display_tp"]
+visibility: "public"
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
 ---
 
-# **[MTK]EMR & TP 互斥功能实现**
+# [MTK]EMR & TP 互斥功能实现
 
 ## 问题
 解决手写笔（EMR）与手指触摸（TP）同时操作时的干扰问题。
 
 ## **修改模块概览**
-1. **Huion 驱动 (EMR)**：作为控制端，检测笔的状态并通知 TP 驱动。
-1. **Himax 驱动 (TP)**：作为接收端，根据笔的状态决定是否拦截触摸信号。
+## **Huion 驱动 (EMR)**：作为控制端，检测笔的状态并通知 TP 驱动。
+## **Himax 驱动 (TP)**：作为接收端，根据笔的状态决定是否拦截触摸信号。
 ## **详细逻辑分解**
 A. 建立通信桥梁 (Himax Common)
 补丁在 himax_common.c 中定义了全局变量和强制释放函数，供 Huion 驱动调用。
@@ -33,14 +34,14 @@ EXPORT_SYMBOL_GPL(himax_pen_state); // 导出符号，让其他驱动能访问
 
 在 huiontablet.c 的工作队列函数 huion_ts_work_func 中添加了状态机逻辑：
 
-1. **读取状态**：通过 state & 0x10 判断笔是否在感应范围内。
-1. **状态转换**：
+## **读取状态**：通过 state & 0x10 判断笔是否在感应范围内。
+## **状态转换**：
   - **笔进入/存在**：
     - 设置 himax_pen_state = PEN_BUSY。
     - 如果是**刚进入**（pre_pen_status == 0），调用 himax_force_touch_up() 立即掐断当前的触摸。
   - **笔离开**：
     - 设置 himax_pen_state = PEN_NOT_BUSY，释放互斥锁。
-```c
+```diff
 @@ -237,6 +246,35 @@ static void huion_ts_work_func(struct work_struct *work)
  
  	HW_DEBUG("after map: x,y,p %d %d %d", input_x, input_y, input_p);
@@ -88,7 +89,7 @@ if (get_pen_state() == PEN_BUSY) {
 ```
 **关键点**：只要笔在忙，TP 驱动依然在运行和读取数据，但它采集到的坐标永远不会提交给 Android 系统。
 
-```c
+```diff
 +  void himax_force_touch_up(void)
 +  {
 +      struct himax_ts_data *ts = hx_s_ts;

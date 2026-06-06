@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import { ChevronRight } from '@lucide/astro';
-import { categoryMeta, categoryOrder, docUrl, getCategoryFromId, isIndexDoc, topicDocUrl, topicMeta, topicOrder } from '@/lib/navigation';
+import { categoryMeta, categoryOrder, displayTitle, docUrl, getCategoryFromId, isDocInCategory, isIndexDoc, publicDocs, topicDocUrl, topicMeta, topicOrder } from '@/lib/navigation';
 import type { TopicId } from '@/lib/navigation';
 
 interface Props {
@@ -10,13 +10,13 @@ interface Props {
 }
 
 const { currentId = 'index', currentTopic } = Astro.props;
-const docs = await getCollection('docs');
+const docs = publicDocs(await getCollection('docs'));
 const currentCategory = getCategoryFromId(currentId);
 const currentDoc = docs.find((doc) => doc.id === currentId);
 const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ?? [];
 ---
 
-<aside class="hidden w-72 shrink-0 lg:block">
+<aside class="hidden w-72 shrink-0 lg:block" data-pagefind-ignore>
   <nav class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto px-4 py-6" aria-label="文档目录">
     <a
       href="/"
@@ -31,8 +31,8 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
       const meta = categoryMeta[category];
       const categoryIndex = docs.find((doc) => doc.id === category || doc.id === `${category}/index`);
       const notes = docs
-        .filter((doc) => doc.data.category === category && !isIndexDoc(doc.id))
-        .sort((a, b) => a.data.title.localeCompare(b.data.title, 'zh-CN'));
+        .filter((doc) => isDocInCategory(doc, category) && !isIndexDoc(doc.id))
+        .sort((a, b) => displayTitle(a.data.title).localeCompare(displayTitle(b.data.title), 'zh-CN'));
       const isOpen = currentCategory === category;
 
       return (
@@ -71,7 +71,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
                     href={docUrl(doc.id)}
                     class={`block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
                   >
-                    {doc.data.title}
+                    {displayTitle(doc.data.title)}
                   </a>
                 </li>
               );
@@ -86,7 +86,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
       const meta = topicMeta[topic];
       const notes = docs
         .filter((doc) => !isIndexDoc(doc.id) && doc.data.topics.includes(topic))
-        .sort((a, b) => a.data.title.localeCompare(b.data.title, 'zh-CN'));
+        .sort((a, b) => displayTitle(a.data.title).localeCompare(displayTitle(b.data.title), 'zh-CN'));
       const isOpen = currentTopics.includes(topic);
 
       return (
@@ -126,7 +126,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
                     data-topic-doc-link={topic}
                     class={`block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
                   >
-                    <span class="block truncate">{doc.data.title}</span>
+                    <span class="block truncate">{displayTitle(doc.data.title)}</span>
                     <span class="text-[11px] text-slate-600">{categoryMeta[doc.data.category]?.title ?? doc.data.category}</span>
                   </a>
                 </li>

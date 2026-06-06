@@ -2,7 +2,9 @@
 title: "[MTK]马达驱动配置"
 description: "mediateksample/aiot8391p264bsp/ProjectConfig.mk"
 category: "mtk"
-tags: ["mtk"]
+tags: ["mtk", "发现路径不对", "define"]
+topics: []
+visibility: "public"
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -11,7 +13,7 @@ updated: "2026-06-06"
 # [MTK]马达驱动配置
 
 ## 在device下添加vibr服务
-```c
+```diff
 mediateksample/aiot8391p2_64_bsp/ProjectConfig.mk
 +CUSTOM_KERNEL_VIBRATOR = vibrator
 
@@ -19,16 +21,16 @@ mediateksample/aiot8391p2_64_bsp/ko_order_table.csv
 regulator-vibrator.ko,/../kernel_device_modules-6.1/drivers/leds/regulator-vibrator.ko,ramdisk,Y,Y,user/userdebug/eng
 ```
 ## vendor下修改hal层
-### 查看log是否加载了驱动，测试是否有马达震动功能，如果加载驱动没有震动功能请用adb进行测试打开。
-```c
+## 查看log是否加载了驱动，测试是否有马达震动功能，如果加载驱动没有震动功能请用adb进行测试打开。
+```bash
 cd sys/class/leds/vibrator/
 aiot8391p2_64_bsp:/sys/class/leds/vibrator # ls
 activate  brightness  device  duration  max_brightness  power  state  subsystem  trigger  uevent
 aiot8391p2_64_bsp:/sys/class/leds/vibrator # echo 255 > brightness
 aiot8391p2_64_bsp:/sys/class/leds/vibrator # echo 0 > brightness
 ```
-### 如果adb测试有马达功能，那就是hal上层问题
-```c
+## 如果adb测试有马达功能，那就是hal上层问题
+```diff
 #发现路径不对
 
 --- a/mediatek/proprietary/hardware/libvibrator/aidl/default/Vibrator.cpp

@@ -4,6 +4,7 @@ description: "“充电相关查询节点”在这个项目里，指的是能反
 category: "mtk"
 tags: ["mtk", "charging"]
 topics: ["charging"]
+visibility: "public"
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -34,7 +35,7 @@ updated: "2026-06-06"
 ---
 
 ## 二、第一阶段：先从源码侧建立“节点地图”
-### 1. DTS / DTSI
+## 1. DTS / DTSI
 #### 【排查目标】
 确认这个项目理论上会有哪些 charger/gauge/typec 设备，以及它们分别挂在哪条总线、哪个地址、是什么角色。
 
@@ -75,7 +76,7 @@ rg -n "sgm41600|mt6375|mtk_gauge|&charger|typec|tcpc|gauge = <&mtk_gauge>|disabl
 - 如果 DTS 有设备但运行时没有节点：进入驱动 probe / register 排查
 ---
 
-### 2. kernel 驱动源码
+## 2. kernel 驱动源码
 #### 【排查目标】
 把“理论节点名”和“支持的属性名”从源码直接抠出来，建立节点地图。
 
@@ -121,7 +122,7 @@ rg -n "power_supply_register|devm_power_supply_register|POWER_SUPPLY_PROP_|psy_d
 - 有私有节点但权限不足：继续看 init/ueventd/sepolicy
 ---
 
-### 3. 设备初始化/权限相关文件
+## 3. 设备初始化/权限相关文件
 #### 【排查目标】
 确认节点读不到时，是“没创建”还是“权限拦住”。
 

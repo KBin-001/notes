@@ -4,9 +4,9 @@ import { BookMarked, Clock3, FilePlus2, Wrench } from '@lucide/astro';
 import CategoryCard from '@/components/CategoryCard.astro';
 import StatusBadge from '@/components/StatusBadge.astro';
 import Layout from '@/layouts/Layout.astro';
-import { categoryMeta, categoryOrder, docUrl, formatDate, isIndexDoc, sortDocsByUpdated, topicMeta, topicOrder } from '@/lib/navigation';
+import { categoryMeta, categoryOrder, displayTitle, docUrl, formatDate, isDocInCategory, isIndexDoc, publicDocs, sortDocsByUpdated, topicMeta, topicOrder } from '@/lib/navigation';
 
-const docs = await getCollection('docs');
+const docs = publicDocs(await getCollection('docs'));
 const notes = docs.filter((doc) => !isIndexDoc(doc.id));
 const latest = sortDocsByUpdated(notes).slice(0, 6);
 ---
@@ -46,7 +46,7 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
       <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {categoryOrder.map((category) => {
           const meta = categoryMeta[category];
-          const count = notes.filter((doc) => doc.data.category === category).length;
+          const count = notes.filter((doc) => isDocInCategory(doc, category)).length;
           return (
             <CategoryCard
               href={`/${category}/`}
@@ -94,7 +94,7 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
           {latest.map((doc) => (
             <a href={docUrl(doc.id)} class="block px-5 py-4 transition hover:bg-slate-900/60">
               <div class="flex flex-wrap items-center gap-3">
-                <h3 class="font-medium text-slate-100">{doc.data.title}</h3>
+                <h3 class="font-medium text-slate-100">{displayTitle(doc.data.title)}</h3>
                 <StatusBadge status={doc.data.status} />
               </div>
               <p class="mt-2 text-sm leading-6 text-slate-500">{doc.data.description}</p>

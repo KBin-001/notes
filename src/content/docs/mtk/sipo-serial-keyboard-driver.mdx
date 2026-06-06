@@ -3,6 +3,8 @@ title: "[MTK] SIPO 串口键盘驱动接入"
 description: "无法进行串口键盘的连接"
 category: "mtk"
 tags: ["mtk", "uart"]
+topics: []
+visibility: "public"
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -27,17 +29,17 @@ modprobe: initcall ... [sipo_seri_kb] returned 0
 Linux platform driver 要 probe，必须同时满足两个条件：
 
 ```c
-1. 驱动已经注册
-2. device tree 里有 compatible 匹配的 platform device
+## 驱动已经注册
+## device tree 里有 compatible 匹配的 platform device
 ```
 驱动里是：
 
-```c
+```dts
 .compatible = "sipo,sipo_seri_kb"
 ```
 所以设备树里必须有：
 
-```c
+```dts
 compatible = "sipo,sipo_seri_kb";
 ```
 失败时板子上查：
@@ -78,7 +80,7 @@ sipo,sipo_seri_kb`
 ## **四、失败的根因**
 当时 tb8781p1_64_wifi.dts 里用了：
 
-```c
+```dts
 &sipo_keyboard {
     ...
 };
@@ -113,7 +115,7 @@ sipo_keyboard: sipo_keyboard {
 
 加基础节点：
 
-```c
+```dts
 sipo_keyboard: sipo_keyboard {
     compatible = "sipo,sipo_seri_kb";
 };
@@ -124,7 +126,7 @@ sipo_keyboard: sipo_keyboard {
 
 补资源：
 
-```c
+```dts
 &sipo_keyboard {
     pinctrl-names = "default", "sleep";
     pinctrl-0 = <&sipo_kb_pins_default>;
@@ -210,7 +212,7 @@ ls /sys/bus/platform/drivers/sipo_drv
 ```
 验证 device tree 是否存在：
 
-```c
+```log
 find /proc/device-tree -name "sipo_keyboard"
 cat /proc/device-tree/sipo_keyboard/compatible
 ```
@@ -221,12 +223,12 @@ ls /sys/bus/platform/devices | grep -i sipo
 ```
 验证 dtbo 分区有没有 sipo：
 
-```c
+```log
 strings /dev/block/by-name/dtbo_a | grep -i sipo
 ```
 验证主 DTB 有没有 sipo：
 
-```c
+```log
 strings /dev/block/by-name/lk_a | grep -i sipo
 ```
 当前槽位：
@@ -236,7 +238,7 @@ strings /dev/block/by-name/lk_a | grep -i sipo
 ## **九、 成功时日志长什么样**
 成功日志是：
 
-```c
+```log
 sipo_drv sipo_keyboard: probe SIPO Driver 3.3.0-20260428
 sipo_drv[DBG]: sipo_probe:455: Pinctrl dynamically initialized to 'default' (UART) state.
 sipo_drv[DBG]: sipo_set_rx_irq_state:134: RX IRQ Disabled (depth 0 -> +1)

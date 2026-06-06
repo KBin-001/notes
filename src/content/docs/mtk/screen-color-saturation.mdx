@@ -4,12 +4,15 @@ description: "屏厂给的是色彩/色温/饱和度参数，本质是写 panel 
 category: "mtk"
 tags: ["mtk", "display"]
 topics: ["display_tp"]
+visibility: "public"
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
 ---
 
 # [MTK]合入屏幕色彩饱和度
+
+## 笔记内容
 
 屏厂给的是色彩/色温/饱和度参数，本质是写 panel IC 的 vendor register，不是改 Android 上层显示效果，也不是改 DRM color matrix。合入位置应该在 LCM 初始化 DSI 命令里，也就是 LK 的 lcm_init_setting[] 和 kernel 的 lmibe127119272_panel_init()。
 

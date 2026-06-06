@@ -1,23 +1,39 @@
 const tocLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
-const headings = tocLinks
-  .map((link) => document.getElementById(link.hash.slice(1)))
-  .filter((heading): heading is HTMLElement => Boolean(heading));
+const tocItems = tocLinks
+  .map((link) => ({
+    link,
+    heading: document.getElementById(decodeURIComponent(link.hash.slice(1))),
+  }))
+  .filter((item): item is { link: HTMLAnchorElement; heading: HTMLElement } => Boolean(item.heading));
 
-if (headings.length > 0) {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const visible = entries.find((entry) => entry.isIntersecting);
-      if (!visible) return;
+function setActiveTocLink(activeLink?: HTMLAnchorElement) {
+  tocLinks.forEach((link) => {
+    const active = link === activeLink;
+    link.classList.toggle('bg-cyan-400/10', active);
+    link.classList.toggle('text-cyan-100', active);
+    link.classList.toggle('text-slate-500', !active);
+    link.setAttribute('aria-current', active ? 'true' : 'false');
+  });
 
-      tocLinks.forEach((link) => {
-        const active = link.hash === `#${visible.target.id}`;
-        link.classList.toggle('bg-cyan-400/10', active);
-        link.classList.toggle('text-cyan-100', active);
-        link.classList.toggle('text-slate-500', !active);
-      });
-    },
-    { rootMargin: '-90px 0px -62% 0px', threshold: 0 }
-  );
-
-  headings.forEach((heading) => observer.observe(heading));
+  activeLink?.scrollIntoView({ block: 'nearest' });
 }
+
+function updateActiveHeading() {
+  if (tocItems.length === 0) return;
+
+  const offset = 104;
+  let active = tocItems[0];
+  for (const item of tocItems) {
+    if (item.heading.getBoundingClientRect().top <= offset) {
+      active = item;
+    } else {
+      break;
+    }
+  }
+
+  setActiveTocLink(active.link);
+}
+
+updateActiveHeading();
+window.addEventListener('scroll', updateActiveHeading, { passive: true });
+window.addEventListener('resize', updateActiveHeading);
