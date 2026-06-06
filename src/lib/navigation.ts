@@ -77,6 +77,10 @@ export function docUrl(id: string) {
   return `/${id.replace(/\/index$/, '')}/`;
 }
 
+export function topicDocUrl(id: string, topic: TopicId) {
+  return `${docUrl(id)}?topic=${topic}`;
+}
+
 export function formatDate(date: Date) {
   return new Intl.DateTimeFormat('zh-CN', {
     year: 'numeric',

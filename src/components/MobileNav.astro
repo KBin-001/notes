@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import { ChevronRight, X } from '@lucide/astro';
-import { categoryMeta, categoryOrder, docUrl, getCategoryFromId, isIndexDoc, topicMeta, topicOrder } from '@/lib/navigation';
+import { categoryMeta, categoryOrder, docUrl, getCategoryFromId, isIndexDoc, topicDocUrl, topicMeta, topicOrder } from '@/lib/navigation';
 import type { TopicId } from '@/lib/navigation';
 
 interface Props {
@@ -35,8 +35,9 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
       const isOpen = currentCategory === category;
 
       return (
-        <details class="group mb-3" open={isOpen}>
+        <details class="group mb-3" data-category-section={category} open={isOpen}>
           <summary
+            data-category-summary={category}
             class={`mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] [&::-webkit-details-marker]:hidden ${isOpen ? 'bg-slate-900 text-slate-100' : 'text-slate-400'}`}
           >
             <ChevronRight
@@ -75,8 +76,9 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
       const isOpen = currentTopics.includes(topic);
 
       return (
-        <details class="group mb-3" open={isOpen}>
+        <details class="group mb-3" data-topic-section={topic} open={isOpen}>
           <summary
+            data-topic-summary={topic}
             class={`mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] [&::-webkit-details-marker]:hidden ${isOpen ? 'bg-slate-900 text-slate-100' : 'text-slate-400'}`}
           >
             <ChevronRight
@@ -89,7 +91,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
           </summary>
           <ul class="space-y-1">
             <li>
-              <a href={`/topics/${topic}/`} class={`block rounded-md px-3 py-2 text-sm ${currentTopic === topic ? 'bg-cyan-400/10 text-cyan-100' : 'text-slate-400'}`}>
+              <a href={`/topics/${topic}/`} data-topic-home-link={topic} class={`block rounded-md px-3 py-2 text-sm ${currentTopic === topic ? 'bg-cyan-400/10 text-cyan-100' : 'text-slate-400'}`}>
                 专题首页
               </a>
             </li>
@@ -98,7 +100,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
             )}
             {notes.map((doc) => (
               <li>
-                <a href={docUrl(doc.id)} class={`block rounded-md px-3 py-2 text-sm ${currentId === doc.id ? 'bg-cyan-400/10 text-cyan-100' : 'text-slate-400'}`}>
+                <a href={topicDocUrl(doc.id, topic)} data-topic-doc-link={topic} class={`block rounded-md px-3 py-2 text-sm ${currentId === doc.id ? 'bg-cyan-400/10 text-cyan-100' : 'text-slate-400'}`}>
                   <span class="block truncate">{doc.data.title}</span>
                   <span class="text-[11px] text-slate-600">{categoryMeta[doc.data.category]?.title ?? doc.data.category}</span>
                 </a>

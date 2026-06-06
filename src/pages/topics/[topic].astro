@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import StatusBadge from '@/components/StatusBadge.astro';
 import Layout from '@/layouts/Layout.astro';
-import { categoryMeta, docUrl, formatDate, isIndexDoc, topicMeta, topicOrder } from '@/lib/navigation';
+import { categoryMeta, formatDate, isIndexDoc, topicDocUrl, topicMeta, topicOrder } from '@/lib/navigation';
 import type { TopicId } from '@/lib/navigation';
 
 export async function getStaticPaths() {
@@ -47,7 +47,7 @@ const notes = docs
         </div>
       )}
       {notes.map((doc) => (
-        <a href={docUrl(doc.id)} class="block rounded-lg border border-slate-800 bg-slate-950/45 p-5 transition hover:border-cyan-400/35 hover:bg-slate-900/70">
+        <a href={topicDocUrl(doc.id, topic)} class="block rounded-lg border border-slate-800 bg-slate-950/45 p-5 transition hover:border-cyan-400/35 hover:bg-slate-900/70">
           <div class="flex flex-wrap items-center gap-3">
             <h2 class="min-w-0 flex-1 text-base font-semibold text-slate-100">{doc.data.title}</h2>
             <StatusBadge status={doc.data.status} />
