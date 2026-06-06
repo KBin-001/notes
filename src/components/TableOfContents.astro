@@ -1,0 +1,41 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings?: Heading[];
+}
+
+const { headings = [] } = Astro.props;
+const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+---
+
+<aside class="hidden w-64 shrink-0 xl:block">
+  <div class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto px-4 py-6">
+    {tocHeadings.length > 0 ? (
+      <nav aria-label="当前页面大纲">
+        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">当前页面</p>
+        <ul class="space-y-1">
+          {tocHeadings.map((heading) => (
+            <li>
+              <a
+                href={`#${heading.slug}`}
+                data-toc-link
+                class={`block rounded-md py-1.5 pr-2 text-sm leading-5 text-slate-500 transition hover:text-cyan-100 ${heading.depth === 3 ? 'pl-4 text-xs' : 'pl-2'}`}
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    ) : (
+      <div class="rounded-lg border border-slate-800 bg-slate-950/35 p-4 text-sm leading-6 text-slate-500">
+        当前页面暂无二级标题。
+      </div>
+    )}
+  </div>
+</aside>

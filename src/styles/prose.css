@@ -1,0 +1,238 @@
+.doc-prose {
+  max-width: 76ch;
+  color: #d8e3f4;
+  font-size: 1rem;
+  line-height: 1.88;
+}
+
+.doc-prose h1,
+.doc-prose h2,
+.doc-prose h3,
+.doc-prose h4 {
+  color: #f6f9ff;
+  letter-spacing: 0;
+  scroll-margin-top: 5.5rem;
+}
+
+.doc-prose h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  line-height: 1.12;
+  font-weight: 760;
+}
+
+.doc-prose h2 {
+  margin: 3rem 0 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-soft);
+  font-size: 1.45rem;
+  line-height: 1.32;
+  font-weight: 720;
+}
+
+.doc-prose h3 {
+  margin: 2rem 0 0.75rem;
+  font-size: 1.15rem;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.doc-prose p {
+  margin: 0 0 1.15rem;
+}
+
+.doc-prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.doc-prose strong {
+  color: #ffffff;
+}
+
+.doc-prose ul,
+.doc-prose ol {
+  padding-left: 1.35rem;
+  margin: 0 0 1.2rem;
+}
+
+.doc-prose li {
+  margin: 0.35rem 0;
+}
+
+.doc-prose li::marker {
+  color: var(--accent-2);
+}
+
+.doc-prose blockquote {
+  margin: 1.5rem 0;
+  border-left: 3px solid var(--accent);
+  padding: 0.2rem 0 0.2rem 1rem;
+  color: #b9c7db;
+  background: rgba(70, 194, 255, 0.05);
+}
+
+.doc-prose table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.92rem;
+}
+
+.doc-prose th,
+.doc-prose td {
+  border-bottom: 1px solid var(--border-soft);
+  padding: 0.75rem 0.9rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.doc-prose th {
+  color: #f6f9ff;
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 700;
+}
+
+.doc-prose :not(pre) > code {
+  border: 1px solid rgba(70, 194, 255, 0.2);
+  border-radius: 0.3rem;
+  background: rgba(70, 194, 255, 0.08);
+  color: #bfeaff;
+  padding: 0.1rem 0.32rem;
+  font-size: 0.9em;
+}
+
+.doc-prose pre {
+  margin: 1.4rem 0;
+  overflow-x: auto;
+  border: 1px solid #243246;
+  border-radius: 8px;
+  background: #080c12 !important;
+  padding: 1rem 1.1rem;
+  font-size: 0.88rem;
+  line-height: 1.72;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.doc-prose pre code {
+  display: block;
+  min-width: max-content;
+}
+
+.code-shell {
+  position: relative;
+  margin: 1.4rem 0;
+}
+
+.code-shell pre {
+  margin: 0;
+  padding-top: 2.65rem;
+}
+
+.code-copy {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4rem;
+  height: 1.8rem;
+  border: 1px solid #2b3b50;
+  border-radius: 6px;
+  background: #111925;
+  color: #c4d3e8;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.code-copy:hover {
+  border-color: rgba(70, 194, 255, 0.7);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .doc-prose {
+    font-size: 0.97rem;
+    line-height: 1.78;
+  }
+
+  .doc-prose h2 {
+    margin-top: 2.4rem;
+  }
+}
+
+html[data-theme="claude"] .doc-prose {
+  color: #30302e;
+}
+
+html[data-theme="claude"] .doc-prose h1,
+html[data-theme="claude"] .doc-prose h2,
+html[data-theme="claude"] .doc-prose h3,
+html[data-theme="claude"] .doc-prose h4 {
+  color: #141413;
+}
+
+html[data-theme="claude"] .doc-prose h2 {
+  border-top-color: #d8d4c8;
+}
+
+html[data-theme="claude"] .doc-prose a {
+  color: #c95f3d;
+}
+
+html[data-theme="claude"] .doc-prose strong {
+  color: #141413;
+}
+
+html[data-theme="claude"] .doc-prose li::marker {
+  color: #d97757;
+}
+
+html[data-theme="claude"] .doc-prose blockquote {
+  border-left-color: #d97757;
+  background: rgba(217, 119, 87, 0.08);
+  color: #55524b;
+}
+
+html[data-theme="claude"] .doc-prose table {
+  border-color: #d8d4c8;
+}
+
+html[data-theme="claude"] .doc-prose th,
+html[data-theme="claude"] .doc-prose td {
+  border-bottom-color: #d8d4c8;
+}
+
+html[data-theme="claude"] .doc-prose th {
+  color: #141413;
+  background: rgba(232, 230, 220, 0.72);
+}
+
+html[data-theme="claude"] .doc-prose :not(pre) > code {
+  border-color: rgba(217, 119, 87, 0.22);
+  background: rgba(232, 230, 220, 0.78);
+  color: #9f4d33;
+}
+
+html[data-theme="claude"] .doc-prose pre {
+  border-color: #292722;
+  background: #151513 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="claude"] .code-copy {
+  border-color: #c9c5b8;
+  background: #f5f4ed;
+  color: #4d4a43;
+}
+
+html[data-theme="claude"] .code-copy:hover {
+  border-color: #d97757;
+  background: #d97757;
+  color: #ffffff;
+}

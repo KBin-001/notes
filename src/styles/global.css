@@ -1,0 +1,192 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+:root {
+  color-scheme: dark;
+  --bg: #090b10;
+  --surface: #0f141c;
+  --surface-2: #151c26;
+  --surface-3: #1d2633;
+  --border: #273241;
+  --border-soft: #1d2630;
+  --text: #eef4ff;
+  --muted: #9aa8bb;
+  --subtle: #6f7f93;
+  --accent: #46c2ff;
+  --accent-2: #8ee6cf;
+  --warning: #f6c76f;
+  --danger: #ff7d90;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(70, 194, 255, 0.11), transparent 34rem),
+    linear-gradient(180deg, #0b0e14 0%, #090b10 42rem);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+code,
+pre {
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background: rgba(70, 194, 255, 0.28);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #263243;
+  border-radius: 999px;
+}
+
+.glass-line {
+  border-color: rgba(136, 153, 177, 0.16);
+}
+
+html[data-theme="claude"] {
+  color-scheme: light;
+  --bg: #f5f4ed;
+  --surface: #fbfaf5;
+  --surface-2: #efede3;
+  --surface-3: #e8e6dc;
+  --border: #c9c5b8;
+  --border-soft: #ddd9cb;
+  --text: #141413;
+  --muted: #696861;
+  --subtle: #87867f;
+  --accent: #d97757;
+  --accent-2: #eda100;
+  --warning: #a86f00;
+  --danger: #b53d4a;
+}
+
+html[data-theme="claude"],
+html[data-theme="claude"] body {
+  background: #f5f4ed;
+}
+
+html[data-theme="claude"] body {
+  background:
+    linear-gradient(180deg, rgba(255, 251, 239, 0.94), rgba(245, 244, 237, 0.94) 32rem),
+    radial-gradient(circle at top left, rgba(217, 119, 87, 0.12), transparent 28rem);
+  color: var(--text);
+}
+
+html[data-theme="claude"] header,
+html[data-theme="claude"] #mobile-nav-panel,
+html[data-theme="claude"] #mobile-nav-panel > div {
+  background-color: rgba(245, 244, 237, 0.9) !important;
+  border-color: var(--border) !important;
+}
+
+html[data-theme="claude"] #mobile-nav-overlay,
+html[data-theme="claude"] #search-dialog {
+  background-color: rgba(20, 20, 19, 0.24) !important;
+}
+
+html[data-theme="claude"] [class*="bg-slate-950"],
+html[data-theme="claude"] [class*="bg-slate-900"] {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+html[data-theme="claude"] [class*="border-slate-"] {
+  border-color: var(--border) !important;
+}
+
+html[data-theme="claude"] [class*="divide-slate-"] > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--border-soft) !important;
+}
+
+html[data-theme="claude"] [class*="text-slate-"],
+html[data-theme="claude"] [class*="text-white"] {
+  color: var(--muted) !important;
+}
+
+html[data-theme="claude"] h1,
+html[data-theme="claude"] h2,
+html[data-theme="claude"] h3,
+html[data-theme="claude"] header a,
+html[data-theme="claude"] header .font-semibold,
+html[data-theme="claude"] [class*="text-slate-950"],
+html[data-theme="claude"] .doc-prose h1,
+html[data-theme="claude"] .doc-prose h2,
+html[data-theme="claude"] .doc-prose h3,
+html[data-theme="claude"] .doc-prose h4 {
+  color: var(--text) !important;
+}
+
+html[data-theme="claude"] [class*="text-cyan-"],
+html[data-theme="claude"] [class*="hover\\:text-cyan-"]:hover {
+  color: var(--accent) !important;
+}
+
+html[data-theme="claude"] [class*="bg-cyan-400"] {
+  background-color: rgba(217, 119, 87, 0.12) !important;
+}
+
+html[data-theme="claude"] .bg-cyan-300,
+html[data-theme="claude"] [class*="hover\\:bg-cyan-"]:hover {
+  background-color: var(--accent) !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="claude"] [class*="ring-cyan-"] {
+  --tw-ring-color: rgba(217, 119, 87, 0.24) !important;
+}
+
+html[data-theme="claude"] input {
+  color: var(--text) !important;
+}
+
+html[data-theme="claude"] input::placeholder {
+  color: #8c877d !important;
+}
+
+html[data-theme="claude"] a:hover {
+  color: var(--accent);
+}
+
+html[data-theme="claude"] ::selection {
+  background: rgba(217, 119, 87, 0.25);
+}
+
+html[data-theme="claude"] ::-webkit-scrollbar-thumb {
+  background: #c9c5b8;
+}

@@ -1,0 +1,50 @@
+---
+import { getCollection, render } from 'astro:content';
+import StatusBadge from '@/components/StatusBadge.astro';
+import Layout from '@/layouts/Layout.astro';
+import { categoryMeta, docUrl, formatDate } from '@/lib/navigation';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('docs', ({ id }) => id !== 'index');
+  return entries.map((entry) => ({
+    params: { slug: entry.id.replace(/\/index$/, '') },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const category = categoryMeta[entry.data.category];
+const canonicalUrl = docUrl(entry.id);
+---
+
+<Layout title={entry.data.title} description={entry.data.description} currentId={entry.id} headings={headings}>
+  <article class="mx-auto max-w-4xl">
+    <header class="mb-8 border-b border-slate-800 pb-6">
+      <div class="mb-4 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+        <a href="/" class="hover:text-cyan-100">首页</a>
+        <span>/</span>
+        <a href={`/${entry.data.category}/`} class="hover:text-cyan-100">{category?.title ?? entry.data.category}</a>
+        <span>/</span>
+        <span>{canonicalUrl}</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <StatusBadge status={entry.data.status} />
+        <span class="text-xs text-slate-500">创建 {formatDate(entry.data.date)}</span>
+        <span class="text-xs text-slate-500">更新 {formatDate(entry.data.updated)}</span>
+      </div>
+      <p class="mt-4 max-w-3xl text-sm leading-7 text-slate-400">{entry.data.description}</p>
+      {entry.data.tags.length > 0 && (
+        <div class="mt-4 flex flex-wrap gap-2">
+          {entry.data.tags.map((tag) => (
+            <span class="rounded-md border border-slate-800 bg-slate-900/70 px-2 py-1 text-xs text-slate-400">#{tag}</span>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <div class="doc-prose">
+      <Content />
+    </div>
+  </article>
+</Layout>

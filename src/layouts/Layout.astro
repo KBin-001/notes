@@ -1,0 +1,67 @@
+---
+import Header from '@/components/Header.astro';
+import MobileNav from '@/components/MobileNav.astro';
+import SearchDialog from '@/components/SearchDialog.astro';
+import Sidebar from '@/components/Sidebar.astro';
+import TableOfContents from '@/components/TableOfContents.astro';
+import type { TopicId } from '@/lib/navigation';
+import '@/styles/global.css';
+import '@/styles/prose.css';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  currentId?: string;
+  currentTopic?: TopicId;
+  headings?: Heading[];
+}
+
+const { title, description, currentId = 'index', currentTopic, headings = [] } = Astro.props;
+const pageTitle = title === 'kevin知识库' ? title : `${title} | kevin知识库`;
+---
+
+<!doctype html>
+<html lang="zh-CN" class="dark" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      (() => {
+        let theme = 'dark';
+        try {
+          theme = localStorage.getItem('driver-kb-theme') === 'claude' ? 'claude' : 'dark';
+        } catch {}
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+      })();
+    </script>
+  </head>
+  <body>
+    <Header />
+    <MobileNav currentId={currentId} currentTopic={currentTopic} />
+    <SearchDialog />
+
+    <div class="mx-auto flex max-w-[92rem]">
+      <Sidebar currentId={currentId} currentTopic={currentTopic} />
+      <main class="min-w-0 flex-1 px-4 py-8 sm:px-6 lg:px-8">
+        <slot />
+      </main>
+      <TableOfContents headings={headings} />
+    </div>
+
+    <script>
+      import '../scripts/copy-code';
+      import '../scripts/toc-highlight';
+      import '../scripts/theme';
+    </script>
+  </body>
+</html>

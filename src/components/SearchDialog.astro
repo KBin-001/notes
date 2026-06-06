@@ -1,0 +1,54 @@
+---
+import { Search, X } from '@lucide/astro';
+---
+
+<div id="search-dialog" class="fixed inset-0 z-50 hidden items-start justify-center bg-black/60 px-4 pt-20 backdrop-blur-sm">
+  <div class="w-full max-w-2xl rounded-lg border border-slate-800 bg-slate-950 shadow-2xl">
+    <div class="flex items-center gap-3 border-b border-slate-800 px-4 py-3">
+      <Search size={18} class="text-cyan-200" aria-hidden="true" />
+      <input
+        class="h-10 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
+        placeholder="搜索功能预留：后续可接入本地索引"
+        type="search"
+      />
+      <button id="search-close" class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-400 hover:bg-slate-900 hover:text-white" type="button" aria-label="关闭搜索" title="关闭">
+        <X size={18} aria-hidden="true" />
+      </button>
+    </div>
+    <div class="p-4 text-sm leading-7 text-slate-400">
+      当前先保留搜索交互结构。后续可以基于标题、描述、标签和正文摘要生成静态 JSON 索引。
+    </div>
+  </div>
+</div>
+
+<script>
+  const dialog = document.getElementById('search-dialog');
+  const open = document.getElementById('search-open');
+  const close = document.getElementById('search-close');
+
+  function openSearch() {
+    dialog?.classList.remove('hidden');
+    dialog?.classList.add('flex');
+    dialog?.querySelector('input')?.focus();
+    document.body.classList.add('overflow-hidden');
+  }
+
+  function closeSearch() {
+    dialog?.classList.add('hidden');
+    dialog?.classList.remove('flex');
+    document.body.classList.remove('overflow-hidden');
+  }
+
+  open?.addEventListener('click', openSearch);
+  close?.addEventListener('click', closeSearch);
+  dialog?.addEventListener('click', (event) => {
+    if (event.target === dialog) closeSearch();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeSearch();
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      openSearch();
+    }
+  });
+</script>
