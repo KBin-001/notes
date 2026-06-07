@@ -29,9 +29,12 @@ public boolean isAvailable() {
 }
 ```
 ```text
+
 ```
 ## 追踪 FlashlightControllerImpl.java
 **第一次判断（主检查）** — 第 98 行：
+```text
+
 ```
 ```java
 mHasFlashlight = packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
@@ -40,16 +43,31 @@ mHasFlashlight = packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_F
 
 ```
 ```text
+
+```
+```text
+
+```
+```text
 **hasFlashlight()**`** 方法** — 第 144 行：
 ```
-```java
+```text
+
+```
+```c
 public boolean hasFlashlight() {
     return mHasFlashlight;
 }
 ```
 ```text
+
+```
+```text
 > **关键发现：** 手电筒图标是否显示，取决于 `FEATURE_CAMERA_FLASH` 系统特性是否已声明。
 **第二次判断（备用检查）** — 第 177–189 行：
+```
+```text
+
 ```
 ```log
 private String getCameraId() throws CameraAccessException {
@@ -67,11 +85,19 @@ private String getCameraId() throws CameraAccessException {
 }
 ```
 ```text
+
+```
+```text
 >
 即使存在第二次检查（通过 Camera2 API），若第一次 `FEATURE_CAMERA_FLASH` 检查失败，`mHasFlashlight` 就为 `false`，整个初始化流程会被跳过。
-
+```
 ## 检查设备特性声明
 查看 `tablet_core_hardware.xml`，注释中提到：
+```text
+
+```
+```text
+
 ```
 ```xml
 <!-- devices with a rear-facing camera must include one of these as appropriate:
@@ -79,9 +105,12 @@ private String getCameraId() throws CameraAccessException {
      android.hardware.camera.autofocus.xml or
      android.hardware.camera.autofocus-flash.xml -->
 ```
+```text
+
+```
 ```diff
 **发现：平板的默认配置中没有包含 **`**android.hardware.camera.flash**`** 特性！**
-
+```
 ## 检查项目配置
 搜索项目目录下的 `device-vext.mk`，确认**没有声明** camera flash feature。
 
@@ -89,10 +118,28 @@ private String getCameraId() throws CameraAccessException {
 
 ## ✅ 解决方案
 在 `device-vext.mk` 中添加以下声明：
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```log
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.flash-autofocus.xml
 ```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
 
 ```

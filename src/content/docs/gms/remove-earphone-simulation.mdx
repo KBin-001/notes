@@ -53,16 +53,17 @@ devicePort` 代表硬件接口。移除后，系统不再认为芯片上存在 3
 即便上层应用尝试往耳机发声，`AudioPolicyManager` 也会因找不到 Route 而失败，从而 fallback 到扬声器或其他设备。
 
 ---
-
 ```
 ## ✅ 验证方法
 确认配置是否已生效：
+```text
+
 ```
 ```bash
 dumpsys media.audio_policy | grep -A 20 "Available output devices"
 ```
+```diff
 ---
-
 ```
 ## 📎 附件
 附件：0001-.patch

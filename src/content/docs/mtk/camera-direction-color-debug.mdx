@@ -59,10 +59,13 @@ set_mirror_flip(IMAGE_V_MIRROR);
 - 再叠加一个 180 度，相当于 `V + HV = H`
 ```
 ```text
+
 ```
 ## 排查
 
 **第二阶段验证：为什么改了 IMAGE_* 也没有效果**
+```text
+
 ```
 ```diff
 - 试过 `IMAGE_V_MIRROR`
@@ -78,11 +81,17 @@ set_mirror_flip(IMAGE_V_MIRROR);
 - 后面是不是还有地方把 `0x0101` 覆盖掉了
 ```
 ```text
+
+```
+```text
 **真正的可疑点：streaming_control()**
+```
+```text
+
 ```
 ```diff
 驱动中的 `streaming_control()` 有这样一段代码：
-```text`\`c
+```c
 if (enable)
 {
     while (1)
@@ -101,7 +110,7 @@ else
         ...
     }
 }
-``\`
+```
 
 这里最可疑的地方有两个：
 
@@ -110,13 +119,20 @@ else
 
 也就是说，开流和关流的寄存器写法不对称。
 
+```
+```text
+
+```
+```text
+```
+```text
+```
 ## 为什么 write_cmos_sensor(0x0100, 0x0103) 很可疑
 
 ## 1 两种写寄存器接口的区别
 
 本驱动里：
-
-```text`\`c
+```c
 static void write_cmos_sensor_byte(kal_uint32 addr, kal_uint32 para)
 {
     char pu_send_cmd[3] = {
@@ -126,11 +142,11 @@ static void write_cmos_sensor_byte(kal_uint32 addr, kal_uint32 para)
     };
     iWriteRegI2C(pu_send_cmd, 3, imgsensor.i2c_write_id);
 }
-``\`
+```
 
 这是 8-bit data 写法。
 
-```text`\`c
+```c
 static void write_cmos_sensor(kal_uint16 addr, kal_uint16 para)
 {
     char pusendcmd[4] = {
@@ -141,11 +157,20 @@ static void write_cmos_sensor(kal_uint16 addr, kal_uint16 para)
     };
     iWriteRegI2C(pusendcmd, 4, imgsensor.i2c_write_id);
 }
-``\`
+```
 
 这是 16-bit data 写法。
 
 ## 2 为什么这会影响 mirror/flip
+
+```
+```text
+
+```
+```text
+
+```
+```text
 
 ```
 ```diff
@@ -158,9 +183,9 @@ set_mirror_flip()` 写的是：
 - `0x0100, 0x0103`
 
 如果这颗 sensor 的 `0x0100`、`0x0101` 是连续 8-bit 寄存器，那么：
-```text`\`c
+```c
 write_cmos_sensor(0x0100, 0x0103);
-``\`
+```
 
 非常像是在一次 transaction 里顺手写成：
 
@@ -181,7 +206,38 @@ write_cmos_sensor(0x0100, 0x0103);
 这是本次排查最关键的根因判断。
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+```
+```text
+
+```
+```text
+```
+```text
 ## 方向修复
+```
+```text
+
 ```
 ```diff
 ## 1 方向修复
@@ -192,20 +248,61 @@ write_cmos_sensor(0x0100, 0x0103);
 - `mirror/flip` 只由 `set_mirror_flip()` 控制
 
 因此开流逻辑改成只写：
-
-```text`\`c
+```c
 write_cmos_sensor_byte(0x0100, 0x01);
-``\`
+```
 
 然后场景函数统一保留：
 
-```text`\`c
+```c
 set_mirror_flip(IMAGE_NORMAL);
-``\`
+```
 
 ## 验证结果
 
 - 方向恢复正常
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```text
 
@@ -222,9 +319,9 @@ set_mirror_flip(IMAGE_NORMAL);
 
 驱动中原来配置的是：
 
-```text`\`c
+```c
 .sensor_output_dataformat = SENSOR_OUTPUT_FORMAT_RAW_Gb
-``\`
+```
 
 但根据 `set_mirror_flip()` 的注释映射：
 
@@ -232,18 +329,48 @@ set_mirror_flip(IMAGE_NORMAL);
 
 所以最终把：
 
-```text`\`c
+```c
 SENSOR_OUTPUT_FORMAT_RAW_Gb
-``\`
+```
 
 改成：
 
-```text`\`c
+```c
 SENSOR_OUTPUT_FORMAT_RAW_Gr
-``\`
+```
 
 ## 验证结果
 
 - 颜色恢复正常
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```

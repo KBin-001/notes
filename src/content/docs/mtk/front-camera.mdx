@@ -39,15 +39,27 @@ updated: "2026-06-06"
 ```
 ## [Android.mk](http://Android.mk) 配置
 **路径**: `mediatek/proprietary/hardware/mtkcam3/main/hal/device/3.x/device/``[Android.mk](http://Android.mk)`
+```text
+
 ```
 ```diff
  += -DSUPPORT_ASYNC_CLOSING
 ```
 ```text
+
+```
+```text
+
+```
 ## MTK Camera 变量配置
 **路径**: `mediatek/proprietary/scripts/soong/mtkcam/mtkcamvars.go`
 
 #### Tuning 模块添加
+```text
+
+```
+```text
+
 ```
 ```diff
 "s5k4e6_mipi_raw_tuning",
@@ -60,7 +72,13 @@ updated: "2026-06-06"
 +        "gc08a3_mipi_raw_tuning",
 ```
 ```text
+
+```
+```text
 #### GC08A3 完整模块列表添加
+```
+```text
+
 ```
 ```diff
 +        "gc08a3_mipi_raw_IdxMgr",
@@ -86,7 +104,13 @@ updated: "2026-06-06"
 +        "libCamera_gc08a3mipiraw_Video_4k",
 ```
 ```text
+
+```
+```text
 #### ISP 映射和参数配置
+```
+```text
+
 ```
 ```diff
 // ISP 映射添加
@@ -105,12 +129,23 @@ updated: "2026-06-06"
 +        "libCamera_gc08a3mipiraw_Scene_Capture_lpnr",
 +        "libCamera_gc08a3mipiraw_Zoom_Capture",
 ```
+```text
+
+```
 ```diff
 ---
-
+```
 ## 🔌 Device 配置
 ## [CameraConfig.mk](http://CameraConfig.mk) 配置
 **路径**: `mediatek/mt8189/``[CameraConfig.mk](http://CameraConfig.mk)`
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```diff
 -CUSTOM_HAL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw
@@ -129,27 +164,144 @@ updated: "2026-06-06"
 +CUSTOM_KERNEL_SUB_IMGSENSOR = ov8856_mipi_raw gc08a3_mipi_raw
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
 ## [device-camera.mk](http://device-camera.mk) 配置
 **路径**: `mediatek/mt8189/``[device-camera.mk](http://device-camera.mk)`
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```diff
 -CUSTOM_HAL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw
 +CUSTOM_HAL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw gc08a3_mipi_raw
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
 ## Kernel Headers 配置
 **路径**: `mediatek/vendor/camera/kernel-headers/kd_imgsensor.h`
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```diff
 +#define GC08A3_SENSOR_ID                         0x08a3
 ```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
 ```log
+```
 ## [ProjectConfig.mk](http://ProjectConfig.mk) 配置
 **路径**: `mediateksample/aiot8391p3_64_bsp/``[ProjectConfig.mk](http://ProjectConfig.mk)`
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```diff
 -CUSTOM_KERNEL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw
 +CUSTOM_KERNEL_IMGSENSOR = ov16880_mipi_raw ov8856_mipi_raw s5k3m5sx_mipi_raw gc08a3_mipi_raw
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```diff
 ---
@@ -157,8 +309,50 @@ updated: "2026-06-06"
 ## 🐧 Kernel 修改
 #### 驱动文件路径
 ```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
 ```log
 kernel_device_modules-6.1/drivers/misc/mediatek/imgsensor/src/common/v1_1/gc08a3_mipi_raw/
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```text
 
@@ -166,19 +360,124 @@ kernel_device_modules-6.1/drivers/misc/mediatek/imgsensor/src/common/v1_1/gc08a3
 ## 问题现象
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
 [15:03:45:165][  122.513673][ T4317] NOTICE: I2C write failed (-6)! speed(100) (0x3)
 [15:03:45:165][  122.515182][ T4317] NOTICE: I2C write failed (-6)! speed(100) (0x4)
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```text
 **解决方案**: 修改I2C写入方式，将批量写入改为单次写入
 
 在驱动的 `.h` 文件中设置：
 ```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
 ```c
  MULTI_WRITE  0
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
 修改 `table_write_cmos_sensor` 函数：
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```c
 static void table_write_cmos_sensor(kal_uint16 *para, kal_uint32 len)
@@ -209,8 +508,50 @@ static void table_write_cmos_sensor(kal_uint16 *para, kal_uint32 len)
 }
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
 ## DTS 配置
 **路径**: `kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/cust_mt8189_p1_camera.dtsi`
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```diff
 cam1-pin-vcamio = "regulator";
@@ -220,24 +561,150 @@ cam0_enable_sensor = "ov16880_mipi_raw s5k3m5sx_mipi_raw";
 +       cam1_enable_sensor = "ov8856_mipi_raw gc08a3_mipi_raw";
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
 ## Defconfig 配置
 **路径**: `kernel_device_modules-6.1/arch/arm64/configs/mgk_64_k61_defconfig`
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```diff
 -CONFIG_CUSTOM_KERNEL_IMGSENSOR="s5k3m5sx_mipi_raw ov16880_mipi_raw ov8856_mipi_raw"
 +CONFIG_CUSTOM_KERNEL_IMGSENSOR="s5k3m5sx_mipi_raw ov16880_mipi_raw ov8856_mipi_raw gc08a3_mipi_raw"
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
 ## Sensor 头文件配置
 **路径**: `kernel_device_modules-6.1/drivers/misc/mediatek/imgsensor/inc/kd_imgsensor.h`
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```diff
 +#define GC08A3_SENSOR_ID                        0x08a3
 +#define SENSOR_DRVNAME_GC08A3_MIPI_RAW          "gc08a3_mipi_raw"
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
 ## 电源序列配置
 **路径**: `kernel_device_modules-6.1/drivers/misc/mediatek/imgsensor/src/common/v1_1/imgsensor_pwr_seq.c`
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```diff
 +#if defined(GC08A3_MIPI_RAW)
@@ -258,8 +725,50 @@ cam0_enable_sensor = "ov16880_mipi_raw s5k3m5sx_mipi_raw";
 +#endif
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
 ## Sensor 列表配置
 **路径**: `kernel_device_modules-6.1/drivers/misc/mediatek/imgsensor/src/common/v1_1/imgsensor_sensor_list.c`
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```diff
 +#if defined(GC08A3_MIPI_RAW)
@@ -267,14 +776,75 @@ cam0_enable_sensor = "ov16880_mipi_raw s5k3m5sx_mipi_raw";
 +#endif
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
 ## Sensor 列表头文件
 **路径**: `kernel_device_modules-6.1/drivers/misc/mediatek/imgsensor/src/common/v1_1/imgsensor_sensor_list.h`
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```diff
 +UINT32 GC08A3_MIPI_RAW_SensorInit(struct SENSOR_FUNCTION_STRUCT **pfFunc);
 ```
----
+```text
 
+```
+```text
+
+```
+```text
+
+```
+```diff
+---
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
 ```
 ## 🔍 调试注意事项
 > **⚠️ 重要提醒**: 记得恢复debug模式！
@@ -293,3 +863,12 @@ cam0_enable_sensor = "ov16880_mipi_raw s5k3m5sx_mipi_raw";
 - [ ] 电源序列配置完成
 - [ ] 调试模式恢复完成
 **配置完成后，GC08A3前置摄像头应该可以正常工作！** 🎉
+```text
+
+```
+```text
+
+```
+```text
+
+```

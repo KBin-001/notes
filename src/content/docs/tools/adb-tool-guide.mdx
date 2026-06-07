@@ -40,7 +40,6 @@ ro.boot.veritymode
 ro.bootimage.build.type`
 
 我已经从你的文件里看到几个关键事实：
-
 ```
 ```log
 ro.board.platform = mt6789
@@ -57,7 +56,6 @@ build 类型：userdebug
 平台信息：MTK 平台相关
 verified boot：green
 verity：enforcing
-
 ```
 ## 再看 dmesg.txt：认识 kernel log 格式
 
@@ -76,9 +74,14 @@ verity：enforcing
 不是现实时间，不是 15:20:09。
 
 它表示系统启动后大约 8628 秒，也就是设备已经运行一段时间了。
+```text
+
 ```
 ```text
 binder:524_1:
+```
+```text
+
 ```
 ```text
 
@@ -87,7 +90,13 @@ binder:524_1:
 说明这条日志是在某个 binder 线程上下文里打出来的。
 ```
 ```text
+
+```
+```text
 [name:sipo_seri_kb&]
+```
+```text
+
 ```
 ```text
 
@@ -96,7 +105,13 @@ binder:524_1:
 这里明显和 sipo 键盘相关。
 ```
 ```text
+
+```
+```text
 sipo_drv[DBG]:
+```
+```text
+
 ```
 ```text
 
@@ -105,7 +120,13 @@ sipo_drv[DBG]:
 DBG 一般表示 debug 级别，不一定是错误。
 ```
 ```text
+
+```
+```text
 sipo_suspend:513:
+```
+```text
+
 ```
 ```text
 
@@ -124,7 +145,7 @@ sipo_suspend:513:
 这不是错误。
 
 这是正常的电源管理流程日志。
-
+```
 ## 判断这份 dmesg 的时间窗口
 
 你这份 dmesg.txt 开头是：
@@ -134,14 +155,21 @@ sipo_suspend:513:
 这说明它不是完整开机日志。
 
 如果是完整 boot log，通常会从类似下面开始：
+```text
+
 ```
 ```text
+
+```
+```log
 [    0.000000] Booting Linux
 [    0.000000] Linux version ...`
 
 但你的日志从 8626 秒开始，说明 kernel ring buffer 里只保留了较新的日志。
 
 所以这份 dmesg 当前主要适合分析：
+```
+```text
 
 ```
 ```log
@@ -153,6 +181,9 @@ sipo_suspend:513:
 它不太适合完整分析：
 ```
 ```text
+
+```
+```text
 开机早期 probe 顺序
 第一次驱动加载全过程
 bootloader 到 kernel 的早期问题`
@@ -160,10 +191,18 @@ bootloader 到 kernel 的早期问题`
 这是第一条非常重要的经验：
 
 `看 dmesg 之前，先判断它是不是从 0 秒开始。`
-
+```
 ## 从你的 dmesg 里识别正常日志
 
 你这里有一组 sipo 日志：
+
+```text
+
+```
+```text
+
+```
+```text
 
 ```
 ```text
@@ -177,6 +216,15 @@ sipo_suspend: &lt;&lt;&lt; Suspend OK`
 这组日志说明：
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
 sipo 驱动进入休眠
 切换 RX pin 到 GPIO sleep 状态
 打开 IRQ wake
@@ -185,6 +233,14 @@ suspend 成功`
 这看起来是正常路径。
 
 后面 resume：
+```
+```text
+
+```
+```text
+
+```
+```text
 
 ```
 ```text
@@ -195,6 +251,15 @@ Disabled IRQ wake for RX
 RX IRQ Disabled`
 
 这说明：
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```text
 sipo 驱动从休眠恢复
@@ -212,6 +277,14 @@ suspend OK、resume、Enabled IRQ wake 这些不是问题。
 好，进入第二课。
 
 这一节你要学会看这一条链路：
+```
+```text
+
+```
+```text
+
+```
+```text
 
 ```
 ```diff
@@ -230,6 +303,15 @@ ko 文件是否存在
 我们今天重点看这些文件：
 ```
 ```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
 module_ko_files_keyword.txt
 lsmod_driver_keyword.txt
 platform_devices_keyword.txt
@@ -239,6 +321,14 @@ i2c_devices.txt
 i2c_drivers.txt`
 
 先记住一句话：
+```
+```text
+
+```
+```text
+
+```
+```text
 
 ```
 ```diff
@@ -247,17 +337,46 @@ i2c_drivers.txt`
 有 dmesg 运行日志，才说明代码真的执行过。`
 
 ---
-
+```
 ## 看 ko 文件是否存在
 
 文件：
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```text
 module_ko_files_keyword.txt
 ```
 ```text
 
+```
+```text
+
+```
+```text
+
+```
+```text
+
 你这里有：
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```text
 /vendor_dlkm/lib/modules/sipo_seri_kb.ko
@@ -279,6 +398,14 @@ module_ko_files_keyword.txt
 `这个 ko 被打包进系统了`
 
 不能说明：
+```
+```text
+
+```
+```text
+
+```
+```text
 
 ```
 ```diff
@@ -291,17 +418,79 @@ module_ko_files_keyword.txt
 这是不对的。
 
 ---
-
+```
 ## 看 module 是否已加载
 
 文件：
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```text
 lsmod_driver_keyword.txt
 ```
 ```text
 
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 你这里有：
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```
 ```text
 sipo_seri_kb           40960  0
@@ -309,4 +498,33 @@ hall                   20480  0
 sensorhub              98304  0`
 
 ```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
+```
+```text
+
 ```

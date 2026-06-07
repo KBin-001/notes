@@ -22,9 +22,12 @@ mediateksample/aiot8391p2_64_bsp/ko_order_table.csv
 regulator-vibrator.ko,/../kernel_device_modules-6.1/drivers/leds/regulator-vibrator.ko,ramdisk,Y,Y,user/userdebug/eng
 ```
 ```text
+
 ```
 ## vendor下修改hal层
 ## 查看log是否加载了驱动，测试是否有马达震动功能，如果加载驱动没有震动功能请用adb进行测试打开。
+```text
+
 ```
 ```bash
 cd sys/class/leds/vibrator/
@@ -34,7 +37,17 @@ aiot8391p2_64_bsp:/sys/class/leds/vibrator # echo 255 > brightness
 aiot8391p2_64_bsp:/sys/class/leds/vibrator # echo 0 > brightness
 ```
 ```text
+
+```
+```text
+
+```
 ## 如果adb测试有马达功能，那就是hal上层问题
+```text
+
+```
+```text
+
 ```
 ```diff
 
@@ -68,6 +81,14 @@ aiot8391p2_64_bsp:/sys/class/leds/vibrator # echo 0 > brightness
      return write_value(THE_DEVICE, value);
  }
 ```
+```text
+
+```
+```text
+
 ```
 ## 测试APK
 附件：app-release.apk(1).1
+```text
+
+```

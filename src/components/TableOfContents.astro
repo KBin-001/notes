@@ -10,7 +10,10 @@ interface Props {
 }
 
 const { headings = [] } = Astro.props;
-const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+const tocHeadings = headings.filter((heading) => {
+  const text = heading.text.trim();
+  return heading.depth >= 2 && heading.depth <= 3 && text !== '笔记内容' && text !== '绗旇鍐呭';
+});
 ---
 
 <aside class="hidden w-64 shrink-0 xl:block" data-pagefind-ignore aria-hidden="true">
@@ -24,7 +27,7 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
               <a
                 href={`#${heading.slug}`}
                 data-toc-link
-                class={`block rounded-md py-1.5 pr-2 text-sm leading-5 text-slate-500 transition hover:text-cyan-100 ${heading.depth === 3 ? 'pl-4 text-xs' : 'pl-2'}`}
+                class={`block rounded-md py-1.5 pr-2 text-sm leading-5 text-slate-500 transition hover:bg-slate-900/45 hover:text-slate-300 ${heading.depth === 3 ? 'pl-4 text-xs' : 'pl-2'}`}
               >
                 {heading.text}
               </a>

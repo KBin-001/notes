@@ -20,13 +20,16 @@ deleted:    mediateksample/aiot8391p2_64_bsp/aw87391/lib/awinic.audio.effect.so
 deleted:    mediateksample/aiot8391p2_64_bsp/aw87391/lib64/awinic.audio.effect.so
 ```
 ```log
+
 ```
 ## mediateksample/aiot8391p2_64_bsp/device-vext.mk注释掉
+```text
+
 ```
 ```diff
 +#PRODUCT_COPY_FILES += $(LOCAL_PATH)/aw87391/lib/awinic.audio.effect.so:$(TARGET_COPY_OUT_VENDOR)/lib/hw/awinic.audio.effect.so
 +#PRODUCT_COPY_FILES += $(LOCAL_PATH)/aw87391/lib64/awinic.audio.effect.so:$(TARGET_COPY_OUT_VENDOR)/lib64/hw/awinic.audio.effect.so
 ```
+```text
 adb去除音效文件不会！！！
-
 ```

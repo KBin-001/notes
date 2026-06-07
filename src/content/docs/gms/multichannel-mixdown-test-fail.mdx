@@ -34,7 +34,6 @@ if (profile_is_format_valid(&device_info->profile, fmt)) {
 - 某些 `audio_format`（如压缩格式、特殊 PCM）转换后得到的 `pcm_format` **并不真实支持**
 - 导致 HAL 误认为 format 合法 → 实际打开 stream 失败 → ExoPlayer 报 `Source error`
 ---
-
 ```
 ## 解决方案
 >
@@ -44,6 +43,8 @@ if (profile_is_format_valid(&device_info->profile, fmt)) {
 
 ## 修改内容
 #### 1️⃣ 新增函数：`is_audio_format_supported()`
+```text
+
 ```
 ```c
 static bool is_audio_format_supported(const alsa_device_profile* profile,
@@ -57,10 +58,16 @@ static bool is_audio_format_supported(const alsa_device_profile* profile,
     return false;
 }
 ```
+```text
+
+```
 ```log
 **关键点**：遍历 `profile->formats`，使用 `audio_format_from(pcm_format)` 做**反向匹配**，避免"错误映射"导致的假支持。
 
 #### 2️⃣ Patch 内容（`libhardware/modules/usbaudio/audio_hal.c`）
+```
+```text
+
 ```
 ```diff
 --- a/libhardware/modules/usbaudio/audio_hal.c
@@ -106,6 +113,6 @@ static bool is_audio_format_supported(const alsa_device_profile* profile,
          } else {
              in->config.format = profile_get_default_format(&device_info->profile);
 ```
+```diff
 ---
-
 ```

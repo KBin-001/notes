@@ -35,7 +35,6 @@ EXPORT_SYMBOL_GPL(himax_pen_state); // 导出符号，让其他驱动能访问
 **B. 笔状态监测 (Huion Tablet)**
 
 在 huiontablet.c 的工作队列函数 huion_ts_work_func 中添加了状态机逻辑：
-
 ```
 ## **读取状态**：通过 state & 0x10 判断笔是否在感应范围内。
 ## **状态转换**：
@@ -44,6 +43,8 @@ EXPORT_SYMBOL_GPL(himax_pen_state); // 导出符号，让其他驱动能访问
     - 如果是**刚进入**（pre_pen_status == 0），调用 himax_force_touch_up() 立即掐断当前的触摸。
   - **笔离开**：
     - 设置 himax_pen_state = PEN_NOT_BUSY，释放互斥锁。
+```text
+
 ```
 ```diff
 @@ -237,6 +246,35 @@ static void huion_ts_work_func(struct work_struct *work)
@@ -81,9 +82,15 @@ EXPORT_SYMBOL_GPL(himax_pen_state); // 导出符号，让其他驱动能访问
 +    //zlt-end
 ```
 ```text
+
+```
+```text
 **C. 触摸上报拦截 (Himax Report)**
 
 在 Himax 驱动的数据上报入口 himax_report_data 中插入拦截逻辑：
+```
+```text
+
 ```
 ```c
 if (get_pen_state() == PEN_BUSY) {
@@ -93,7 +100,13 @@ if (get_pen_state() == PEN_BUSY) {
 }
 ```
 ```text
+
+```
+```text
 **关键点**：只要笔在忙，TP 驱动依然在运行和读取数据，但它采集到的坐标永远不会提交给 Android 系统。
+```
+```text
+
 ```
 ```diff
 +  void himax_force_touch_up(void)
@@ -111,6 +124,8 @@ if (get_pen_state() == PEN_BUSY) {
 +  }
 +  EXPORT_SYMBOL_GPL(himax_force_touch_up);
 ```
+```text
+
 ```
 ## patch
 附件：0001-erm-tp-ok.patch

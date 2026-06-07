@@ -77,7 +77,6 @@ rg -n "sgm41600|mt6375|mtk_gauge|&charger|typec|tcpc|gauge = <&mtk_gauge>|disabl
 - 如果 DTS 没设备：优先查板级 dts include 链和 `.dtsi` 是否被正确包含
 - 如果 DTS 有设备但运行时没有节点：进入驱动 probe / register 排查
 ---
-
 ```
 ## kernel 驱动源码
 #### 【排查目标】
@@ -109,10 +108,13 @@ rg -n "sgm41600|mt6375|mtk_gauge|&charger|typec|tcpc|gauge = <&mtk_gauge>|disabl
 - [sgm41600s.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/sgm41600s.c#L1230) 有私有 `registers`
 - [mtk_charger.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mtk_charger.c#L3277) 创建 `/proc/mtk_battery_cmd/*`
 #### 【要执行的命令】
+```text
+
 ```
 ```bash
 rg -n "power_supply_register|devm_power_supply_register|POWER_SUPPLY_PROP_|psy_desc.name|DEVICE_ATTR|sysfs_create_group|proc_create_data|proc_mkdir" Z:\\kp1202_v16\\mt8391_u\\kernel\\kernel_device_modules-6.1\\drivers\\power\\supply
 ```
+```diff
 #### 【正常现象】
 - 每条查询链都能找到明确的注册点
 - 能把目录名和属性名完整列出来
@@ -125,7 +127,6 @@ rg -n "power_supply_register|devm_power_supply_register|POWER_SUPPLY_PROP_|psy_d
 - 有实现但运行时没文件：可能节点不是标准 power_supply，而是私有 sysfs/proc
 - 有私有节点但权限不足：继续看 init/ueventd/sepolicy
 ---
-
 ```
 ## 设备初始化/权限相关文件
 #### 【排查目标】

@@ -159,7 +159,9 @@ import { Search, X } from '@lucide/astro';
   function scrollToHash(hash: string) {
     const id = decodeURIComponent(hash.slice(1));
     const target = document.getElementById(id) || document.querySelector(hash);
-    target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.requestAnimationFrame(() => {
+      target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
   open?.addEventListener('click', openSearch);
@@ -180,8 +182,11 @@ import { Search, X } from '@lucide/astro';
 
     if (target.origin === location.origin && target.pathname === location.pathname && target.hash) {
       event.preventDefault();
-      history.pushState(null, '', `${target.pathname}${target.hash}`);
-      scrollToHash(target.hash);
+      if (location.hash === target.hash) {
+        scrollToHash(target.hash);
+      } else {
+        location.hash = target.hash;
+      }
     }
   });
   document.addEventListener('keydown', (event) => {

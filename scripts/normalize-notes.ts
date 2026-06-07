@@ -164,6 +164,77 @@ function normalizeCodeFences(body: string) {
   });
 }
 
+function splitInlineFences(body: string) {
+  return body
+    .split('\n')
+    .flatMap((line) => {
+      const marker = line.indexOf('```');
+      if (marker <= 0) return [line];
+
+      const before = line.slice(0, marker).trimEnd();
+      const after = line.slice(marker).trim();
+      if (!before || !after.startsWith('```')) return [line];
+
+      return [before, after];
+    })
+    .join('\n');
+}
+
+function closeFencesBeforeHeadings(body: string) {
+  const lines = body.split('\n');
+  const next: string[] = [];
+  let inside = false;
+
+  for (const line of lines) {
+    if (inside && /^#{1,3}\s+/.test(line)) {
+      next.push('```');
+      inside = false;
+    }
+
+    if (/^```[A-Za-z0-9_-]*\s*$/.test(line.trim())) {
+      inside = !inside;
+    }
+
+    next.push(line);
+  }
+
+  if (inside) next.push('```');
+  return next.join('\n');
+}
+
+function canonicalizeFenceTransitions(body: string) {
+  const next: string[] = [];
+  let inside = false;
+
+  for (const line of body.split('\n')) {
+    const fence = line.trim().match(/^```([A-Za-z0-9_-]*)$/);
+    if (!fence) {
+      next.push(line);
+      continue;
+    }
+
+    const lang = fence[1];
+    if (!inside) {
+      inside = true;
+      next.push(line);
+      continue;
+    }
+
+    if (!lang) {
+      inside = false;
+      next.push(line);
+      continue;
+    }
+
+    next.push('```');
+    next.push(line);
+    inside = true;
+  }
+
+  if (inside) next.push('```');
+  return next.join('\n');
+}
+
 function convertLooseBacktickBlocks(body: string) {
   const lines = body.split('\n');
   const next: string[] = [];
@@ -216,8 +287,17 @@ function normalizeBody(_file: string, body: string, title: string) {
     .map(normalizeHeadingLine)
     .join('\n');
 
+  normalized = splitInlineFences(normalized);
+  normalized = canonicalizeFenceTransitions(normalized);
+  normalized = closeFencesBeforeHeadings(normalized);
   normalized = convertLooseBacktickBlocks(normalized);
+  normalized = splitInlineFences(normalized);
+  normalized = canonicalizeFenceTransitions(normalized);
+  normalized = closeFencesBeforeHeadings(normalized);
   normalized = normalizeCodeFences(normalized);
+  normalized = splitInlineFences(normalized);
+  normalized = canonicalizeFenceTransitions(normalized);
+  normalized = closeFencesBeforeHeadings(normalized);
 
   const hasSubheading = /^##\s+/m.test(normalized);
   if (!hasSubheading) {
