@@ -43,6 +43,16 @@ body {
   font-family: var(--font-sans);
 }
 
+#reading-progress {
+  background: var(--accent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+[data-toc-link][data-active="true"] {
+  background: color-mix(in srgb, var(--accent) 11%, transparent);
+  color: color-mix(in srgb, var(--accent) 58%, var(--text));
+}
+
 svg {
   color: currentColor;
 }

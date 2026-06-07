@@ -1,0 +1,11 @@
+---
+interface Props {
+  tone?: 'default' | 'success' | 'warning' | 'danger' | 'info';
+}
+
+const { tone = 'default' } = Astro.props;
+---
+
+<span class={`mdx-badge mdx-badge-${tone}`}>
+  <slot />
+</span>

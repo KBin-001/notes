@@ -1,5 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
+import Badge from '@/components/Badge.astro';
+import Callout from '@/components/Callout.astro';
+import CodeTabs from '@/components/CodeTabs.astro';
+import Collapse from '@/components/Collapse.astro';
 import StatusBadge from '@/components/StatusBadge.astro';
 import TagBadge from '@/components/TagBadge.astro';
 import Layout from '@/layouts/Layout.astro';
@@ -48,7 +52,7 @@ const categoryNotes = isCategoryPage ? getCategoryNotes(docs, entry.data.categor
     </header>
 
     <div class="doc-prose">
-      <Content />
+      <Content components={{ Badge, Callout, CodeTabs, Collapse, StatusBadge, TagBadge }} />
     </div>
 
     {isCategoryPage && (

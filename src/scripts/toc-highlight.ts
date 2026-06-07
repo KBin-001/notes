@@ -14,9 +14,7 @@ function setActiveTocLink(activeLink?: HTMLAnchorElement) {
 
   tocLinks.forEach((link) => {
     const active = link === activeLink;
-    link.classList.toggle('bg-cyan-400/8', active);
-    link.classList.toggle('text-cyan-100', active);
-    link.classList.toggle('text-slate-500', !active);
+    link.dataset.active = active ? 'true' : 'false';
     link.setAttribute('aria-current', active ? 'true' : 'false');
   });
 
@@ -49,4 +47,8 @@ if (tocItems.length > 0) {
   setActiveTocLink(nearestHeading()?.link);
   window.addEventListener('scroll', () => setActiveTocLink(nearestHeading()?.link), { passive: true });
   window.addEventListener('resize', () => setActiveTocLink(nearestHeading()?.link));
+  window.addEventListener('hashchange', () => {
+    const active = tocItems.find((item) => item.link.hash === window.location.hash);
+    setActiveTocLink(active?.link ?? nearestHeading()?.link);
+  });
 }

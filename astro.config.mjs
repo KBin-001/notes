@@ -7,6 +7,9 @@ export default defineConfig({
     shikiConfig: {
       theme: 'github-dark',
       langs: ['bash', 'diff', 'log', 'c', 'cpp', 'java', 'xml', 'text', 'makefile'],
+      langAlias: {
+        dts: 'c',
+      },
     },
   },
 });

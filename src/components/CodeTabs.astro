@@ -1,0 +1,50 @@
+---
+interface TabItem {
+  label: string;
+  code: string;
+  lang?: string;
+}
+
+interface Props {
+  tabs: TabItem[];
+}
+
+const { tabs = [] } = Astro.props;
+const id = `code-tabs-${Math.random().toString(36).slice(2)}`;
+---
+
+<div class="code-tabs" data-code-tabs id={id}>
+  <div class="code-tabs-list" role="tablist">
+    {tabs.map((tab, index) => (
+      <button
+        class="code-tabs-tab"
+        type="button"
+        role="tab"
+        aria-selected={index === 0 ? 'true' : 'false'}
+        data-code-tab={index}
+      >
+        {tab.label}
+      </button>
+    ))}
+  </div>
+  {tabs.map((tab, index) => (
+    <pre class={`code-tabs-panel language-${tab.lang ?? 'text'}`} data-code-panel={index} hidden={index !== 0}><code>{tab.code}</code></pre>
+  ))}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-code-tabs]').forEach((root) => {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-code-tab]'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-code-panel]'));
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const active = tab.dataset.codeTab;
+        tabs.forEach((item) => item.setAttribute('aria-selected', String(item === tab)));
+        panels.forEach((panel) => {
+          panel.hidden = panel.dataset.codePanel !== active;
+        });
+      });
+    });
+  });
+</script>

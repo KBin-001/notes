@@ -37,6 +37,7 @@ function walk(dir: string): string[] {
 
 function cleanTitle(value: string) {
   return value
+    .replace(/\\+"/g, '"')
     .replace(/\\([\\`*_[\]{}()#+\-.!>])/g, '$1')
     .replace(/\*\*(.*?)\*\*/g, '$1')
     .replace(/__(.*?)__/g, '$1')
@@ -68,6 +69,14 @@ function parseValue(value: string): unknown {
   if (value === 'true') return true;
   if (value === 'false') return false;
   if (value === '[]') return [];
+  if (value.startsWith('"') && value.endsWith('"')) {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return value.slice(1, -1).replace(/\\"/g, '"');
+    }
+  }
+  if (value.startsWith("'") && value.endsWith("'")) return value.slice(1, -1);
   if (value.startsWith('[') && value.endsWith(']')) {
     const inner = value.slice(1, -1).trim();
     if (!inner) return [];
@@ -153,6 +162,76 @@ function inferFenceLanguage(code: string) {
   if (/([A-Za-z0-9_]+:\s*{|\bcompatible\s*=|pinctrl-|gpio|&[A-Za-z0-9_]+\s*{)/.test(trimmed)) return 'dts';
   if (/^\s*(#include|int\s+|static\s+|struct\s+|void\s+|return\s+|if\s*\()/m.test(trimmed)) return 'c';
   return 'text';
+}
+
+function looksLikeCodeLine(line: string) {
+  const trimmed = line.trim();
+  if (!trimmed) return false;
+  if (/^#{1,6}\s+/.test(trimmed)) return false;
+  if (/^[-*]\s+[\u4e00-\u9fa5]/.test(trimmed)) return false;
+  if (/^(-{3,}|\*{3,}|_{3,})$/.test(trimmed)) return false;
+
+  const diffLine =
+    /^(diff --git|index\s+[0-9a-f]{6,}|@@\s+-|\+\+\+\s+[ab]\/|---\s+[ab]\/)/.test(trimmed) ||
+    /^[+-](?!\s)(#include|static\b|struct\b|int\b|void\b|return\b|if\b|CONFIG_|obj-|ccflags-|LOCAL_|[A-Za-z_][\w.-]*\s*[=:({]|&|\{|\/\/)/.test(trimmed);
+
+  return (
+    diffLine ||
+    /^(&?[A-Za-z0-9_,.-]+:?\s*)?[\w,-]+\s*\{/.test(trimmed) ||
+    /^(compatible|pinctrl-|gpio|reg|status)\s*=/.test(trimmed) ||
+    /^(obj-\$\(|ccflags-|CONFIG_[A-Z0-9_]+=|include \$\(|LOCAL_PATH)/.test(trimmed) ||
+    /^(adb|fastboot|getprop|setprop|dmesg|logcat|cat|cd|make)(\s|$)/.test(trimmed) ||
+    /^(\[[\s\d.]+\]|[EWIDF]\/|avc: denied|Exception|FATAL)/i.test(trimmed) ||
+    /^(#include|static\s+|struct\s+|int\s+|void\s+|return\b|if\s*\()/.test(trimmed) ||
+    /^<\/?[A-Za-z][\w:-]*(\s|>|\/>)/.test(trimmed)
+  );
+}
+
+function wrapLooseCodeParagraphs(body: string) {
+  const lines = body.split('\n');
+  const next: string[] = [];
+  let insideFence = false;
+  let buffer: string[] = [];
+
+  function flush() {
+    if (buffer.length === 0) return;
+    const code = buffer.join('\n');
+    const lang = inferFenceLanguage(code);
+    const meaningfulLines = buffer.filter((line) => line.trim()).length;
+    const allowSingleLine = ['bash', 'log', 'xml', 'makefile'].includes(lang);
+    if (lang !== 'text' && (meaningfulLines >= 2 || allowSingleLine)) {
+      next.push(`\`\`\`${lang}`, code.replace(/\s+$/, ''), '```');
+    } else {
+      next.push(...buffer);
+    }
+    buffer = [];
+  }
+
+  for (const line of lines) {
+    if (/^```[A-Za-z0-9_-]*\s*$/.test(line.trim())) {
+      flush();
+      insideFence = !insideFence;
+      next.push(line);
+      continue;
+    }
+
+    if (insideFence) {
+      next.push(line);
+      continue;
+    }
+
+    const continuation = buffer.length > 0 && (/^\s+/.test(line) || /^[{});,#]/.test(line.trim()) || line.trim() === '');
+    if (looksLikeCodeLine(line) || continuation) {
+      buffer.push(line);
+      continue;
+    }
+
+    flush();
+    next.push(line);
+  }
+
+  flush();
+  return next.join('\n');
 }
 
 function normalizeCodeFences(body: string) {
@@ -276,6 +355,7 @@ function convertLooseBacktickBlocks(body: string) {
 
 function normalizeBody(_file: string, body: string, title: string) {
   let normalized = body.replace(/\r\n/g, '\n').trim();
+  const hasExistingFences = normalized.includes('```');
   normalized = normalized.replace(/^#\s+(.+)$/m, `# ${title}`);
 
   if (!/^#\s+/m.test(normalized)) {
@@ -287,17 +367,12 @@ function normalizeBody(_file: string, body: string, title: string) {
     .map(normalizeHeadingLine)
     .join('\n');
 
-  normalized = splitInlineFences(normalized);
-  normalized = canonicalizeFenceTransitions(normalized);
-  normalized = closeFencesBeforeHeadings(normalized);
-  normalized = convertLooseBacktickBlocks(normalized);
-  normalized = splitInlineFences(normalized);
-  normalized = canonicalizeFenceTransitions(normalized);
-  normalized = closeFencesBeforeHeadings(normalized);
-  normalized = normalizeCodeFences(normalized);
-  normalized = splitInlineFences(normalized);
-  normalized = canonicalizeFenceTransitions(normalized);
-  normalized = closeFencesBeforeHeadings(normalized);
+  if (!hasExistingFences) {
+    normalized = splitInlineFences(normalized);
+    normalized = convertLooseBacktickBlocks(normalized);
+    normalized = wrapLooseCodeParagraphs(normalized);
+    normalized = normalizeCodeFences(normalized);
+  }
 
   const hasSubheading = /^##\s+/m.test(normalized);
   if (!hasSubheading) {
