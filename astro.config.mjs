@@ -6,7 +6,7 @@ export default defineConfig({
   markdown: {
     shikiConfig: {
       theme: 'github-dark',
-      langs: ['bash', 'diff', 'log', 'c', 'cpp', 'java', 'xml', 'text'],
+      langs: ['bash', 'diff', 'log', 'c', 'cpp', 'java', 'xml', 'text', 'makefile'],
     },
   },
 });

@@ -13,7 +13,7 @@ const { headings = [] } = Astro.props;
 const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
 ---
 
-<aside class="hidden w-64 shrink-0 xl:block" data-pagefind-ignore>
+<aside class="hidden w-64 shrink-0 xl:block" data-pagefind-ignore aria-hidden="true">
   <div class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto px-4 py-6">
     {tocHeadings.length > 0 ? (
       <nav aria-label="当前页面大纲">
@@ -32,10 +32,6 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
           ))}
         </ul>
       </nav>
-    ) : (
-      <div class="rounded-lg border border-slate-800 bg-slate-950/35 p-4 text-sm leading-6 text-slate-500">
-        当前页面暂无二级标题。
-      </div>
-    )}
+    ) : null}
   </div>
 </aside>

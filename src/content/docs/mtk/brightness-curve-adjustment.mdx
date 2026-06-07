@@ -5,6 +5,7 @@ category: "mtk"
 tags: ["mtk", "display"]
 topics: ["display_tp"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -12,18 +13,20 @@ updated: "2026-06-06"
 
 # [MTK]亮度调整记录：压低高亮段峰值，保留中低亮手感
 
-## 一、修改文件
+## 修改文件
 路径如下：
 
 ```text
 kernel_device_modules-6.1/drivers/leds/leds-mtk.c
 ```
+```diff
 这次改动主要有三块：
 
+```
 ## 新增一个高亮段重映射函数 `brightness_remap_highlight()`
 ## 在 `brightness_maptolevel()` 里接入这层 remap
 ## 在 `mtk_leds_brightness_set()` 里使用转换后的亮度值下发
-## 二、先说结论：这次改的不是“亮度值”，而是“亮度曲线”
+## 先说结论：这次改的不是“亮度值”，而是“亮度曲线”
 很多时候看 patch，第一眼会以为只是把最大亮度改小了。
 
 其实不是。
@@ -43,10 +46,10 @@ kernel_device_modules-6.1/drivers/leds/leds-mtk.c
 
 而是 80% 往上那一段是不是太炸，是不是刺眼，是不是发热上来太快。
 
-## 三、修改点 1：新增高亮压缩函数
+## 修改点 1：新增高亮压缩函数
 新增代码如下：
-
-```text
+```
+```c
 staticintbrightness_remap_highlight(intlevel,intinput_max)
 {
 intknee;
@@ -74,13 +77,16 @@ returnknee+ (level-knee)* (out_max-knee)/
                (input_max-knee);
 }
 ```
+```text
 #### 这段代码在干什么？
 先说几个关键点：
 
 #### 1）`knee` 是拐点
+```
 ```text
 knee=input_max*70/100;
 ```
+```diff
 这里把输入最大值的 **70%** 当成一个分界点。
 
 含义很直接：
@@ -94,23 +100,27 @@ knee=input_max*70/100;
 把 70% 以下保持原样，用户平时手感基本不会变。
 
 #### 2）`out_max` 是压缩后的最高输出
+```
 ```text
 out_max=input_max*830/1000;
 ```
+```text
 这个值等于原始最大值的 **83%**。
 
 注意这里有个细节：
 
 代码注释写的是：
-
+```
 ```text
 compressthetop-endtoabout85.5%
 ```
+```text
 但实际代码算出来是：
-
+```
 ```text
 830/1000=83%
 ```
+```text
 也就是说，**注释和代码现在并不一致**。
 
 真正生效的是代码，不是注释。
@@ -121,21 +131,23 @@ compressthetop-endtoabout85.5%
 
 #### 3）70% 以下不变，70% 以上重新拉一条线
 如果亮度还没到 `knee`：
-
-```text
+```
+```c
 if (level<=knee)
 returnlevel;
 ```
+```text
 那就原样返回。
 
 不做任何处理。
 
 如果超过了 `knee`，就用下面这条公式重新映射：
-
+```
 ```text
 returnknee+ (level-knee)* (out_max-knee)/
        (input_max-knee);
 ```
+```diff
 这个公式本质上就是：
 
 **把原来 [70%, 100%] 这一段，线性压缩到 [70%, 83%] 这一段。**
@@ -145,9 +157,9 @@ returnknee+ (level-knee)* (out_max-knee)/
 - 中低亮不变
 - 高亮越来越“收”
 - 满亮不再顶到最上面
-## 四、修改点 2：在 `brightness_maptolevel()` 里接入 remap
+## 修改点 2：在 brightness_maptolevel() 里接入 remap
 改动前：
-
+```
 ```diff
 staticintbrightness_maptolevel(structled_conf_info*led_conf,intbrightness)
 {
@@ -156,8 +168,9 @@ return (((led_conf->max_hw_brightness)*brightness
 / (led_conf->cdev.max_brightness));
 }
 ```
+```text
 改动后：
-
+```
 ```diff
 staticintbrightness_maptolevel(structled_conf_info*led_conf,intbrightness)
 {
@@ -170,6 +183,7 @@ level= (((led_conf->max_hw_brightness)*brightness
 returnbrightness_remap_highlight(level,led_conf->max_hw_brightness);
 }
 ```
+```diff
 #### 这里的变化很关键
 原来这函数只做一件事：
 
@@ -197,10 +211,10 @@ returnbrightness_remap_highlight(level,led_conf->max_hw_brightness);
 
 ---
 
-## 五、修改点 3：在 `mtk_leds_brightness_set()` 里下发转换后的亮度
+## 修改点 3：在 mtk_leds_brightness_set() 里下发转换后的亮度
 改动如下：
-
-```text
+```
+```c
 intmtk_leds_brightness_set(intconnector_id,intlevel,
 {
 structmt_led_data*led_dat;
@@ -220,6 +234,7 @@ led_dat->last_hw_brightness=trans_level;
        ...
 }
 ```
+```text
 #### 这里要看两个点
 #### 1）增加了 `trans_level`
 这个变量名字起得还可以。
@@ -234,12 +249,13 @@ led_dat->last_hw_brightness=trans_level;
 
 #### 2）`last_hw_brightness` 记录的也变了
 原来是：
-
+```
 ```text
 led_dat->last_hw_brightness=level;
 ```
+```text
 现在变成：
-
+```
 ```text
 led_dat->last_hw_brightness=trans_level;
 ```
@@ -254,3 +270,5 @@ led_dat->last_hw_brightness=trans_level;
 因为后面如果有人拿 `last_hw_brightness` 做日志、对比、补偿或者恢复，就要知道它现在存的是**转换后的值**，不是原始输入值。
 
 ---
+
+```

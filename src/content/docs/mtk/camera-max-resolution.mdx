@@ -5,6 +5,7 @@ category: "mtk"
 tags: ["mtk", "camera"]
 topics: ["camera"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -39,10 +40,13 @@ height = 2 * 1471.96 ≈ 2943.92
 4415 * 2943 = 12,993,345 ≈ 13MP
 4415 / 2943 ≈ 1.50017 ≈ 3:2
 ```
+```text
+```
 ## 本次修改内容
 在 `config_static_metadata_project.h` 中，分别为以下两类输出格式添加 13MP 分辨率：
 
-#### 1. BLOB / JPEG 输出
+## BLOB / JPEG 输出
+```
 ```c
 CONFIG_ENTRY_VALUE(HAL_PIXEL_FORMAT_BLOB, MINT64) //13mp 3:2
 CONFIG_ENTRY_VALUE(4415, MINT64)        // width
@@ -51,9 +55,11 @@ CONFIG_ENTRY_VALUE(MTK_SCALER_AVAILABLE_STREAM_CONFIGURATIONS_OUTPUT, MINT64)   
 CONFIG_ENTRY_VALUE(66666666, MINT64)    // frame duration
 CONFIG_ENTRY_VALUE(33333333, MINT64)    // stall duration
 ```
+```text
 该部分主要用于 JPEG 拍照输出。
 
-#### 2. YCbCr_420_888 / Preview 或 YUV 输出
+## YCbCr_420_888 / Preview 或 YUV 输出
+```
 ```c
 CONFIG_ENTRY_VALUE(HAL_PIXEL_FORMAT_YCbCr_420_888, MINT64) //13mp 3:2
 CONFIG_ENTRY_VALUE(4415, MINT64)        // width
@@ -64,6 +70,7 @@ CONFIG_ENTRY_VALUE(0, MINT64)           // stall duration
 ```
 该部分主要用于 YUV 输出能力声明。
 
+```
 ## 注意点
 当前添加的尺寸 `4415 x 2943` 是奇数宽高。
 

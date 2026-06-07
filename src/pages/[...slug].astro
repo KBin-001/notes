@@ -3,7 +3,7 @@ import { getCollection, render } from 'astro:content';
 import StatusBadge from '@/components/StatusBadge.astro';
 import TagBadge from '@/components/TagBadge.astro';
 import Layout from '@/layouts/Layout.astro';
-import { categoryMeta, displayTitle, docUrl, formatDate } from '@/lib/navigation';
+import { categoryMeta, categoryOrder, displayTitle, docUrl, formatDate, getCategoryNotes, isIndexDoc, publicDocs } from '@/lib/navigation';
 
 export async function getStaticPaths() {
   const entries = await getCollection('docs', ({ id, data }) => id !== 'index' && data.visibility === 'public');
@@ -17,6 +17,9 @@ const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 const category = categoryMeta[entry.data.category];
 const canonicalUrl = docUrl(entry.id);
+const isCategoryPage = isIndexDoc(entry.id) && categoryOrder.includes(entry.data.category);
+const docs = isCategoryPage ? publicDocs(await getCollection('docs')) : [];
+const categoryNotes = isCategoryPage ? getCategoryNotes(docs, entry.data.category) : [];
 ---
 
 <Layout title={displayTitle(entry.data.title)} description={entry.data.description} currentId={entry.id} headings={headings}>
@@ -47,5 +50,33 @@ const canonicalUrl = docUrl(entry.id);
     <div class="doc-prose">
       <Content />
     </div>
+
+    {isCategoryPage && (
+      <section class="mt-12 border-t border-slate-800 pt-8" data-pagefind-ignore>
+        <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-100">文章列表</h2>
+            <p class="mt-1 text-sm text-slate-500">共 {categoryNotes.length} 篇公开笔记。</p>
+          </div>
+        </div>
+        <div class="grid gap-3">
+          {categoryNotes.map((doc) => (
+            <a href={docUrl(doc.id)} class="block rounded-lg border border-slate-800 bg-slate-950/40 p-4 transition hover:border-cyan-400/25 hover:bg-slate-900/55">
+              <div class="flex flex-wrap items-center gap-3">
+                <h3 class="min-w-0 flex-1 text-base font-semibold text-slate-100">{displayTitle(doc.data.title)}</h3>
+                <StatusBadge status={doc.data.status} />
+              </div>
+              <p class="mt-2 text-sm leading-6 text-slate-500">{doc.data.description}</p>
+              <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                <span>{formatDate(doc.data.updated)}</span>
+                {doc.data.tags.map((tag) => (
+                  <TagBadge tag={tag} />
+                ))}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
   </article>
 </Layout>

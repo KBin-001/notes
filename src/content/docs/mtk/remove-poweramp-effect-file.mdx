@@ -5,6 +5,7 @@ category: "mtk"
 tags: ["mtk", "audio"]
 topics: ["audio"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -18,9 +19,14 @@ updated: "2026-06-06"
 deleted:    mediateksample/aiot8391p2_64_bsp/aw87391/lib/awinic.audio.effect.so
 deleted:    mediateksample/aiot8391p2_64_bsp/aw87391/lib64/awinic.audio.effect.so
 ```
+```log
+```
 ## mediateksample/aiot8391p2_64_bsp/device-vext.mk注释掉
+```
 ```diff
 +#PRODUCT_COPY_FILES += $(LOCAL_PATH)/aw87391/lib/awinic.audio.effect.so:$(TARGET_COPY_OUT_VENDOR)/lib/hw/awinic.audio.effect.so
 +#PRODUCT_COPY_FILES += $(LOCAL_PATH)/aw87391/lib64/awinic.audio.effect.so:$(TARGET_COPY_OUT_VENDOR)/lib64/hw/awinic.audio.effect.so
 ```
 adb去除音效文件不会！！！
+
+```

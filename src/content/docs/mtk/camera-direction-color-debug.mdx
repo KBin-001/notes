@@ -5,6 +5,7 @@ category: "mtk"
 tags: ["mtk", "camera"]
 topics: ["camera"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -12,20 +13,22 @@ updated: "2026-06-06"
 
 # [MTK]Camera方向与颜色异常排查复盘
 
-## 一、最初现象
+## 最初现象
 ```diff
 - 相机画面方向不对
 - 必须把画面旋转 180 度，显示才正常
 - 怀疑点放在 sensor driver 的 `mirror/flip` 配置
 ```
-一开始修改方向的点放到这个函数上
-
 ```text
+一开始修改方向的点放到这个函数上
+```
+```c
 static struct imgsensor_struct imgsensor = {
 	.mirror = IMAGE_NORMAL,
 ```
+```text
 后面画面一直是需要旋转180°的，是有地方覆盖掉了。
-
+```
 ```diff
 在这个驱动里，几个场景函数原来都在调用：
 
@@ -55,10 +58,12 @@ set_mirror_flip(IMAGE_V_MIRROR);
 - 当前状态是 `V`
 - 再叠加一个 180 度，相当于 `V + HV = H`
 ```
+```text
+```
 ## 排查
 
 **第二阶段验证：为什么改了 IMAGE_* 也没有效果**
-
+```
 ```diff
 - 试过 `IMAGE_V_MIRROR`
 - 试过 `IMAGE_HV_MIRROR`
@@ -72,12 +77,12 @@ set_mirror_flip(IMAGE_V_MIRROR);
 
 - 后面是不是还有地方把 `0x0101` 覆盖掉了
 ```
+```text
 **真正的可疑点：streaming_control()**
-
+```
 ```diff
 驱动中的 `streaming_control()` 有这样一段代码：
-
-``\`c
+```text`\`c
 if (enable)
 {
     while (1)
@@ -105,13 +110,13 @@ else
 
 也就是说，开流和关流的寄存器写法不对称。
 
-## 6. 为什么 `write_cmos_sensor(0x0100, 0x0103)` 很可疑
+## 为什么 write_cmos_sensor(0x0100, 0x0103) 很可疑
 
-## 6.1 两种写寄存器接口的区别
+## 1 两种写寄存器接口的区别
 
 本驱动里：
 
-``\`c
+```text`\`c
 static void write_cmos_sensor_byte(kal_uint32 addr, kal_uint32 para)
 {
     char pu_send_cmd[3] = {
@@ -125,7 +130,7 @@ static void write_cmos_sensor_byte(kal_uint32 addr, kal_uint32 para)
 
 这是 8-bit data 写法。
 
-``\`c
+```text`\`c
 static void write_cmos_sensor(kal_uint16 addr, kal_uint16 para)
 {
     char pusendcmd[4] = {
@@ -140,9 +145,11 @@ static void write_cmos_sensor(kal_uint16 addr, kal_uint16 para)
 
 这是 16-bit data 写法。
 
-## 6.2 为什么这会影响 mirror/flip
+## 2 为什么这会影响 mirror/flip
 
-`set_mirror_flip()` 写的是：
+```
+```diff
+set_mirror_flip()` 写的是：
 
 - `0x0101`
 
@@ -151,8 +158,7 @@ static void write_cmos_sensor(kal_uint16 addr, kal_uint16 para)
 - `0x0100, 0x0103`
 
 如果这颗 sensor 的 `0x0100`、`0x0101` 是连续 8-bit 寄存器，那么：
-
-``\`c
+```text`\`c
 write_cmos_sensor(0x0100, 0x0103);
 ``\`
 
@@ -174,10 +180,11 @@ write_cmos_sensor(0x0100, 0x0103);
 
 这是本次排查最关键的根因判断。
 ```
+```text
 ## 方向修复
-
+```
 ```diff
-## 7.1 方向修复
+## 1 方向修复
 
 最终的思路不是继续尝试 `IMAGE_H`、`IMAGE_V`、`IMAGE_HV`，而是先保证：
 
@@ -186,13 +193,13 @@ write_cmos_sensor(0x0100, 0x0103);
 
 因此开流逻辑改成只写：
 
-``\`c
+```text`\`c
 write_cmos_sensor_byte(0x0100, 0x01);
 ``\`
 
 然后场景函数统一保留：
 
-``\`c
+```text`\`c
 set_mirror_flip(IMAGE_NORMAL);
 ``\`
 
@@ -200,8 +207,11 @@ set_mirror_flip(IMAGE_NORMAL);
 
 - 方向恢复正常
 ```
+```text
+
+```
 ```diff
-## 7.2 颜色修复
+## 2 颜色修复
 
 方向修好以后，颜色异常。
 
@@ -212,7 +222,7 @@ set_mirror_flip(IMAGE_NORMAL);
 
 驱动中原来配置的是：
 
-``\`c
+```text`\`c
 .sensor_output_dataformat = SENSOR_OUTPUT_FORMAT_RAW_Gb
 ``\`
 
@@ -222,17 +232,18 @@ set_mirror_flip(IMAGE_NORMAL);
 
 所以最终把：
 
-``\`c
+```text`\`c
 SENSOR_OUTPUT_FORMAT_RAW_Gb
 ``\`
 
 改成：
 
-``\`c
+```text`\`c
 SENSOR_OUTPUT_FORMAT_RAW_Gr
 ``\`
 
 ## 验证结果
 
 - 颜色恢复正常
+```
 ```

@@ -12,25 +12,25 @@ interface Props {
 const { href, title, description, count = 0, accent = 'cyan' } = Astro.props;
 
 const accentClass: Record<string, string> = {
-  cyan: 'from-cyan-400/20 to-cyan-400/5 text-cyan-200',
-  emerald: 'from-emerald-400/20 to-emerald-400/5 text-emerald-200',
-  violet: 'from-violet-400/20 to-violet-400/5 text-violet-200',
-  amber: 'from-amber-400/20 to-amber-400/5 text-amber-200',
-  rose: 'from-rose-400/20 to-rose-400/5 text-rose-200',
-  sky: 'from-sky-400/20 to-sky-400/5 text-sky-200',
-  slate: 'from-slate-400/20 to-slate-400/5 text-slate-200',
+  cyan: 'from-cyan-400/12 to-cyan-400/5 text-cyan-300/80',
+  emerald: 'from-emerald-400/12 to-emerald-400/5 text-emerald-300/80',
+  violet: 'from-violet-400/12 to-violet-400/5 text-violet-300/80',
+  amber: 'from-amber-400/12 to-amber-400/5 text-amber-300/80',
+  rose: 'from-rose-400/12 to-rose-400/5 text-rose-300/80',
+  sky: 'from-sky-400/12 to-sky-400/5 text-sky-300/80',
+  slate: 'from-slate-400/12 to-slate-400/5 text-slate-300/80',
 };
 ---
 
 <a
   href={href}
-  class="group block rounded-lg border border-slate-800/90 bg-slate-950/45 p-5 transition duration-150 hover:-translate-y-0.5 hover:border-cyan-400/35 hover:bg-slate-900/70"
+  class="group block rounded-lg border border-slate-800/90 bg-slate-950/35 p-5 transition duration-150 hover:border-cyan-400/25 hover:bg-slate-900/55"
 >
   <div class="mb-5 flex items-center justify-between">
     <div class={`flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br ${accentClass[accent] ?? accentClass.cyan}`}>
       <FolderOpen size={19} aria-hidden="true" />
     </div>
-    <ArrowRight size={18} class="text-slate-500 transition group-hover:translate-x-0.5 group-hover:text-cyan-200" aria-hidden="true" />
+    <ArrowRight size={18} class="text-slate-600 transition group-hover:text-slate-400" aria-hidden="true" />
   </div>
   <h3 class="text-base font-semibold text-white">{title}</h3>
   <p class="mt-2 min-h-12 text-sm leading-6 text-slate-400">{description}</p>

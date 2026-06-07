@@ -4,7 +4,7 @@ import { BookMarked, Clock3, FilePlus2, Wrench } from '@lucide/astro';
 import CategoryCard from '@/components/CategoryCard.astro';
 import StatusBadge from '@/components/StatusBadge.astro';
 import Layout from '@/layouts/Layout.astro';
-import { categoryMeta, categoryOrder, displayTitle, docUrl, formatDate, isDocInCategory, isIndexDoc, publicDocs, sortDocsByUpdated, topicMeta, topicOrder } from '@/lib/navigation';
+import { categoryMeta, categoryOrder, displayTitle, docUrl, formatDate, getCategoryNotes, getTopicNotes, isIndexDoc, publicDocs, sortDocsByUpdated, topicMeta, topicOrder } from '@/lib/navigation';
 
 const docs = publicDocs(await getCollection('docs'));
 const notes = docs.filter((doc) => !isIndexDoc(doc.id));
@@ -13,7 +13,7 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
 
 <Layout title="kevin知识库" description="面向驱动开发、系统定制和认证问题排查的个人知识库。" currentId="index">
   <section class="mx-auto max-w-5xl">
-    <div class="mb-10 rounded-lg border border-slate-800 bg-slate-950/45 p-6 sm:p-8">
+    <div class="mb-10 rounded-lg border border-slate-800 bg-slate-950/35 p-6 sm:p-8">
       <div class="mb-7 inline-flex items-center gap-2 rounded-md border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-sm text-cyan-100">
         <BookMarked size={16} aria-hidden="true" />
         kevin知识库
@@ -36,7 +36,7 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
       </div>
     </div>
 
-    <section class="mb-12">
+    <section class="mb-14">
       <div class="mb-5 flex items-end justify-between gap-4">
         <div>
           <h2 class="text-xl font-semibold text-white">分类入口</h2>
@@ -46,7 +46,7 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
       <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {categoryOrder.map((category) => {
           const meta = categoryMeta[category];
-          const count = notes.filter((doc) => isDocInCategory(doc, category)).length;
+          const count = getCategoryNotes(docs, category).length;
           return (
             <CategoryCard
               href={`/${category}/`}
@@ -60,7 +60,7 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
       </div>
     </section>
 
-    <section class="mb-12">
+    <section class="mb-14">
       <div class="mb-5 flex items-end justify-between gap-4">
         <div>
           <h2 class="text-xl font-semibold text-white">复盘专题</h2>
@@ -70,7 +70,7 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
       <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {topicOrder.map((topic) => {
           const meta = topicMeta[topic];
-          const count = notes.filter((doc) => doc.data.topics.includes(topic)).length;
+          const count = getTopicNotes(docs, topic).length;
           return (
             <CategoryCard
               href={`/topics/${topic}/`}
@@ -84,7 +84,7 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
       </div>
     </section>
 
-    <section class="mb-12 grid gap-5 xl:grid-cols-[1fr_20rem]">
+    <section class="mb-12 grid gap-6 xl:grid-cols-[1fr_20rem]">
       <div class="rounded-lg border border-slate-800 bg-slate-950/45">
         <div class="flex items-center gap-2 border-b border-slate-800 px-5 py-4">
           <Clock3 size={18} class="text-cyan-200" aria-hidden="true" />

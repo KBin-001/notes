@@ -5,6 +5,7 @@ category: "audio"
 tags: ["audio"]
 topics: ["audio"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -15,7 +16,7 @@ updated: "2026-06-06"
 ---
 
 ## MT8781 音量减按键异常：KPROW0 固定拉低 + KPCOL0 输入检测方案
-## 1. 问题背景
+## 问题背景
 MT8781 项目中出现 **音量减按键异常** 问题。
 
 根据硬件原理图，音量减按键不是单独 GPIO 按键，而是 keypad 矩阵按键：
@@ -23,27 +24,31 @@ MT8781 项目中出现 **音量减按键异常** 问题。
 ```text
 Volume Down = KPROW0 + KPCOL0
 ```
+```text
 对应 MT8781/MT6789 平台 pinmux 关系：
-
+```
 ```text
 GPIO68 = KPROW0
 GPIO66 = KPCOL0
 ```
+```diff
 也就是说，音量减按键由两根 keypad 矩阵线组合实现：
 
 ---
 
-## 2. 原始问题分析
+```
+## 原始问题分析
 正常 keypad 矩阵按键需要同时配置 row 和 column，通过 keypad 驱动扫描识别按键事件。
 
 但当前项目中并没有采用完整的 keypad row/col 扫描方式，而是参考其他项目采用 workaround：
-
+```
 ```text
 GPIO68 / KPROW0 固定输出低电平
 GPIO66 / KPCOL0 作为输入检测
 ```
+```text
 这样处理后，音量减按键按下时：
-
+```
 ```text
 KPCOL0 与 KPROW0 导通
         ↓
@@ -53,21 +58,23 @@ KPCOL0 被拉低
         ↓
 keypad 驱动检测到按键事件
 ```
+```text
 因此，本问题不是单纯配置 `KPCOL0` 就可以解决的。
 
 因为硬件上音量减实际依赖：
-
+```
 ```text
 KPROW0 + KPCOL0
 ```
+```diff
 如果只配置 `GPIO66 = KPCOL0`，而 `GPIO68 = KPROW0` 没有稳定电平，则按键按下后 KPCOL0 不一定能被有效拉低，可能导致音量减无效或波形异常。
 
 ---
 
-## 3. DTS 修改方案
-#### 3.1 新增 `gpio_key_rom` pinctrl
+## DTS 修改方案
+## 1 新增 gpio_key_rom pinctrl
 在 `&pio` 节点中新增 `gpio_key_rom`，将 GPIO68 配置为普通 GPIO，并输出低电平。
-
+```
 ```xml
 &pio {
 	gpio_key_rom: key_low {
@@ -79,30 +86,33 @@ KPROW0 + KPCOL0
 	};
 };
 ```
+```diff
 关键点：
 
 ---
 
-#### 3.2 panel 节点绑定 `key_rom`
+## 2 panel 节点绑定 key_rom
 在 panel 节点中绑定该 pinctrl 状态：
-
+```
 ```dts
 pinctrl-names = "key_rom";
 pinctrl-0 = <&gpio_key_rom>;
 ```
+```text
 如果 panel 节点原本已经存在其他 pinctrl，例如 LCM 电源、复位、bias 相关 GPIO，不能直接覆盖原有配置，而应该追加：
-
+```
 ```dts
 pinctrl-names = "xxx", "xxx", "key_rom";
 pinctrl-x = <&gpio_key_rom>;
 ```
+```diff
 否则可能影响屏幕上电、复位或 bias 时序。
 
 ---
 
-#### 3.3 keypad 侧配置 KPCOL0
+## 3 keypad 侧配置 KPCOL0
 keypad 侧仅配置 GPIO66 为 KPCOL0，并作为输入检测：
-
+```
 ```xml
 &keypad {
 	pinctrl-names = "default";
@@ -120,17 +130,18 @@ keypad 侧仅配置 GPIO66 为 KPCOL0，并作为输入检测：
 	};
 };
 ```
+```diff
 关键点：
 
 ---
 
-## 4. panel 驱动修改方案
+## panel 驱动修改方案
 仅在 DTS 中定义 `gpio_key_rom` 不一定会自动生效。
 
 需要在 panel 驱动中主动获取并选择该 pinctrl 状态。
 
 在 panel probe 阶段增加如下逻辑：
-
+```
 ```dts
 ctx->pinctrl = devm_pinctrl_get(dev);
 if (IS_ERR(ctx->pinctrl)) {
@@ -148,8 +159,9 @@ if (IS_ERR(ctx->pinctrl)) {
 	}
 }
 ```
+```text
 作用：
-
+```
 ```text
 panel probe
    ↓
@@ -161,22 +173,25 @@ panel probe
    ↓
 GPIO68 生效为普通 GPIO 输出低电平
 ```
+```diff
 ---
 
-## 5. 核心结论
+## 核心结论
 本问题的本质是：
-
+```
 ```text
 音量减硬件上由 KPROW0 + KPCOL0 构成
 ```
+```log
 但当前方案没有使用完整 keypad row/col 扫描，而是采用 workaround：
-
+```
 ```text
 GPIO68 / KPROW0 固定输出低电平
 GPIO66 / KPCOL0 作为 keypad 输入
 ```
+```text
 因此，最终按键检测路径为：
-
+```
 ```text
 按下音量减
    ↓
@@ -188,40 +203,44 @@ GPIO66 / KPCOL0 被拉低
    ↓
 keypad 驱动检测到音量减按键事件
 ```
+```diff
 ---
 
-## 6. 注意事项
-#### 6.1 GPIO68 不应再作为正常 KPROW0 扫描使用
+## 注意事项
+## 1 GPIO68 不应再作为正常 KPROW0 扫描使用
 本方案中 GPIO68 被配置为：
-
+```
 ```text
 普通 GPIO 输出低电平
 ```
+```text
 因此它不再作为标准 keypad row 扫描线使用。
 
 如果后续要恢复完整 keypad 矩阵扫描，则需要重新配置：
-
+```
 ```text
 GPIO68 = KPROW0
 GPIO66 = KPCOL0
 ```
+```diff
 并由 keypad 驱动统一管理 row/col。
 
 ---
 
-#### 6.2 panel pinctrl 不要覆盖原有配置
+## 2 panel pinctrl 不要覆盖原有配置
 如果 panel 节点已有其他 pinctrl 状态，例如：
-
+```
 ```text
 lcm_rst_low
 lcm_rst_high
 bias_en_low
 bias_en_high
 ```
+```text
 新增 `key_rom` 时必须追加，而不是替换。
 
 错误风险：
-
+```
 ```text
 覆盖 panel 原有 pinctrl
    ↓
@@ -229,56 +248,66 @@ LCM 电源 / 复位 / bias 配置丢失
    ↓
 可能导致屏幕不开机、白屏、花屏或上电时序异常
 ```
+```diff
 ---
 
-#### 6.3 需要确认 pinctrl select 是否真正执行
+## 3 需要确认 pinctrl select 是否真正执行
 DTS 中写了：
-
+```
 ```dts
 pinctrl-names = "key_rom";
 pinctrl-0 = <&gpio_key_rom>;
 ```
+```text
 但是否生效，取决于驱动是否调用：
-
+```
 ```dts
 pinctrl_select_state(ctx->pinctrl, ctx->gpio_key_rom);
 ```
+```text
 建议通过 kernel log 确认是否有以下异常：
-
+```
 ```text
 cannot get panel pinctrl
 cannot find pinctrl key_rom
 ```
+```diff
 如果没有报错，并且音量减恢复正常，说明 `key_rom` 状态已正确生效。
 
 ---
 
-## 7. 验证结果
+## 验证结果
 合入修改后，音量减按键恢复正常。
 
 验证结论：
-
+```
 ```text
 GPIO68 固定输出低电平生效
 GPIO66 KPCOL0 能够检测到按键低电平变化
 音量减按键功能恢复
 ```
+```diff
 ---
 
-## 8. 推荐提交说明
+## 推荐提交说明
+```
 ```text
 dts: configure GPIO68 low to fix volume down key issue
 ```
+```text
 或中文描述：
-
+```
 ```text
 配置 GPIO68 输出低电平，修复音量减按键异常
 ```
+```text
 更完整版本：
-
+```
 ```text
 MT8781 音量减按键由 KPROW0 + KPCOL0 构成。
 参考项目 workaround，将 GPIO68/KPROW0 配置为普通 GPIO 输出低电平，
 GPIO66/KPCOL0 作为 keypad 输入检测。
 按下音量减时 KPCOL0 被 GPIO68 拉低，从而恢复按键检测功能。
+```
+
 ```

@@ -71,6 +71,7 @@ category: "${category}"
 tags: []
 topics: [${topics.map((topic) => `"${topic}"`).join(', ')}]
 visibility: "public"
+sensitive: true
 status: "${status}"
 date: "${today}"
 updated: "${today}"

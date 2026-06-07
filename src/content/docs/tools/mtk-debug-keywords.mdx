@@ -5,6 +5,7 @@ category: "tools"
 tags: ["tools", "mtk"]
 topics: []
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -24,14 +25,14 @@ updated: "2026-06-06"
 - events_log_2026_0327_174501.curf 里 2026-03-27 17:58:58，音量一路从 5->6->...->15，最终到 volume_changed: [3,14,15,15,android]
 也就是：
 
-- `3`：音频流类型
-- `14`：变化前音量
-- `15`：变化后音量
-- `15`：该流的最大音量
+## 音频流类型
+## 变化前音量
+## 变化后音量
+## 该流的最大音量
 - `android`：触发方
 ## 本地视频播放关键词：com.google.android.apps.photos
 ## 本地视频播放
-  - 2026-03-27 17:58:54 打开了 com.google.android.apps.photos
+## 27 17:58:54 打开了 com.google.android.apps.photos
   - 后续整晚都有 ExoPlayer:MediaCodecAsyncAdapter:Audio/Video、ExoPlayer:Playback、MediaCodec_looper 活动，时间点覆盖 20:20、21:34、22:24、00:00、01:35、02:38、08:57
   - 这能比较强地侧面证明 Google Photos 一直在跑本地媒体播放流程。严格说，日志里没直接打印“某个本地视频文件名”，但“本地视频播放中”这个结论基本成立
 ## 5V 充电

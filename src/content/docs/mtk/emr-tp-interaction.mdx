@@ -5,6 +5,7 @@ category: "mtk"
 tags: ["mtk", "emr", "tp", "if", "endif"]
 topics: ["display_tp"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -26,6 +27,7 @@ A. 建立通信桥梁 (Himax Common)
 unsigned int himax_pen_state = 0; // 0: PEN_NOT_BUSY, 1: PEN_BUSY
 EXPORT_SYMBOL_GPL(himax_pen_state); // 导出符号，让其他驱动能访问
 ```
+```text
 **A.强制抬起函数 (himax_force_touch_up)**：
 
 当笔突然靠近时，如果手指正按在屏幕上，该函数会发送一个假的所有手指“抬起”事件，清空系统当前的触摸状态。
@@ -34,6 +36,7 @@ EXPORT_SYMBOL_GPL(himax_pen_state); // 导出符号，让其他驱动能访问
 
 在 huiontablet.c 的工作队列函数 huion_ts_work_func 中添加了状态机逻辑：
 
+```
 ## **读取状态**：通过 state & 0x10 判断笔是否在感应范围内。
 ## **状态转换**：
   - **笔进入/存在**：
@@ -41,20 +44,21 @@ EXPORT_SYMBOL_GPL(himax_pen_state); // 导出符号，让其他驱动能访问
     - 如果是**刚进入**（pre_pen_status == 0），调用 himax_force_touch_up() 立即掐断当前的触摸。
   - **笔离开**：
     - 设置 himax_pen_state = PEN_NOT_BUSY，释放互斥锁。
+```
 ```diff
 @@ -237,6 +246,35 @@ static void huion_ts_work_func(struct work_struct *work)
- 
+
  	HW_DEBUG("after map: x,y,p %d %d %d", input_x, input_y, input_p);
- 
-+     #if defined(CONFIG_TOUCHSCREEN_HIMAX_CHIPSET) || defined(CONFIG_TOUCHSCREEN_HIMAX_HX83102)
+
++     defined(CONFIG_TOUCHSCREEN_HIMAX_CHIPSET) || defined(CONFIG_TOUCHSCREEN_HIMAX_HX83102)
 +        {
 +                static int pre_pen_status = 0;
 +                int cur_pen_status = 0;
 +
 +                if (state & 0x10) {
-+                        cur_pen_status = 1;  
++                        cur_pen_status = 1;
 +                } else {
-+                        cur_pen_status = 0;  
++                        cur_pen_status = 0;
 +                }
 +
 +                if (cur_pen_status == 0 && pre_pen_status == 1) { //刚才还在，现在走了
@@ -72,14 +76,15 @@ EXPORT_SYMBOL_GPL(himax_pen_state); // 导出符号，让其他驱动能访问
 +
 +                pre_pen_status = cur_pen_status;
 +        }
-+        #endif
++
 +
 +    //zlt-end
 ```
+```text
 **C. 触摸上报拦截 (Himax Report)**
 
 在 Himax 驱动的数据上报入口 himax_report_data 中插入拦截逻辑：
-
+```
 ```c
 if (get_pen_state() == PEN_BUSY) {
     if (g_ts_dbg != 0)
@@ -87,8 +92,9 @@ if (get_pen_state() == PEN_BUSY) {
     return ts_status; // 直接返回，不执行后面的 input_report 逻辑
 }
 ```
+```text
 **关键点**：只要笔在忙，TP 驱动依然在运行和读取数据，但它采集到的坐标永远不会提交给 Android 系统。
-
+```
 ```diff
 +  void himax_force_touch_up(void)
 +  {
@@ -104,6 +110,7 @@ if (get_pen_state() == PEN_BUSY) {
 +      }
 +  }
 +  EXPORT_SYMBOL_GPL(himax_force_touch_up);
+```
 ```
 ## patch
 附件：0001-erm-tp-ok.patch

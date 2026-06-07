@@ -5,6 +5,7 @@ category: "mtk"
 tags: ["mtk"]
 topics: ["display_tp"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -22,7 +23,10 @@ updated: "2026-06-06"
 +       params->physical_width = PHYSICAL_WIDTH_MM;
 +       params->physical_height = PHYSICAL_HEIGHT_MM;
 ```
+```text
+```
 ## kernel
+```
 ```diff
 +#define PHYSICAL_WIDTH_MM              172
 +#define PHYSICAL_HEIGHT_MM             258
@@ -31,4 +35,6 @@ updated: "2026-06-06"
 
 +       connector->display_info.width_mm = PHYSICAL_WIDTH_MM;
 +       connector->display_info.height_mm = PHYSICAL_HEIGHT_MM;
+```
+
 ```

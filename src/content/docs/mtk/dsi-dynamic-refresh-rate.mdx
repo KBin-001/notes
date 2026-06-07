@@ -5,6 +5,7 @@ category: "mtk"
 tags: ["mtk", "define"]
 topics: ["display_tp"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -23,19 +24,22 @@ static struct mtk_panel_params ext_params = {
       ...
   }
 ```
+```text
+```
 ## 计算方式
+```
 ```c
 ## 当前90Hz配置参数
 
-  #define HAC 1600    // 水平有效像素
-  #define HFP 60      // 水平前肩
-  #define HSA 20      // 水平同步
-  #define HBP 40      // 水平后肩
+  HAC 1600    // 水平有效像素
+  HFP 60      // 水平前肩
+  HSA 20      // 水平同步
+  HBP 40      // 水平后肩
 
-  #define VAC 2400    // 垂直有效像素
-  #define VFP 270     // 垂直前肩
-  #define VSA 8       // 垂直同步
-  #define VBP 38      // 垂直后肩
+  VAC 2400    // 垂直有效像素
+  VFP 270     // 垂直前肩
+  VSA 8       // 垂直同步
+  VBP 38      // 垂直后肩
 
 ## 计算当前总像素数
 
@@ -59,10 +63,12 @@ static struct mtk_panel_params ext_params = {
 
   Vtotal_45Hz = 421,000,000 / (1720 × 45)
               = 5432 行
- 
+
 ## 计算需要的VFP值
 
   VFP_45Hz = Vtotal_45Hz - VAC - VSA - VBP
            = 5432 - 2400 - 8 - 38
            = 2986
+```
+
 ```

@@ -5,6 +5,7 @@ category: "mtk"
 tags: ["mtk", "charging"]
 topics: ["charging"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -12,7 +13,7 @@ updated: "2026-06-06"
 
 # [MTK]充电相关节点查询
 
-## 一、排查目标定义
+## 排查目标定义
 “充电相关查询节点”在这个项目里，指的是能反映或控制以下状态的运行时接口：
 
 - 电池状态：`capacity`、`status`、`health`、`temp`、`voltage_now`、`current_now`
@@ -34,8 +35,8 @@ updated: "2026-06-06"
 - 节点异常时，到底是 DTS、驱动注册、属性实现、权限，还是硬件状态没上来
 ---
 
-## 二、第一阶段：先从源码侧建立“节点地图”
-## 1. DTS / DTSI
+## 第一阶段：先从源码侧建立“节点地图”
+## DTS / DTSI
 #### 【排查目标】
 确认这个项目理论上会有哪些 charger/gauge/typec 设备，以及它们分别挂在哪条总线、哪个地址、是什么角色。
 
@@ -63,6 +64,7 @@ DTS 决定“项目里接了什么芯片”和“驱动最终会 probe 谁”。
 ```bash
 rg -n "sgm41600|mt6375|mtk_gauge|&charger|typec|tcpc|gauge = <&mtk_gauge>|disable-charger|disable-mtkbattery" Z:\\kp1202_v16\\mt8391_u\\kernel\\kernel_device_modules-6.1\\arch\\arm64\\boot\\dts\\mediatek
 ```
+```diff
 #### 【正常现象】
 - 能明确看到 charger/gauge/typec 芯片实例
 - 能对上 I2C 设备，如 `4-0034`、`5-006e`
@@ -76,7 +78,8 @@ rg -n "sgm41600|mt6375|mtk_gauge|&charger|typec|tcpc|gauge = <&mtk_gauge>|disabl
 - 如果 DTS 有设备但运行时没有节点：进入驱动 probe / register 排查
 ---
 
-## 2. kernel 驱动源码
+```
+## kernel 驱动源码
 #### 【排查目标】
 把“理论节点名”和“支持的属性名”从源码直接抠出来，建立节点地图。
 
@@ -106,6 +109,7 @@ rg -n "sgm41600|mt6375|mtk_gauge|&charger|typec|tcpc|gauge = <&mtk_gauge>|disabl
 - [sgm41600s.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/sgm41600s.c#L1230) 有私有 `registers`
 - [mtk_charger.c](https://www.notion.so/Z:/kp1202_v16/mt8391_u/kernel/kernel_device_modules-6.1/drivers/power/supply/mtk_charger.c#L3277) 创建 `/proc/mtk_battery_cmd/*`
 #### 【要执行的命令】
+```
 ```bash
 rg -n "power_supply_register|devm_power_supply_register|POWER_SUPPLY_PROP_|psy_desc.name|DEVICE_ATTR|sysfs_create_group|proc_create_data|proc_mkdir" Z:\\kp1202_v16\\mt8391_u\\kernel\\kernel_device_modules-6.1\\drivers\\power\\supply
 ```
@@ -122,7 +126,8 @@ rg -n "power_supply_register|devm_power_supply_register|POWER_SUPPLY_PROP_|psy_d
 - 有私有节点但权限不足：继续看 init/ueventd/sepolicy
 ---
 
-## 3. 设备初始化/权限相关文件
+```
+## 设备初始化/权限相关文件
 #### 【排查目标】
 确认节点读不到时，是“没创建”还是“权限拦住”。
 

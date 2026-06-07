@@ -93,6 +93,10 @@ export function sortDocsByUpdated(docs: CollectionEntry<'docs'>[]) {
   return [...docs].sort((a, b) => b.data.updated.getTime() - a.data.updated.getTime());
 }
 
+export function sortDocsByTitle(docs: CollectionEntry<'docs'>[]) {
+  return [...docs].sort((a, b) => displayTitle(a.data.title).localeCompare(displayTitle(b.data.title), 'zh-CN'));
+}
+
 export function isPublicDoc(doc: CollectionEntry<'docs'>) {
   return doc.data.visibility === 'public';
 }
@@ -103,6 +107,18 @@ export function publicDocs(docs: CollectionEntry<'docs'>[]) {
 
 export function isDocInCategory(doc: CollectionEntry<'docs'>, category: string) {
   return doc.data.category === category || (category === 'display' && doc.data.topics.includes('display_tp'));
+}
+
+export function getCategoryNotes(docs: CollectionEntry<'docs'>[], category: string) {
+  return sortDocsByTitle(docs.filter((doc) => isDocInCategory(doc, category) && !isIndexDoc(doc.id)));
+}
+
+export function getTopicNotes(docs: CollectionEntry<'docs'>[], topic: TopicId) {
+  return sortDocsByTitle(docs.filter((doc) => !isIndexDoc(doc.id) && doc.data.topics.includes(topic)));
+}
+
+export function getCategoryIndex(docs: CollectionEntry<'docs'>[], category: string) {
+  return docs.find((doc) => doc.id === category || doc.id === `${category}/index`);
 }
 
 export function displayTitle(title: string) {

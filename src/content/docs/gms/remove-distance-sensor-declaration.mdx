@@ -5,6 +5,7 @@ category: "gms"
 tags: ["gms"]
 topics: ["sensor"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -30,6 +31,6 @@ CTS 测试中，`CtsAppTestCases` 报错如下：
 +CUSTOM_KERNEL_ALSPS =
 +CUSTOM_KERNEL_ALS = yes
 ```
-#### 说明
+## 说明
 - `CUSTOM_KERNEL_ALSPS`：同时声明了 **ALS**（环境光）和 **Proximity**（距离）传感器。若硬件上实际不存在距离传感器，CTS 会因声明与实际不符而报错。
 - 解决方式：将 `ALSPS` 拆分，仅保留 `CUSTOM_KERNEL_ALS = yes`，不再声明 Proximity 特性。

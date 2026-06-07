@@ -5,6 +5,7 @@ category: "mtk"
 tags: ["mtk"]
 topics: []
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -12,7 +13,7 @@ updated: "2026-06-06"
 
 # [MTK]平台移除开机显示字符
 
-## 一、问题背景
+## 问题背景
 在 MTK 平台项目开发中，设备开机早期阶段有时会在屏幕左上角打印一些启动模式字符，比如：
 
 ```bash
@@ -21,23 +22,27 @@ updated: "2026-06-06"
 => POWER OFF CHARGING MODE
 => UNKNOWN BOOT
 ```
+```text
 很多初次接触这个问题的开发者会误以为这是 Android Framework 层或者系统应用打印出来的 log，实际上并不是。**这些字符的输出发生在 LK2（Little Kernel 2）Bootloader 阶段**，彼时 Android 系统尚未启动，Framework 还没有拉起来。
 
 在研发和调试阶段，这类提示信息能帮助工程师快速判断当前设备进入了哪种启动模式，是非常有价值的调试手段。但到了量产阶段，这些字符会叠加在开机 Logo 或开机动画上，影响用户体验，显得不够干净专业。因此，**量产版本通常需要将这些字符移除**。
 
-## 二、问题定位
+```
+## 问题定位
 这类开机模式提示，通常出现在 MTK 的 LK2 代码中。
 
 代码路径如下：
-
+```
 ```log
 mediatek/proprietary/bootable/bootloader/lk2/app/mt_boot/mt_boot.c
 ```
+```text
 目标函数：
-
+```
 ```text
 staticvoidshow_boot_mode(void)
 ```
+```text
 这个函数的职责很直接：
 
 ## 获取当前 boot mode
@@ -45,9 +50,9 @@ staticvoidshow_boot_mode(void)
 ## 将字符串显示到屏幕上
 也就是说，**真正决定是否显示字符的关键点，就在这个函数里**。
 
-## 三、修改方法
+## 修改方法
 原始修改如下：
-
+```
 ```diff
 --- a/mediatek/proprietary/bootable/bootloader/lk2/app/mt_boot/mt_boot.c
 +++ b/mediatek/proprietary/bootable/bootloader/lk2/app/mt_boot/mt_boot.c
@@ -87,16 +92,17 @@ staticvoidshow_boot_mode(void)
      if (n < 0)
          LTRACEF("snprintf error.\n");
 ```
-## 四、修改原理分析
+```text
+## 修改原理分析
 这里的核心，不是把字符串注释掉这么简单。
 
 真正起作用的是：**直接 **`**return**`** 退出 **`**show_boot_mode()**`** 函数。**
 
-#### 1. 为什么 `return` 能去掉显示？
+## 为什么 return 能去掉显示？
 因为后面的流程通常还会继续执行显示逻辑。
 
 原本逻辑是：
-
+```
 ```text
 snprintf(...)
 然后再调用显示接口把str_buf打出去
@@ -106,3 +112,5 @@ snprintf(...)
 后续显示代码根本走不到。
 
 所以字符自然不会出现在屏幕上。
+
+```

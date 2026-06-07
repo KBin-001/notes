@@ -10,6 +10,7 @@ const docs = defineCollection({
     tags: z.array(z.string()).default([]),
     topics: z.array(z.enum(['charging', 'camera', 'display_tp', 'audio', 'sensor'])).default([]),
     visibility: z.enum(['public', 'private', 'draft']).default('public'),
+    sensitive: z.boolean().default(true),
     status: z.enum(['整理中', '已验证', '待验证', '未完成', '废弃']).default('整理中'),
     date: z.coerce.date(),
     updated: z.coerce.date(),

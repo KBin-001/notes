@@ -5,6 +5,7 @@ category: "camera"
 tags: ["camera", "define"]
 topics: ["camera"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -20,13 +21,13 @@ updated: "2026-06-06"
 
 **现针对问题总结如下：**
 
-**1. Flash全面校准命令：**adb shell setpropvendor.flash_ratio 1或者adbshell setpropvendor.flash_calibration 1校准的结果放在如下目录：/data/vendor/flash/且需要合入到参数文件中，具体可参考DCC上各个平台的调优文档；不再一一赘述。
+## Flash全面校准命令：adb shell setpropvendor.flash_ratio 1或者adbshell setpropvendor.flash_calibration 1校准的结果放在如下目录：/data/vendor/flash/且需要合入到参数文件中，具体可参考DCC上各个平台的调优文档；不再一一赘述。
 
-**2. 快速校准命令：**adb shell setprop vendor.flash_ratio_quick2 1或adb shell setprop vendor.flash_quick_calibration_2 1
+## 快速校准命令：adb shell setprop vendor.flash_ratio_quick2 1或adb shell setprop vendor.flash_quick_calibration_2 1
 
 快速校准的结果会直接读取nvram。（针对校准的校准）
 
-**3. **执行以上若仍遇到calibration命令无效，或者没有生成Cali结果，**请先在flash_mgr目录下查找如下文件：**
+## 执行以上若仍遇到calibration命令无效，或者没有生成Cali结果，请先在flash_mgr目录下查找如下文件
 
 **1) 调试命令查询：**flash_mgr_m.cpp
 
@@ -42,6 +43,6 @@ mSpMode = e_SpModeCalibration；
 
 mSpMode = e_SpModeQuickCalibration2;
 
-根据设置e_SpModeCalibration的条件去反查需要设置什么debug命令；如： #define PROP_FLASH_RATIO " vendor.flash_ratio "**2) Cali结果路径查询：**flash_cct.cpp或者flash_cct.h查找关键字" cali_ae.txt ",即可看到路径："/data/vendor/flash/eng_code.txt"
+根据设置e_SpModeCalibration的条件去反查需要设置什么debug命令；如： PROP_FLASH_RATIO " vendor.flash_ratio "**2) Cali结果路径查询：**flash_cct.cpp或者flash_cct.h查找关键字" cali_ae.txt ",即可看到路径："/data/vendor/flash/eng_code.txt"
 
-**4.如何查找不同平台的代码**代码路径：/vendor/mediatek/proprietary/hardware/mtkcam/aaa/source/请根据mk文件找到各个平台使用的flash_mgr文件夹
+## 如何查找不同平台的代码代码路径：/vendor/mediatek/proprietary/hardware/mtkcam/aaa/source/请根据mk文件找到各个平台使用的flash_mgr文件夹

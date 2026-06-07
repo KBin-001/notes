@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import { ChevronRight, X } from '@lucide/astro';
-import { categoryMeta, categoryOrder, displayTitle, docUrl, getCategoryFromId, isDocInCategory, isIndexDoc, publicDocs, topicDocUrl, topicMeta, topicOrder } from '@/lib/navigation';
+import { categoryMeta, categoryOrder, displayTitle, docUrl, getCategoryFromId, getCategoryIndex, getCategoryNotes, getTopicNotes, publicDocs, topicDocUrl, topicMeta, topicOrder } from '@/lib/navigation';
 import type { TopicId } from '@/lib/navigation';
 
 interface Props {
@@ -16,8 +16,8 @@ const currentDoc = docs.find((doc) => doc.id === currentId);
 const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ?? [];
 ---
 
-<div id="mobile-nav-overlay" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm lg:hidden" data-pagefind-ignore></div>
-<aside id="mobile-nav-panel" class="fixed left-0 top-0 z-50 h-full w-[82vw] max-w-sm -translate-x-full overflow-y-auto border-r border-slate-800 bg-slate-950 transition-transform duration-200 lg:hidden" data-pagefind-ignore>
+<div id="mobile-nav-overlay" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm lg:hidden" data-pagefind-ignore aria-hidden="true"></div>
+<aside id="mobile-nav-panel" class="fixed left-0 top-0 z-50 h-full w-[82vw] max-w-sm -translate-x-full overflow-y-auto border-r border-slate-800 bg-slate-950 transition-transform duration-200 lg:hidden" data-pagefind-ignore aria-hidden="true">
   <div class="sticky top-0 flex h-14 items-center justify-between border-b border-slate-800 bg-slate-950 px-4">
     <span class="text-sm font-semibold text-white">文档目录</span>
     <button id="mobile-nav-close" class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-400 hover:bg-slate-900 hover:text-white" type="button" aria-label="关闭导航" title="关闭导航">
@@ -28,10 +28,8 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
     <a href="/" class={`mb-4 block rounded-md px-3 py-2 text-sm ${currentId === 'index' ? 'bg-cyan-400/10 text-cyan-100' : 'text-slate-300'}`}>知识库首页</a>
     <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-600">平台目录</p>
     {categoryOrder.map((category) => {
-      const categoryIndex = docs.find((doc) => doc.id === category || doc.id === `${category}/index`);
-      const notes = docs
-        .filter((doc) => isDocInCategory(doc, category) && !isIndexDoc(doc.id))
-        .sort((a, b) => displayTitle(a.data.title).localeCompare(displayTitle(b.data.title), 'zh-CN'));
+      const categoryIndex = getCategoryIndex(docs, category);
+      const notes = getCategoryNotes(docs, category);
       const isOpen = currentCategory === category;
 
       return (
@@ -70,9 +68,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
 
     <p class="mb-2 mt-6 px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-600">复盘专题</p>
     {topicOrder.map((topic) => {
-      const notes = docs
-        .filter((doc) => !isIndexDoc(doc.id) && doc.data.topics.includes(topic))
-        .sort((a, b) => displayTitle(a.data.title).localeCompare(displayTitle(b.data.title), 'zh-CN'));
+      const notes = getTopicNotes(docs, topic);
       const isOpen = currentTopics.includes(topic);
 
       return (
@@ -122,12 +118,16 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
   function openNav() {
     navOverlay?.classList.remove('hidden');
     navPanel?.classList.remove('-translate-x-full');
+    navOverlay?.setAttribute('aria-hidden', 'false');
+    navPanel?.setAttribute('aria-hidden', 'false');
     document.body.classList.add('overflow-hidden');
   }
 
   function closeNav() {
     navOverlay?.classList.add('hidden');
     navPanel?.classList.add('-translate-x-full');
+    navOverlay?.setAttribute('aria-hidden', 'true');
+    navPanel?.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('overflow-hidden');
   }
 

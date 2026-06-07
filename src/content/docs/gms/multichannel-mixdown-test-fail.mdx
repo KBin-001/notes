@@ -5,6 +5,7 @@ category: "gms"
 tags: ["gms"]
 topics: ["audio"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -12,12 +13,12 @@ updated: "2026-06-06"
 
 # [GMS] 解决 Multichannel Mixdown Test fail
 
-> 
+>
 **问题现象**：跑 GMS / CTS（ExoPlayer 相关用例）时出现以下错误：
 
 `Multichannel Mixdown Test fail` / `ExoPlaybackException: Source error`
 
-## 一、问题分析
+## 问题分析
 **问题本质**：HAL 层错误地将不支持的 `audio_format` 强制转换为 PCM format，导致误判 format 合法。
 
 #### 原始代码逻辑
@@ -27,20 +28,23 @@ if (profile_is_format_valid(&device_info->profile, fmt)) {
     proxy_config.format = fmt;
 }
 ```
+```diff
 #### ❌ 问题点
 - `pcm_format_from_audio_format()` **先转换**，再校验
 - 某些 `audio_format`（如压缩格式、特殊 PCM）转换后得到的 `pcm_format` **并不真实支持**
 - 导致 HAL 误认为 format 合法 → 实际打开 stream 失败 → ExoPlayer 报 `Source error`
 ---
 
-## 二、解决方案
-> 
+```
+## 解决方案
+>
 **核心思路**：先判断 `audio_format` 是否支持，再进行转换。
 
 ---
 
-## 三、修改内容
+## 修改内容
 #### 1️⃣ 新增函数：`is_audio_format_supported()`
+```
 ```c
 static bool is_audio_format_supported(const alsa_device_profile* profile,
                                       audio_format_t format)
@@ -53,9 +57,11 @@ static bool is_audio_format_supported(const alsa_device_profile* profile,
     return false;
 }
 ```
+```log
 **关键点**：遍历 `profile->formats`，使用 `audio_format_from(pcm_format)` 做**反向匹配**，避免"错误映射"导致的假支持。
 
 #### 2️⃣ Patch 内容（`libhardware/modules/usbaudio/audio_hal.c`）
+```
 ```diff
 --- a/libhardware/modules/usbaudio/audio_hal.c
 +++ b/libhardware/modules/usbaudio/audio_hal.c
@@ -101,3 +107,5 @@ static bool is_audio_format_supported(const alsa_device_profile* profile,
              in->config.format = profile_get_default_format(&device_info->profile);
 ```
 ---
+
+```

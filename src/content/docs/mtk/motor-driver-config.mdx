@@ -5,6 +5,7 @@ category: "mtk"
 tags: ["mtk", "发现路径不对", "define"]
 topics: []
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -20,8 +21,11 @@ mediateksample/aiot8391p2_64_bsp/ProjectConfig.mk
 mediateksample/aiot8391p2_64_bsp/ko_order_table.csv
 regulator-vibrator.ko,/../kernel_device_modules-6.1/drivers/leds/regulator-vibrator.ko,ramdisk,Y,Y,user/userdebug/eng
 ```
+```text
+```
 ## vendor下修改hal层
 ## 查看log是否加载了驱动，测试是否有马达震动功能，如果加载驱动没有震动功能请用adb进行测试打开。
+```
 ```bash
 cd sys/class/leds/vibrator/
 aiot8391p2_64_bsp:/sys/class/leds/vibrator # ls
@@ -29,15 +33,17 @@ activate  brightness  device  duration  max_brightness  power  state  subsystem 
 aiot8391p2_64_bsp:/sys/class/leds/vibrator # echo 255 > brightness
 aiot8391p2_64_bsp:/sys/class/leds/vibrator # echo 0 > brightness
 ```
+```text
 ## 如果adb测试有马达功能，那就是hal上层问题
+```
 ```diff
-#发现路径不对
+
 
 --- a/mediatek/proprietary/hardware/libvibrator/aidl/default/Vibrator.cpp
 +++ b/mediatek/proprietary/hardware/libvibrator/aidl/default/Vibrator.cpp
 @@ -51,7 +51,7 @@ static constexpr int32_t WAVEFORM_HEAVY_CLICK_EFFECT = 90;
 
- #define TIMEOUT_STR_LEN         20
+ TIMEOUT_STR_LEN         20
 
 -static const char THE_DEVICE[] = "/sys/class/timed_output/vibrator/enable";
 +static const char THE_DEVICE[] = "/sys/class/leds/vibrator/brightness";
@@ -61,6 +67,7 @@ aiot8391p2_64_bsp:/sys/class/leds/vibrator # echo 0 > brightness
      if (bytes >= sizeof(value)) return -EINVAL;
      return write_value(THE_DEVICE, value);
  }
+```
 ```
 ## 测试APK
 附件：app-release.apk(1).1

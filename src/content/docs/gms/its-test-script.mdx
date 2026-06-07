@@ -5,6 +5,7 @@ category: "gms"
 tags: ["gms", "激活脚本", "执行脚本"]
 topics: []
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -19,9 +20,9 @@ updated: "2026-06-06"
 机器号需要在**config.yml**文件进行更改
 
 ```bash
-#激活脚本
+
 source build/envsetup.sh
 
-#执行脚本 （camera 0/1 后面可以跟具体测试项目）
+ （camera 0/1 后面可以跟具体测试项目）
 python3 tools/run_all_tests.py camera=0 scene_flash
 ```

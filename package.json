@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "build": "tsx scripts/check-sensitive.ts && astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
     "new:note": "tsx scripts/create-note.ts",

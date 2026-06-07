@@ -5,6 +5,7 @@ category: "mtk"
 tags: ["mtk", "display"]
 topics: ["display_tp"]
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -24,8 +25,9 @@ MIPI_WR(0x39, 0xC1, 0x01);
 MIPI_WR(0x39, 0xBD, 0x01);
 MIPI_WR(0x39, 0xC1, ...);
 ```
+```text
 这里第一个 0x39 是 MIPI DSI packet type，表示 long write。合入现有驱动时不要把 0x39 当作寄存器写进去，因为当前 LK/kernel 的写接口已经负责封装 DSI packet。真正要写给屏的是后面的寄存器和数据：
-
+```
 ```c
 BD 00
 C1 01
@@ -37,10 +39,11 @@ BD 03
 C1 ...
 BD 00
 ```
+```text
 0xBD 是切换寄存器页，也可以理解为 page select/bank select。0xC1 是当前页下的色彩参数表。所以 BD 和 C1 的顺序必须保留，不能只拷贝 C1，也不能把三页参数混在一起。
 
 LK 合入方式是放进 lcm_init_setting[]：
-
+```
 ```c
 {0xBD, 1, {0x00}},
 {0xC1, 1, {0x01}},
@@ -52,8 +55,9 @@ LK 合入方式是放进 lcm_init_setting[]：
 {0xC1, 58, {...}},
 {0xBD, 1, {0x00}},
 ```
+```text
 kernel 合入方式是放进 lmibe127119272_panel_init()：
-
+```
 ```c
 lmibe127119272_dcs_write_seq_static(ctx, 0xBD, 0x00);
 lmibe127119272_dcs_write_seq_static(ctx, 0xC1, 0x01);

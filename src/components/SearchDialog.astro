@@ -2,24 +2,23 @@
 import { Search, X } from '@lucide/astro';
 ---
 
-<div id="search-dialog" class="fixed inset-0 z-50 hidden items-start justify-center bg-black/60 px-4 pt-20 backdrop-blur-sm" data-pagefind-ignore>
+<div id="search-dialog" class="fixed inset-0 z-50 hidden items-start justify-center bg-black/55 px-4 pt-20 backdrop-blur-sm" data-pagefind-ignore aria-hidden="true">
   <div class="w-full max-w-2xl rounded-lg border border-slate-800 bg-slate-950 shadow-2xl">
     <div class="flex items-center gap-3 border-b border-slate-800 px-4 py-3">
-      <Search size={18} class="text-cyan-200" aria-hidden="true" />
+      <Search size={18} class="text-slate-400" aria-hidden="true" />
       <input
-        class="h-10 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
+        class="h-10 flex-1 bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-600"
         placeholder="搜索标题、日志、代码路径..."
         type="search"
       />
-      <button id="search-close" class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-400 hover:bg-slate-900 hover:text-white" type="button" aria-label="关闭搜索" title="关闭">
+      <button id="search-close" class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 hover:bg-slate-900/70 hover:text-slate-200" type="button" aria-label="关闭搜索" title="关闭">
         <X size={18} aria-hidden="true" />
       </button>
     </div>
     <div id="search-status" class="border-b border-slate-800 px-4 py-3 text-xs text-slate-500">
       输入关键词开始搜索。
     </div>
-    <div id="search-results" class="max-h-[60vh] overflow-y-auto p-2">
-    </div>
+    <div id="search-results" class="max-h-[60vh] overflow-y-auto p-2"></div>
   </div>
 </div>
 
@@ -57,23 +56,62 @@ import { Search, X } from '@lucide/astro';
     }
   }
 
-  function renderResult(result: any) {
+  function firstHashUrl(result: any) {
+    const subResult = Array.isArray(result.sub_results)
+      ? result.sub_results.find((item: any) => typeof item.url === 'string' && item.url.includes('#'))
+      : undefined;
+    if (subResult?.url) return subResult.url;
+
+    const anchor = Array.isArray(result.anchors) ? result.anchors.find((item: any) => item.id || item.url) : undefined;
+    if (anchor?.url) return anchor.url;
+    if (anchor?.id) return `${String(result.url).replace(/#.*/, '')}#${anchor.id}`;
+
+    return result.url;
+  }
+
+  function renderLink(url: string, className: string, titleHtml: string, excerptHtml?: string) {
     if (!results) return;
 
     const item = document.createElement('a');
-    item.href = result.url;
-    item.className = 'block rounded-md px-3 py-3 text-sm transition hover:bg-slate-900';
+    item.href = url;
+    item.className = className;
 
     const title = document.createElement('div');
     title.className = 'font-medium text-slate-100';
-    title.innerHTML = result.meta?.title || result.url;
+    title.innerHTML = titleHtml;
+    item.append(title);
 
-    const excerpt = document.createElement('p');
-    excerpt.className = 'mt-1 text-xs leading-6 text-slate-500';
-    excerpt.innerHTML = result.excerpt || result.url;
+    if (excerptHtml) {
+      const excerpt = document.createElement('p');
+      excerpt.className = 'mt-1 text-xs leading-6 text-slate-500';
+      excerpt.innerHTML = excerptHtml;
+      item.append(excerpt);
+    }
 
-    item.append(title, excerpt);
     results.append(item);
+  }
+
+  function renderResult(result: any) {
+    const primaryUrl = firstHashUrl(result);
+    renderLink(
+      primaryUrl,
+      'block rounded-md px-3 py-3 text-sm transition hover:bg-slate-900/65',
+      result.meta?.title || primaryUrl,
+      result.excerpt || result.url,
+    );
+
+    if (!Array.isArray(result.sub_results)) return;
+
+    result.sub_results
+      .filter((sub: any) => sub.url && sub.url !== primaryUrl)
+      .slice(0, 3)
+      .forEach((sub: any) => {
+        renderLink(
+          sub.url,
+          'ml-4 block rounded-md border-l border-slate-800 px-3 py-2 text-xs leading-6 text-slate-500 transition hover:bg-slate-900/50 hover:text-slate-300',
+          sub.title || sub.excerpt || sub.url,
+        );
+      });
   }
 
   async function runSearch(query: string) {
@@ -105,6 +143,7 @@ import { Search, X } from '@lucide/astro';
   function openSearch() {
     dialog?.classList.remove('hidden');
     dialog?.classList.add('flex');
+    dialog?.setAttribute('aria-hidden', 'false');
     input?.focus();
     input?.select();
     document.body.classList.add('overflow-hidden');
@@ -113,7 +152,14 @@ import { Search, X } from '@lucide/astro';
   function closeSearch() {
     dialog?.classList.add('hidden');
     dialog?.classList.remove('flex');
+    dialog?.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('overflow-hidden');
+  }
+
+  function scrollToHash(hash: string) {
+    const id = decodeURIComponent(hash.slice(1));
+    const target = document.getElementById(id) || document.querySelector(hash);
+    target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   open?.addEventListener('click', openSearch);
@@ -124,6 +170,19 @@ import { Search, X } from '@lucide/astro';
   });
   dialog?.addEventListener('click', (event) => {
     if (event.target === dialog) closeSearch();
+  });
+  results?.addEventListener('click', (event) => {
+    const link = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[href]');
+    if (!link) return;
+
+    const target = new URL(link.href);
+    closeSearch();
+
+    if (target.origin === location.origin && target.pathname === location.pathname && target.hash) {
+      event.preventDefault();
+      history.pushState(null, '', `${target.pathname}${target.hash}`);
+      scrollToHash(target.hash);
+    }
   });
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeSearch();

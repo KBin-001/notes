@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import StatusBadge from '@/components/StatusBadge.astro';
 import Layout from '@/layouts/Layout.astro';
-import { categoryMeta, displayTitle, formatDate, isIndexDoc, publicDocs, topicDocUrl, topicMeta, topicOrder } from '@/lib/navigation';
+import { categoryMeta, displayTitle, formatDate, getTopicNotes, publicDocs, topicDocUrl, topicMeta, topicOrder } from '@/lib/navigation';
 import type { TopicId } from '@/lib/navigation';
 
 export async function getStaticPaths() {
@@ -19,9 +19,7 @@ interface Props {
 const { topic } = Astro.props;
 const meta = topicMeta[topic];
 const docs = publicDocs(await getCollection('docs'));
-const notes = docs
-  .filter((doc) => !isIndexDoc(doc.id) && doc.data.topics.includes(topic))
-  .sort((a, b) => b.data.updated.getTime() - a.data.updated.getTime());
+const notes = getTopicNotes(docs, topic);
 ---
 
 <Layout title={meta.title} description={meta.description} currentTopic={topic}>

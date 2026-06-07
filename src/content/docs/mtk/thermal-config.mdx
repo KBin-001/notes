@@ -1,10 +1,11 @@
 ---
 title: "[MTK]修改温控"
-description: "mintargettj 是皮肤控制环路允许下压到的最低 Tj 目标，提高后意味着即使壳温较高，SoC 也不会被压到比 60°C 更低的结温，整体散热策略趋于\\\\\"少干预、保性能\\\\\"。triptpcb 与 targettpcb 同步上调约 11~1"
+description: "mintargettj 是皮肤控制环路允许下压到的最低 Tj 目标，提高后意味着即使壳温较高，SoC 也不会被压到比 60°C 更低的结温，整体散热策略趋于\\\\\\\\\"少干预、保性能\\\\\\\\\"。triptpcb 与 targettpcb 同步上调约 11~1"
 category: "mtk"
 tags: ["mtk", "thermal"]
 topics: []
 visibility: "public"
+sensitive: true
 status: "整理中"
 date: "2026-06-06"
 updated: "2026-06-06"
@@ -20,16 +21,18 @@ updated: "2026-06-06"
 - **变更范围**：`[mtk-skin-control]` 与 `[charger-cooler]` 两个温控节
 - **变更性质**：温控阈值整体提高，充电散热档位被合并为单一高阈值且全部限流为 0
 #### `**[mtk-skin-control]**`** 皮肤温控调整**
-`min_target_tj` 是皮肤控制环路允许下压到的最低 Tj 目标，提高后意味着即使壳温较高，SoC 也不会被压到比 60°C 更低的结温，整体散热策略趋于"少干预、保性能"。`trip_tpcb` 与 `target_tpcb` 同步上调约 11~12°C，触发点和稳态控温点都明显放宽，PCB 表面温度需要更高才会进入皮肤温控介入区间。
+```text
+min_target_tj` 是皮肤控制环路允许下压到的最低 Tj 目标，提高后意味着即使壳温较高，SoC 也不会被压到比 60°C 更低的结温，整体散热策略趋于"少干预、保性能"。`trip_tpcb` 与 `target_tpcb` 同步上调约 11~12°C，触发点和稳态控温点都明显放宽，PCB 表面温度需要更高才会进入皮肤温控介入区间。
 
 #### `**[charger-cooler]**`** 充电温控调整**
 原配置为 4 档分级限流：
-
+```
 ```c
 threshold = [40000, 42000, 45000, 56000]   // 40 / 42 / 45 / 56°Chysteresis= [2000,  2000,  2000,  2000]current   = [1800, 1000,  500,    0]       // mA
 ```
+```text
 新配置：
-
+```
 ```c
 threshold = [58000, 58000, 58000, 58000]   // 全部 58°Chysteresis= [1000,  1000,  1000,  1000]current   = [0,     0,     0,     0]       // 全部 0
 ```
