@@ -1,5 +1,9 @@
 # kevin知识库
 
+## 笔记上传指南
+
+新增、导入、清洗、构建、上传 GitHub 和 Cloudflare Pages 部署流程见：[docs/NOTE_UPLOAD_GUIDE.md](docs/NOTE_UPLOAD_GUIDE.md)。
+
 面向驱动开发、系统定制和认证问题排查的个人知识库。内容使用 MDX 文件维护，适合沉淀日志、代码路径、Diff、验证方法和最终结论。
 
 ## 技术栈

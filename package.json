@@ -16,11 +16,14 @@
     "@lucide/astro": "latest",
     "@tailwindcss/postcss": "latest",
     "astro": "latest",
+    "gray-matter": "^4.0.3",
     "tailwindcss": "latest"
   },
   "devDependencies": {
+    "@types/node": "^25.9.2",
     "pagefind": "^1.5.2",
     "tsx": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "wrangler": "^4.99.0"
   }
 }

@@ -1,0 +1,8 @@
+GITHUB_CLIENT_ID="your_github_oauth_client_id"
+GITHUB_CLIENT_SECRET="your_github_oauth_client_secret"
+SESSION_SECRET="replace_with_a_long_random_string"
+ADMIN_GITHUB_USERS="KBin-001"
+GITHUB_OWNER="KBin-001"
+GITHUB_REPO="notes"
+GITHUB_BRANCH="main"
+
