@@ -13,23 +13,23 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
 
 <Layout title="kevin知识库" description="面向驱动开发、系统定制和认证问题排查的个人知识库。" currentId="index">
   <section class="mx-auto max-w-5xl">
-    <div class="mb-10 rounded-lg border border-slate-800 bg-slate-950/35 p-6 sm:p-8">
+    <div class="kb-hero mb-10 rounded-lg border border-slate-800 bg-slate-950/35 p-6 sm:p-8">
       <div class="mb-7 inline-flex items-center gap-2 rounded-md border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-sm text-cyan-100">
         <BookMarked size={16} aria-hidden="true" />
         kevin知识库
       </div>
-      <h1 class="max-w-3xl text-4xl font-semibold leading-tight text-white sm:text-5xl">
+      <h1 class="max-w-3xl text-3xl font-semibold leading-tight text-white sm:text-4xl">
         驱动问题、日志线索和修改记录，沉淀成可复用的排查路径。
       </h1>
       <p class="mt-5 max-w-3xl text-base leading-8 text-slate-400">
         这里用于整理 MTK、GMS、Camera、Audio、Display 与工具链相关笔记。每篇内容都按现象、平台、日志、代码路径、排查过程、修改方案和验证方法组织，便于后续快速复盘。
       </p>
       <div class="mt-8 flex flex-wrap gap-3">
-        <a href="/mtk/hall-driver/" class="inline-flex h-10 items-center gap-2 rounded-md bg-cyan-300 px-4 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">
+        <a href="/mtk/hall-driver/" class="kb-button-primary inline-flex h-10 items-center gap-2 rounded-md bg-cyan-300 px-4 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">
           <Wrench size={16} aria-hidden="true" />
           查看霍尔驱动笔记
         </a>
-        <a href="/templates/issue-template/" class="inline-flex h-10 items-center gap-2 rounded-md border border-slate-700 px-4 text-sm font-medium text-slate-200 transition hover:border-cyan-400/50 hover:text-white">
+        <a href="/templates/issue-template/" class="kb-button-secondary inline-flex h-10 items-center gap-2 rounded-md border border-slate-700 px-4 text-sm font-medium text-slate-200 transition hover:border-cyan-400/50 hover:text-white">
           <FilePlus2 size={16} aria-hidden="true" />
           使用问题模板
         </a>
@@ -85,14 +85,14 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
     </section>
 
     <section class="mb-12 grid gap-6 xl:grid-cols-[1fr_20rem]">
-      <div class="rounded-lg border border-slate-800 bg-slate-950/45">
+      <div class="kb-panel rounded-lg border border-slate-800 bg-slate-950/45">
         <div class="flex items-center gap-2 border-b border-slate-800 px-5 py-4">
           <Clock3 size={18} class="text-cyan-200" aria-hidden="true" />
           <h2 class="text-base font-semibold text-white">最近更新</h2>
         </div>
         <div class="divide-y divide-slate-800/80">
           {latest.map((doc) => (
-            <a href={docUrl(doc.id)} class="block px-5 py-4 transition hover:bg-slate-900/60">
+            <a href={docUrl(doc.id)} class="kb-update-link block px-5 py-4 transition hover:bg-slate-900/60">
               <div class="flex flex-wrap items-center gap-3">
                 <h3 class="font-medium text-slate-100">{displayTitle(doc.data.title)}</h3>
                 <StatusBadge status={doc.data.status} />
@@ -104,7 +104,7 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
         </div>
       </div>
 
-      <div class="rounded-lg border border-slate-800 bg-slate-950/45 p-5">
+      <div class="kb-panel rounded-lg border border-slate-800 bg-slate-950/45 p-5">
         <h2 class="text-base font-semibold text-white">快速入口</h2>
         <div class="mt-4 grid gap-2">
           {[
@@ -113,7 +113,7 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
             ['MTK debug 关键词', '/tools/mtk-debug-keywords/'],
             ['问题记录模板', '/templates/issue-template/'],
           ].map(([label, href]) => (
-            <a href={href} class="rounded-md border border-slate-800 px-3 py-2 text-sm text-slate-300 transition hover:border-cyan-400/35 hover:bg-slate-900 hover:text-white">
+            <a href={href} class="kb-quick-link rounded-md border border-slate-800 px-3 py-2 text-sm text-slate-300 transition hover:border-cyan-400/35 hover:bg-slate-900 hover:text-white">
               {label}
             </a>
           ))}

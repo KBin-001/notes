@@ -1,8 +1,9 @@
 .doc-prose {
-  max-width: 76ch;
+  max-width: 48rem;
+  overflow-x: clip;
   color: var(--text);
   font-size: 1rem;
-  line-height: 1.88;
+  line-height: 1.72;
 }
 
 .doc-prose h1,
@@ -15,30 +16,30 @@
 }
 
 .doc-prose h1 {
-  margin: 0 0 1.25rem;
-  font-size: clamp(2rem, 6vw, 3.25rem);
-  line-height: 1.12;
-  font-weight: 760;
+  margin: 0 0 1.35rem;
+  font-size: clamp(1.95rem, 5vw, 2.6rem);
+  line-height: 1.16;
+  font-weight: 740;
 }
 
 .doc-prose h2 {
-  margin: 3rem 0 1rem;
-  padding-top: 1.25rem;
+  margin: 2.85rem 0 0.95rem;
+  padding-top: 1.1rem;
   border-top: 1px solid var(--border-soft);
-  font-size: 1.45rem;
+  font-size: 1.38rem;
   line-height: 1.32;
-  font-weight: 720;
-}
-
-.doc-prose h3 {
-  margin: 2rem 0 0.75rem;
-  font-size: 1.15rem;
-  line-height: 1.4;
   font-weight: 700;
 }
 
+.doc-prose h3 {
+  margin: 2.15rem 0 0.7rem;
+  font-size: 1.12rem;
+  line-height: 1.4;
+  font-weight: 680;
+}
+
 .doc-prose p {
-  margin: 0 0 1.15rem;
+  margin: 0 0 1.05rem;
 }
 
 .doc-prose a {
@@ -61,12 +62,13 @@
 
 .doc-prose ul,
 .doc-prose ol {
-  padding-left: 1.35rem;
-  margin: 0 0 1.2rem;
+  padding-left: 1.45rem;
+  margin: 0 0 1.15rem;
 }
 
 .doc-prose li {
-  margin: 0.35rem 0;
+  margin: 0.38rem 0;
+  padding-left: 0.1rem;
 }
 
 .doc-prose li::marker {
@@ -74,11 +76,11 @@
 }
 
 .doc-prose blockquote {
-  margin: 1.5rem 0;
+  margin: 1.4rem 0;
   border: 1px solid var(--border);
   border-left: 3px solid rgba(56, 189, 248, 0.58);
   border-radius: 8px;
-  padding: 0.2rem 0 0.2rem 1rem;
+  padding: 0.55rem 1rem;
   color: #cbd5e1;
   background:
     linear-gradient(90deg, rgba(56, 189, 248, 0.08), rgba(139, 92, 246, 0.05));
@@ -246,7 +248,7 @@
 .doc-prose :not(pre) > code {
   border: 1px solid rgba(148, 163, 184, 0.14);
   border-radius: 0.3rem;
-  background: rgba(148, 163, 184, 0.12);
+  background: var(--inline-code-bg);
   color: #dbeafe;
   padding: 0.1rem 0.32rem;
   font-size: 0.9em;
@@ -261,7 +263,7 @@
   border-radius: 8px;
   background:
     radial-gradient(circle at top left, rgba(56, 189, 248, 0.055), transparent 18rem),
-    #0a0f1c !important;
+    var(--code-bg) !important;
   padding: 1rem 1.1rem;
   font-size: 0.88rem;
   line-height: 1.72;
@@ -278,6 +280,8 @@
 .code-shell {
   position: relative;
   margin: 1.4rem 0;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 .code-shell pre {
@@ -309,14 +313,39 @@
   color: var(--heading);
 }
 
+.code-copy[data-copied="true"] {
+  border-color: rgba(134, 239, 172, 0.32);
+  color: #bbf7d0;
+}
+
+.code-copy[data-copied="false"] {
+  border-color: rgba(251, 113, 133, 0.34);
+  color: #fecdd3;
+}
+
+.doc-prose img {
+  display: block;
+  max-width: min(100%, 46rem);
+  height: auto;
+  margin: 1.6rem auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
 @media (max-width: 768px) {
   .doc-prose {
-    font-size: 0.97rem;
-    line-height: 1.78;
+    font-size: 0.98rem;
+    line-height: 1.74;
   }
 
   .doc-prose h2 {
     margin-top: 2.4rem;
+  }
+
+  .doc-prose pre {
+    margin-inline: -0.25rem;
+    padding: 0.9rem;
   }
 }
 
@@ -417,11 +446,26 @@ html[data-theme="claude"] .doc-prose pre {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
+html[data-theme="claude"] .doc-prose img {
+  border-color: #d8d4c8;
+  background: #fbfaf5;
+}
+
 html[data-theme="claude"] .code-copy {
   border-color: #c9c5b8;
   background: #f5f4ed;
   color: #4d4a43;
   backdrop-filter: none;
+}
+
+html[data-theme="claude"] .code-copy[data-copied="true"] {
+  border-color: #4f8f58;
+  color: #2f6f39;
+}
+
+html[data-theme="claude"] .code-copy[data-copied="false"] {
+  border-color: #b53d4a;
+  color: #8c2f39;
 }
 
 html[data-theme="claude"] .code-copy:hover {

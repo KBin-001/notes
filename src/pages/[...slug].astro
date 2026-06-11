@@ -27,9 +27,9 @@ const categoryNotes = isCategoryPage ? getCategoryNotes(docs, entry.data.categor
 ---
 
 <Layout title={displayTitle(entry.data.title)} description={entry.data.description} currentId={entry.id} headings={headings}>
-  <article class="mx-auto max-w-4xl" data-pagefind-body>
-    <header class="mb-8 border-b border-slate-800 pb-6">
-      <div class="mb-4 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+  <article class="mx-auto max-w-[52rem]" data-pagefind-body>
+    <header class="article-header mb-9 border-b border-slate-800 pb-7">
+      <div class="breadcrumb mb-4 flex flex-wrap items-center gap-2 text-sm text-slate-500">
         <a href="/" class="hover:text-cyan-100">首页</a>
         <span>/</span>
         <a href={`/${entry.data.category}/`} class="hover:text-cyan-100">{category?.title ?? entry.data.category}</a>
@@ -41,7 +41,7 @@ const categoryNotes = isCategoryPage ? getCategoryNotes(docs, entry.data.categor
         <span class="text-xs text-slate-500">创建 {formatDate(entry.data.date)}</span>
         <span class="text-xs text-slate-500">更新 {formatDate(entry.data.updated)}</span>
       </div>
-      <p class="mt-4 max-w-3xl text-sm leading-7 text-slate-400">{entry.data.description}</p>
+      <p class="mt-4 max-w-3xl text-base leading-7 text-slate-400">{entry.data.description}</p>
       {entry.data.tags.length > 0 && (
         <div class="mt-4 flex flex-wrap gap-2">
           {entry.data.tags.map((tag) => (
@@ -65,7 +65,7 @@ const categoryNotes = isCategoryPage ? getCategoryNotes(docs, entry.data.categor
         </div>
         <div class="grid gap-3">
           {categoryNotes.map((doc) => (
-            <a href={docUrl(doc.id)} class="block rounded-lg border border-slate-800 bg-slate-950/40 p-4 transition hover:border-cyan-400/25 hover:bg-slate-900/55">
+            <a href={docUrl(doc.id)} class="kb-list-card block rounded-lg border border-slate-800 bg-slate-950/40 p-4 transition hover:border-cyan-400/25 hover:bg-slate-900/55">
               <div class="flex flex-wrap items-center gap-3">
                 <h3 class="min-w-0 flex-1 text-base font-semibold text-slate-100">{displayTitle(doc.data.title)}</h3>
                 <StatusBadge status={doc.data.status} />

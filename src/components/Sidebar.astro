@@ -20,7 +20,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
   <nav class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto px-4 py-6" aria-label="文档目录">
     <a
       href="/"
-      class={`mb-4 flex items-center justify-between rounded-md px-3 py-2 text-sm transition ${currentId === 'index' ? 'bg-cyan-400/10 text-cyan-100' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}
+      class={`sidebar-link mb-4 flex items-center justify-between rounded-md px-3 py-2 text-sm transition ${currentId === 'index' ? 'is-active bg-cyan-400/10 text-cyan-100' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}
     >
       <span>知识库首页</span>
       <span class="text-xs text-slate-500">Home</span>
@@ -37,7 +37,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
         <details class="group mb-2" data-category-section={category} open={isOpen}>
           <summary
             data-category-summary={category}
-            class={`mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-900 hover:text-slate-200'}`}
+            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-900 hover:text-slate-200'}`}
           >
             <ChevronRight
               size={14}
@@ -55,7 +55,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
               <li>
                 <a
                   href={docUrl(categoryIndex.id)}
-                  class={`block rounded-md px-3 py-1.5 text-sm leading-6 transition ${currentId === categoryIndex.id ? 'bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
+                  class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${currentId === categoryIndex.id ? 'is-active bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
                 >
                   分类首页
                 </a>
@@ -67,7 +67,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
                 <li>
                   <a
                     href={docUrl(doc.id)}
-                    class={`block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
+                    class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'is-active bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
                   >
                     {displayTitle(doc.data.title)}
                   </a>
@@ -89,7 +89,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
         <details class="group mb-2" data-topic-section={topic} open={isOpen}>
           <summary
             data-topic-summary={topic}
-            class={`mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-900 hover:text-slate-200'}`}
+            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-900 hover:text-slate-200'}`}
           >
             <ChevronRight
               size={14}
@@ -105,7 +105,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
               <a
                 href={`/topics/${topic}/`}
                 data-topic-home-link={topic}
-                class={`block rounded-md px-3 py-1.5 text-sm leading-6 transition ${currentTopic === topic ? 'bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
+                class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${currentTopic === topic ? 'is-active bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
               >
                 专题首页
               </a>
@@ -120,7 +120,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
                   <a
                     href={topicDocUrl(doc.id, topic)}
                     data-topic-doc-link={topic}
-                    class={`block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
+                    class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'is-active bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
                   >
                     <span class="block truncate">{displayTitle(doc.data.title)}</span>
                     <span class="text-[11px] text-slate-600">{categoryMeta[doc.data.category]?.title ?? doc.data.category}</span>

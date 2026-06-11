@@ -27,7 +27,7 @@ const tocHeadings = headings.filter((heading) => {
               <a
                 href={`#${heading.slug}`}
                 data-toc-link
-                class={`block rounded-md py-1.5 pr-2 text-sm leading-5 text-slate-500 transition hover:bg-slate-900/45 hover:text-slate-300 ${heading.depth === 3 ? 'pl-4 text-xs' : 'pl-2'}`}
+                class={`toc-link block rounded-md py-1.5 pr-2 text-sm leading-5 text-slate-500 transition hover:bg-slate-900/45 hover:text-slate-300 ${heading.depth === 3 ? 'pl-4 text-xs' : 'pl-2'}`}
               >
                 {heading.text}
               </a>

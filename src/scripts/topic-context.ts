@@ -2,17 +2,17 @@ const validTopics = new Set(['charging', 'camera', 'display_tp', 'audio', 'senso
 const topic = new URLSearchParams(window.location.search).get('topic');
 
 function setActiveLink(link: Element) {
-  link.classList.add('bg-cyan-400/10', 'text-cyan-100', 'ring-1', 'ring-cyan-400/20');
+  link.classList.add('is-active', 'bg-cyan-400/10', 'text-cyan-100', 'ring-1', 'ring-cyan-400/20');
   link.classList.remove('text-slate-400');
 }
 
 function setInactiveSummary(summary: Element) {
-  summary.classList.remove('bg-slate-900', 'text-white', 'text-slate-100');
+  summary.classList.remove('is-active', 'bg-slate-900', 'text-white', 'text-slate-100');
   summary.classList.add('text-slate-500');
 }
 
 function setActiveSummary(summary: Element) {
-  summary.classList.add('bg-slate-900', 'text-white');
+  summary.classList.add('is-active', 'bg-slate-900', 'text-white');
   summary.classList.remove('text-slate-500', 'text-slate-400');
 }
 

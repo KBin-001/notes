@@ -23,9 +23,9 @@ const notes = getTopicNotes(docs, topic);
 ---
 
 <Layout title={meta.title} description={meta.description} currentTopic={topic}>
-  <section class="mx-auto max-w-4xl">
-    <header class="mb-8 border-b border-slate-800 pb-6">
-      <div class="mb-4 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+  <section class="mx-auto max-w-[52rem]">
+    <header class="article-header mb-9 border-b border-slate-800 pb-7">
+      <div class="breadcrumb mb-4 flex flex-wrap items-center gap-2 text-sm text-slate-500">
         <a href="/" class="hover:text-cyan-100">首页</a>
         <span>/</span>
         <span>复盘专题</span>
@@ -33,19 +33,19 @@ const notes = getTopicNotes(docs, topic);
         <span>{meta.title}</span>
       </div>
       <p class="mb-3 text-sm font-medium text-cyan-200">复盘专题</p>
-      <h1 class="text-4xl font-semibold leading-tight text-white sm:text-5xl">{meta.title}</h1>
-      <p class="mt-4 max-w-3xl text-sm leading-7 text-slate-400">{meta.description}</p>
+      <h1 class="text-3xl font-semibold leading-tight text-white sm:text-4xl">{meta.title}</h1>
+      <p class="mt-4 max-w-3xl text-base leading-7 text-slate-400">{meta.description}</p>
       <p class="mt-4 text-xs text-slate-600">共 {notes.length} 篇明确归类笔记</p>
     </header>
 
     <div class="grid gap-3">
       {notes.length === 0 && (
-        <div class="rounded-lg border border-slate-800 bg-slate-950/45 p-5 text-sm text-slate-500">
+        <div class="kb-panel rounded-lg border border-slate-800 bg-slate-950/45 p-5 text-sm text-slate-500">
           目前没有明确归入该专题的笔记。
         </div>
       )}
       {notes.map((doc) => (
-        <a href={topicDocUrl(doc.id, topic)} class="block rounded-lg border border-slate-800 bg-slate-950/45 p-5 transition hover:border-cyan-400/35 hover:bg-slate-900/70">
+        <a href={topicDocUrl(doc.id, topic)} class="kb-list-card block rounded-lg border border-slate-800 bg-slate-950/45 p-5 transition hover:border-cyan-400/35 hover:bg-slate-900/70">
           <div class="flex flex-wrap items-center gap-3">
             <h2 class="min-w-0 flex-1 text-base font-semibold text-slate-100">{displayTitle(doc.data.title)}</h2>
             <StatusBadge status={doc.data.status} />
