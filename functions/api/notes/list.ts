@@ -1,8 +1,9 @@
 import { docsRoot } from '../../_lib/constants';
 import { requireAdmin } from '../../_lib/auth';
 import { type Env } from '../../_lib/env';
-import { getTree } from '../../_lib/github';
+import { decodeBase64Content, getFile, getTree } from '../../_lib/github';
 import { json, serverError } from '../../_lib/http';
+import { parseNote } from '../../_lib/notes';
 
 type TreeItem = {
   path: string;
@@ -26,9 +27,36 @@ export async function onRequestGet(context: { request: Request; env: Env }) {
       })
       .sort((a, b) => a.path.localeCompare(b.path));
 
-    return json({ ok: true, files });
+    const filesWithTitle = await Promise.all(
+      files.map(async (file) => {
+        try {
+          const githubFile = await getFile(context.env, auth.session!.token, file.path);
+          const text = decodeBase64Content(githubFile.content);
+          const note = parseNote(text, file.path.split('/').pop() ?? '');
+          const title = note.title || file.slug;
+          return {
+            ...file,
+            title,
+            status: note.status,
+            visibility: note.visibility,
+            label: `${title} · ${file.category}/${file.slug}`,
+          };
+        } catch {
+          return {
+            ...file,
+            title: file.slug,
+            status: '',
+            visibility: '',
+            label: `${file.slug} · ${file.category}/${file.slug}`,
+          };
+        }
+      })
+    );
+
+    filesWithTitle.sort((a, b) => `${a.category}/${a.title}`.localeCompare(`${b.category}/${b.title}`, 'zh-CN'));
+
+    return json({ ok: true, files: filesWithTitle });
   } catch (error) {
     return serverError(error instanceof Error ? error.message : 'List failed');
   }
 }
-

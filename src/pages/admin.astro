@@ -332,7 +332,7 @@ import '../styles/global.css';
           const data = await api('/api/notes/list');
           const select = $('#note-list');
           select.innerHTML = '<option value="">请选择文章</option>' + data.files
-            .map((file) => `<option value="${escapeHtml(file.path)}">${escapeHtml(file.path)}</option>`)
+            .map((file) => `<option value="${escapeHtml(file.path)}" title="${escapeHtml(file.path)}">${escapeHtml(file.label || file.title || file.path)}</option>`)
             .join('');
           showMessage(`已读取 ${data.files.length} 篇笔记。`, 'success');
         } catch (error) {
@@ -648,4 +648,3 @@ import '../styles/global.css';
     </style>
   </body>
 </html>
-
