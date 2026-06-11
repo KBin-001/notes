@@ -1,48 +1,190 @@
 ---
-title: "flash校准"
-description: "FAQ21526 闪存校准Android P 闪存校准命令和校准数据路径 ( 2019-01-24 )"
-category: "camera"
-tags: ["camera", "define"]
-topics: ["camera"]
-visibility: "public"
+title: flash校准
+description: FAQ21526 闪存校准Android P 闪存校准命令和校准数据路径 ( 2019-01-24 )
+category: camera
+tags:
+  - camera
+  - define
+topics:
+  - camera
+visibility: public
 sensitive: true
-status: "整理中"
-date: "2026-06-06"
-updated: "2026-06-06"
+status: 整理中
+date: '2026-06-06'
+updated: '2026-06-06'
 ---
-
-# flash校准
+# Flash 校准
 
 ## 笔记内容
 
-**[ FAQ21526 ] [闪存校准]Android P 闪存校准命令和校准数据路径 ( 2019-01-24 )**
+**[FAQ21526] [闪存校准] Android P 闪存校准命令和校准数据路径（2019-01-24）**
 
-**Android P**升级后反馈一些平台的**flash校准的命令**不起作用或者**无法生成校准数据。**
+Android P 升级后，反馈部分平台存在以下问题：
 
-**现针对问题总结如下：**
+* Flash 校准命令不起作用；
+* 无法生成 Flash 校准数据。
 
-## Flash全面校准命令：adb shell setpropvendor.flash_ratio 1或者adbshell setpropvendor.flash_calibration 1校准的结果放在如下目录：/data/vendor/flash/且需要合入到参数文件中，具体可参考DCC上各个平台的调优文档；不再一一赘述。
+现针对该问题总结如下。
 
-## 快速校准命令：adb shell setprop vendor.flash_ratio_quick2 1或adb shell setprop vendor.flash_quick_calibration_2 1
+---
 
-快速校准的结果会直接读取nvram。（针对校准的校准）
+## 一、Flash 全面校准命令
 
-## 执行以上若仍遇到calibration命令无效，或者没有生成Cali结果，请先在flash_mgr目录下查找如下文件
+### 1. 校准命令
 
-**1) 调试命令查询：**flash_mgr_m.cpp
+```bash
+adb shell setprop vendor.flash_ratio 1
+```
 
-在下面函数中搜索“ e_SpModeCalibration ”
+或者：
 
-int FlashMgrM::doPfOneFrame(FlashExePara *in, FlashExeRep *out)&#123;
+```bash
+adb shell setprop vendor.flash_calibration 1
+```
 
-……getPropInt(PROP_FLASH_CALIBRATION, &propFlashCalibration, 0);getPropInt( PROP_FLASH_RATIO , &propFlashRatio, 0);getPropInt(PROP_FLASH_QUICK_CALIBRATION_2, &propFlashQuickCalibration2, 0);getPropInt(PROP_FLASH_RATIO_QUICK2, &propFlashRatioQuick2, 0);if (propFlashCalibration || propFlashRatio )
+### 2. 校准结果路径
 
-mSpMode = e_SpModeCalibration；
+校准结果会生成在如下目录：
 
-否则如果 (propFlashQuickCalibration2 || propFlashRatioQuick2)
+```bash
+/data/vendor/flash/
+```
 
-mSpMode = e_SpModeQuickCalibration2;
+生成后的校准结果需要合入到参数文件中。
 
-根据设置e_SpModeCalibration的条件去反查需要设置什么debug命令；如： PROP_FLASH_RATIO " vendor.flash_ratio "**2) Cali结果路径查询：**flash_cct.cpp或者flash_cct.h查找关键字" cali_ae.txt ",即可看到路径："/data/vendor/flash/eng_code.txt"
+具体合入方式可参考 DCC 上各个平台对应的 Flash 调优文档，这里不再逐一说明。
 
-## 如何查找不同平台的代码代码路径：/vendor/mediatek/proprietary/hardware/mtkcam/aaa/source/请根据mk文件找到各个平台使用的flash_mgr文件夹
+---
+
+## 二、Flash 快速校准命令
+
+### 1. 快速校准命令
+
+```bash
+adb shell setprop vendor.flash_ratio_quick2 1
+```
+
+或者：
+
+```bash
+adb shell setprop vendor.flash_quick_calibration_2 1
+```
+
+### 2. 快速校准说明
+
+快速校准的结果会直接读取 NVRAM。
+
+> 该方式主要用于已经校准过的场景，即“针对校准数据的校准”。
+
+---
+
+## 三、校准命令无效或未生成 Cali 结果的排查方法
+
+如果执行以上命令后，仍然遇到以下问题：
+
+* calibration 命令无效；
+* 没有生成 Cali 结果；
+
+请先在 `flash_mgr` 目录下查找并确认如下文件。
+
+---
+
+## 四、调试命令查询
+
+### 1. 查询文件
+
+```text
+flash_mgr_m.cpp
+```
+
+### 2. 查询关键字
+
+在如下函数中搜索：
+
+```text
+e_SpModeCalibration
+```
+
+函数位置示例：
+
+```cpp
+int FlashMgrM::doPfOneFrame(FlashExePara *in, FlashExeRep *out)
+{
+    ...
+    getPropInt(PROP_FLASH_CALIBRATION, &propFlashCalibration, 0);
+    getPropInt(PROP_FLASH_RATIO, &propFlashRatio, 0);
+    getPropInt(PROP_FLASH_QUICK_CALIBRATION_2, &propFlashQuickCalibration2, 0);
+    getPropInt(PROP_FLASH_RATIO_QUICK2, &propFlashRatioQuick2, 0);
+
+    if (propFlashCalibration || propFlashRatio)
+        mSpMode = e_SpModeCalibration;
+    else if (propFlashQuickCalibration2 || propFlashRatioQuick2)
+        mSpMode = e_SpModeQuickCalibration2;
+}
+```
+
+### 3. 排查思路
+
+根据设置 `e_SpModeCalibration` 的条件，反查需要设置的 debug 命令。
+
+例如：
+
+```cpp
+PROP_FLASH_RATIO
+```
+
+对应的属性可能是：
+
+```text
+vendor.flash_ratio
+```
+
+因此可以通过如下命令触发 Flash 全面校准：
+
+```bash
+adb shell setprop vendor.flash_ratio 1
+```
+
+---
+
+## 五、Cali 结果路径查询
+
+### 1. 查询文件
+
+可在以下文件中查找：
+
+```text
+flash_cct.cpp
+```
+
+或者：
+
+```text
+flash_cct.h
+```
+
+### 2. 查询关键字
+
+搜索关键字：
+
+```text
+cali_ae.txt
+```
+
+即可看到对应路径，例如：
+
+```text
+/data/vendor/flash/eng_code.txt
+```
+
+---
+
+## 六、不同平台代码路径查找方法
+
+不同平台的 Flash 代码路径一般位于：
+
+```text
+/vendor/mediatek/proprietary/hardware/mtkcam/aaa/source/
+```
+
+请根据对应平台的 `mk` 文件，确认当前平台实际使用的 `flash_mgr` 文件夹。
