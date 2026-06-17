@@ -1,0 +1,782 @@
+---
+title: 手电筒强制重启不灭的复盘记录
+description: 记录 MT8781 AW36515 手电筒强制重启不灭，完成闭环 的问题现象、排查过程、修改方案和验证方法。
+category: mtk
+tags:
+  - define
+  - include
+topics:
+  - sensor
+visibility: public
+sensitive: true
+status: 已验证
+date: '2026-06-17'
+updated: '2026-06-17'
+---
+# MT8781 AW36515 手电筒强制重启不灭，通过补齐 preloader I2C7 pinmux/pull 完成闭环
+
+## 1. 问题背景
+
+项目中需要解决一个长按电源键强制重启场景下的手电筒残留点亮问题：用户打开手电筒后，长按电源键触发强制重启，设备进入重启阶段时手电筒没有同步关闭；设备重新开机后，状态栏手电筒图标显示为关闭，但硬件层面在重启过程中曾持续点亮。
+
+这个问题的影响范围主要在 AW36515 flashlight/torch 模块，涉及 Android 上层手电筒状态、kernel flashlight 驱动、preloader 长按复位识别、preloader I2C 控制器初始化以及硬件 I2C7 引脚配置。
+
+正常情况下，即使长按电源键触发的是 PMIC/preloader 级别的强制复位，也应该在 kernel 启动前尽早关闭 AW36515 输出，避免等到 Android 或 kernel flashlight driver 重新起来后才处理。
+
+本问题最终不是通过 Android 状态同步解决，也不是通过单独拉 GPIO150 解决，而是通过在 preloader 阶段补齐 I2C7 的 SCL/SDA pinmux 和上拉配置，使 AW36515 的 I2C 关闭命令真正发送成功。
+
+## 2. 环境信息
+
+| 项目 | 信息 |
+| --- | --- |
+| 平台 | MT8781 / MT6789 |
+| 系统版本 | Android，具体版本未提供 |
+| 内核版本 | kernel-5.10 |
+| 模块或功能 | AW36515 flashlight / torch |
+| 代码分支 | `U:\mt8781\mt8781_s`，后续工作路径为 `\\192.168.16.21\yumingyu\mt8781\mt8781_s` |
+| 硬件环境 | AW36515，挂在 I2C7，I2C 地址 `0x63`；GPIO150 确认为 EN 脚 |
+| 测试条件 | Android 开启手电筒后，长按电源键触发强制重启 |
+
+相关路径：
+
+```text
+Kernel AW36515 driver:
+U:\mt8781\mt8781_s\kernel-5.10\drivers\misc\mediatek\flashlight\v4l2\aw36515.c
+
+Kernel DTS:
+U:\mt8781\mt8781_s\kernel-5.10\arch\arm64\boot\dts\mediatek\cust_mt6789_camera_v4l2.dtsi
+
+Preloader PMIC:
+U:\mt8781\mt8781_s\vendor\mediatek\proprietary\bootable\bootloader\preloader\platform\mt6789\src\drivers\pmic.c
+
+Preloader I2C:
+U:\mt8781\mt8781_s\vendor\mediatek\proprietary\bootable\bootloader\preloader\platform\mt6789\src\drivers\i2c.c
+U:\mt8781\mt8781_s\vendor\mediatek\proprietary\bootable\bootloader\preloader\platform\mt6789\src\drivers\inc\i2c.h
+```
+
+## 3. 问题现象
+
+触发步骤：
+
+1. 设备正常开机进入 Android。
+2. 打开状态栏手电筒。
+3. 长按电源键触发强制重启。
+4. 重启过程中手电筒没有立即熄灭。
+5. 设备开机后，状态栏手电筒图标显示为关闭。
+
+问题稳定复现于长按强制重启场景。普通 Android 层面的手电筒开关流程能够正常工作，kernel 阶段 AW36515 也能正常 probe。
+
+失败日志中的关键现象：
+
+```text
+[11:51:01:512] aw36515_mode_ctrl mode:2
+[11:51:01:512] aw36515_enable_ctrl led:0 enable:1 , mode:2
+[11:51:01:986] debug.tracing.battery_stats.flashlight=[1]
+
+[11:51:16:350][pmic_check_rst] Long press shutdown
+[11:51:16:373][I2C] 335: id=7,addr: 63, transfer timeout
+[11:51:16:392][I2C] base address 0x11F00000
+[11:51:16:392][I2C] SLAVE_ADDR=C6,INTR_STAT=0,CONTROL=28,TRANSFER_LEN=2
+[11:51:16:392][I2C] Write 2 bytes fails,ret=-110.
+[11:51:16:392][flashlight][kbkbkb] aw36515 i2c force off ret=-1
+[11:51:16:392][flashlight][kbkbkb] aw36515 gpio150 mode gpio ret=0
+[11:51:16:392][flashlight][kbkbkb] aw36515 gpio150 dir out ret=0
+[11:51:16:392][flashlight][kbkbkb] aw36515 gpio150 force low ret=0
+```
+
+这个日志说明：
+
+- 手电筒在 Android 阶段确实被打开。
+- 长按强制重启后，preloader 进入了 `pmic_check_rst` 的 `Long press shutdown` 分支。
+- preloader 尝试通过 I2C7 地址 `0x63` 写 AW36515，但 I2C transaction timeout。
+- GPIO150 拉低 API 返回成功，但实际硬件灯仍未关闭。
+
+## 4. 预期结果
+
+正常预期：
+
+- 打开手电筒后，即使长按电源键触发强制重启，也应在 preloader 阶段关闭 AW36515 输出。
+- 关闭动作不应依赖 Android Framework、Camera HAL 或 kernel flashlight driver 重新初始化。
+- preloader 中写 AW36515 `REG_ENABLE=0x00` 应成功返回，手电筒应在重启早期熄灭。
+
+实际差异：
+
+- 修改前，preloader 已进入长按复位分支，但 I2C7 timeout，AW36515 没有收到关闭命令。
+- 单独增加 GPIO150 拉低后，日志显示 GPIO API 成功，但实际仍无法关灯。
+- 最终补齐 I2C7 pinmux/pull 后，I2C 写返回 `ret=0`，手电筒实际熄灭。
+
+## 5. 初步分析
+
+| 怀疑方向 | 判断依据 | 后续结果 |
+| --- | --- | --- |
+| Android 状态栏状态异常 | 开机后状态栏手电筒图标显示关闭，但硬件重启期间仍亮 | 已排除。图标状态只是 Android 重新启动后的状态，不是重启瞬间硬件输出状态 |
+| kernel AW36515 driver 异常 | 怀疑 kernel 没有正确关闭 AW36515 | 已排除。长按强制重启是 PMIC/preloader 级别复位，kernel 已经来不及处理；kernel probe 本身成功 |
+| I2C bus 号错误 | 参考平台 patch 使用 `I2C8`，当前平台最初也尝试过 I2C8 | 已排除。DTS 和 kernel probe 均证明 AW36515 在 I2C7 |
+| AW36515 地址错误 | 关闭命令写 `0x63`，日志显示 `SLAVE_ADDR=C6` | 已排除。`0x63 << 1 = 0xC6`，地址格式正确 |
+| GPIO150 可以硬关灯 | GPIO150 确认为 EN 脚，preloader 拉低 API 返回 0 | 已排除为主解决路径。GPIO API 成功但实际未关灯，说明仅拉 GPIO150 不足以清掉 torch 输出，或者需要 I2C 清寄存器 |
+| preloader I2C7 未完成初始化 | 失败日志中 I2C7 `START=1` 后 timeout，`INTR_STAT=0` | 已确认。补 I2C7 SCL/SDA pinmux/pull 后，I2C 写 `ret=0`，问题解决 |
+
+## 6. 排查过程
+
+### 6.1 确认 AW36515 在 kernel 阶段是否正常
+
+**检查目的：**
+
+先确认 AW36515 芯片、地址和 kernel 驱动是否本身可用。如果 kernel 阶段都不能 probe，则需要先查硬件地址、电源或驱动注册；如果 kernel probe 成功，说明问题更可能发生在强制重启的 preloader 阶段。
+
+**执行方法：**
+
+```powershell
+rg -n "aw36515|read chip id|probe of 7-0063|fl_probe_complete" "C:\Users\PC\Desktop\log数据\LOG\20260615-114811.log"
+```
+
+**实际结果：**
+
+```text
+[11:50:16:988] aw36515_probe:951
+[11:50:16:988] read chip id:48
+[11:50:17:009] probe of 7-0063 returned 1
+[11:50:18:658] fl_probe_complete v4l2:aw36515-led0
+```
+
+**分析结论：**
+
+AW36515 在 kernel 阶段可以通过 I2C7 地址 `0x63` 访问，芯片 ID 能读到 `0x48`。因此硬件地址和 kernel 驱动不是首要问题。问题范围缩小到长按强制重启时的 preloader 阶段。
+
+### 6.2 确认长按强制重启是否进入 preloader 目标分支
+
+**检查目的：**
+
+确认当前添加的 preloader force-off 逻辑是否被执行。如果没有进入 `Long press shutdown` 分支，应先查 PMIC 复位原因判断；如果进入了分支，再继续分析 I2C/GPIO 行为。
+
+**执行方法：**
+
+```powershell
+rg -n "Long press|pmic_check_rst|reboot_longkey|flashlight" "C:\Users\PC\Desktop\log数据\LOG\20260615-114811.log"
+```
+
+**实际结果：**
+
+```text
+[11:51:16:350][pmic_check_rst] Long press shutdown
+[11:51:16:392][flashlight][kbkbkb] aw36515 i2c force off ret=-1
+[11:51:16:392][flashlight][kbkbkb] aw36515 gpio150 force low ret=0
+[11:51:24:785] androidboot.bootreason=reboot_longkey
+[11:51:35:657] sys.boot.reason=[reboot_longkey]
+```
+
+**分析结论：**
+
+preloader 已经正确识别到长按强制重启，`flashlight_force_off_preloader()` 确实执行了。问题不是调用点没走到，而是走到以后关闭手段没有生效。
+
+### 6.3 对比参考平台：确认成功平台的关键差异
+
+**检查目的：**
+
+用户提供了其他平台可关灯日志和 patch。需要确认参考平台是通过什么动作成功关灯，以及当前平台失败点是否一致。
+
+**执行方法：**
+
+```powershell
+rg -n "Long press|flashlight|aw36515|i2c force off|transfer timeout|Write 2 bytes" "C:\Users\PC\Desktop\log数据\LOG\20260610-141639.log"
+```
+
+**实际结果：**
+
+参考平台成功日志：
+
+```text
+[14:18:27:393][pmic_check_rst] Long press shutdown
+[14:18:27:393][flashlight] aw36515 i2c force off ret=0
+[14:18:27:393][PMIC]just_rst = 1
+```
+
+当前平台失败日志：
+
+```text
+[11:18:19:676][pmic_check_rst] Long press shutdown
+[11:18:19:705][I2C] id=7,addr: 63, transfer timeout
+[11:18:19:723][I2C] SLAVE_ADDR=C6,INTR_STAT=0
+[11:18:19:723][I2C] Write 2 bytes fails,ret=-110
+[11:18:19:723][flashlight] aw36515 i2c force off ret=-1
+```
+
+**分析结论：**
+
+参考平台成功的本质是 `i2c_write()` 返回 `0`，AW36515 收到了 `REG_ENABLE=0x00`。当前平台失败的本质是 preloader I2C7 timeout，关闭命令没有送达芯片。排查方向从“关灯命令对不对”转向“为什么 preloader I2C7 发不出去”。
+
+### 6.4 确认 I2C bus 和地址是否正确
+
+**检查目的：**
+
+参考 patch 使用 `I2C8`，但当前平台不一定相同。需要用 DTS 和 kernel probe 证据确认 AW36515 实际挂在哪条 I2C。
+
+**执行方法：**
+
+```powershell
+rg -n "aw36515@63|flash-externel|&i2c7|&i2c8" `
+  "U:\mt8781\mt8781_s\kernel-5.10\arch\arm64\boot\dts\mediatek\cust_mt6789_camera_v4l2.dtsi" `
+  "U:\mt8781\mt8781_s\kernel-5.10\arch\arm64\boot\dts\mediatek\cust_mt6789_camera.dtsi"
+```
+
+**实际结果：**
+
+```dts
+&i2c7 {
+    aw36515: aw36515@63 {
+        compatible = "mediatek,aw36515";
+        reg = <0x63>;
+        flash-externel = <&pio 150 0>;
+        status = "okay";
+    };
+};
+```
+
+kernel probe 也证明：
+
+```text
+probe of 7-0063 returned 1
+```
+
+**分析结论：**
+
+AW36515 在当前平台挂在 I2C7，不是 I2C8。地址 `0x63` 正确。失败日志中的 `SLAVE_ADDR=C6` 也符合 `0x63 << 1` 的 7-bit 写地址格式。因此 bus/addr 方向排除，问题继续收敛到 preloader I2C7 的物理引脚或初始化状态。
+
+### 6.5 分析 preloader 长按复位调用链
+
+**检查目的：**
+
+确认 force-off 代码放在什么阶段，以及是否存在更早的调用点。这个步骤用于判断 kernel 下是否有机会处理，以及 preloader 阶段哪些初始化已经执行。
+
+**执行方法：**
+
+```powershell
+rg -n "pmic_init\(|PMIC_enable_long_press_reboot\(|pmic_dbg_status\(|pmic_check_rst\(|i2c_hw_init\(" `
+  "U:\mt8781\mt8781_s\vendor\mediatek\proprietary\bootable\bootloader\preloader\platform\mt6789\src" `
+  -g "*.c" -g "*.h"
+```
+
+**实际结果：**
+
+关键调用链：
+
+```text
+platform.c
+  -> i2c_hw_init()
+  -> pmic_init()
+      -> pmic_dbg_status(1)
+          -> pmic_check_rst(poff_sts)
+              -> Long press shutdown
+              -> flashlight_force_off_preloader()
+```
+
+关键代码：
+
+```c
+if ((poff_sts >> 6) & 1) {
+    pal_log_warn("[%s] Long press shutdown\n", __func__);
+    flashlight_force_off_preloader();
+}
+```
+
+**分析结论：**
+
+长按复位的第一现场在 PMIC/preloader，不在 kernel。kernel 下看到的 `androidboot.bootreason=reboot_longkey` 只是复位后的结果。关灯动作要在 preloader 中完成。
+
+另一个关键信息是：`i2c_hw_init()` 确实在 `pmic_init()` 前调用过，但原始实现只配置了 I2C5 的 GPIO，没有配置 I2C7 的 SCL/SDA。因此“调用过 i2c_hw_init”不等于“I2C7 pinmux 已正确配置”。
+
+### 6.6 尝试 GPIO150 拉低，确认它不是最终有效路径
+
+**检查目的：**
+
+GPIO150 被确认为 EN 脚，尝试在 preloader 阶段将 GPIO150 配为 GPIO 输出低电平，看是否可以绕过 I2C 直接关灯。
+
+**执行方法：**
+
+在 `flashlight_force_off_preloader()` 中增加：
+
+```c
+mt_set_gpio_mode(GPIO150, GPIO_MODE_00);
+mt_set_gpio_dir(GPIO150, GPIO_DIR_OUT);
+mt_set_gpio_out(GPIO150, GPIO_OUT_ZERO);
+```
+
+**实际结果：**
+
+```text
+[11:51:16:392][flashlight][kbkbkb] aw36515 i2c force off ret=-1
+[11:51:16:392][flashlight][kbkbkb] aw36515 gpio150 mode gpio ret=0
+[11:51:16:392][flashlight][kbkbkb] aw36515 gpio150 dir out ret=0
+[11:51:16:392][flashlight][kbkbkb] aw36515 gpio150 force low ret=0
+```
+
+实际现象：手电筒仍未关闭。
+
+**分析结论：**
+
+GPIO API 返回 `0` 只能说明软件接口写寄存器成功，不能证明 AW36515 输出已关闭。结合实际灯未灭，可判断单独拉 GPIO150 低不是有效闭环方案。
+
+这个尝试有价值，因为它排除了“只靠 EN 脚即可关闭”的方向，并进一步证明真正有效的关灯动作仍应是 AW36515 I2C 寄存器清 enable。
+
+### 6.7 定位 I2C7 preloader 初始化缺失
+
+**检查目的：**
+
+失败日志中 I2C7 访问 timeout，但 kernel 阶段同一设备可 probe。需要检查 preloader I2C 初始化是否覆盖 I2C7 的 SCL/SDA pinmux 和上拉。
+
+**执行方法：**
+
+```powershell
+rg -n "GPIO_SCL7|GPIO_SDA7|SCL7|SDA7|i2c_hw_init|mt_set_gpio_mode|pull" `
+  "U:\mt8781\mt8781_s\vendor\mediatek\proprietary\bootable\bootloader\preloader\platform\mt6789\src\drivers\i2c.c" `
+  "U:\mt8781\mt8781_s\vendor\mediatek\proprietary\bootable\bootloader\preloader\platform\mt6789\src\drivers\inc\i2c.h"
+```
+
+**实际结果：**
+
+最终修改前，preloader 的 I2C 初始化中已有 I2C5 的 GPIO 配置：
+
+```c
+mt_set_gpio_mode(GPIO_SCL5, SCL5);
+mt_set_gpio_pull_enable(GPIO_SCL5, 1);
+mt_set_gpio_pull_select(GPIO_SCL5, 1);
+mt_set_gpio_mode(GPIO_SDA5, SDA5);
+mt_set_gpio_pull_enable(GPIO_SDA5, 1);
+mt_set_gpio_pull_select(GPIO_SDA5, 1);
+```
+
+但没有对应 I2C7 的：
+
+```c
+GPIO_SCL7
+GPIO_SDA7
+SCL7
+SDA7
+```
+
+**分析结论：**
+
+这是关键转折点。当前平台 AW36515 挂在 I2C7，但 preloader 只保证了部分 I2C 控制器或 I2C5 pin 的初始化。kernel 能访问 AW36515，是因为 kernel 有自己的 pinctrl；preloader 不能继承 kernel 的 pinctrl 配置。因此长按重启刚进入 preloader 时，I2C7 控制器 base/地址虽然正确，但 GPIO144/GPIO145 未必处于 I2C SCL/SDA 功能和上拉状态，导致 transaction timeout。
+
+## 7. 无效尝试与排除项
+
+| 尝试内容 | 实际结果 | 未解决原因 | 得出的结论 |
+| --- | --- | --- | --- |
+| 直接套参考平台 patch，使用 `I2C8` 写 AW36515 `0x01=0x00` | 当前平台不生效 | 当前平台 AW36515 实际挂在 I2C7，不是 I2C8 | 不能直接照搬参考平台 bus 号，必须以当前 DTS/kernel probe 为准 |
+| 改为 `I2C7` 后直接写 `0x63, reg 0x01=0x00` | 仍然 timeout，`ret=-110` | bus 和地址正确，但 preloader I2C7 引脚配置不完整 | 问题不在寄存器命令，而在 preloader I2C7 transaction 未完成 |
+| 增加 GPIO150 force low | GPIO API 返回 `0`，实际灯仍不灭 | GPIO 返回成功不等于 AW36515 输出关闭；单独拉低 EN 不足以清除 torch 输出 | GPIO150 不能作为本问题最终闭环主路径 |
+| 继续怀疑 Android 状态栏/Framework 状态 | 开机后状态栏显示关闭，但重启阶段硬件仍亮 | Android 状态是重启后的软件状态，不代表强制重启瞬间硬件输出 | 问题不在 Android 状态同步 |
+| 怀疑 kernel AW36515 probe 失败 | kernel 日志显示 `read chip id:48`、`probe of 7-0063 returned 1` | kernel 阶段访问正常，但强制重启时 kernel 已来不及处理 | 需要在 preloader 阶段解决 |
+
+## 8. 根本原因
+
+### 8.1 直接原因
+
+preloader 在 `Long press shutdown` 分支中尝试通过 I2C7 写 AW36515 `REG_ENABLE=0x00` 时，I2C transaction timeout：
+
+```text
+id=7,addr: 63, transfer timeout
+SLAVE_ADDR=C6
+INTR_STAT=0
+Write 2 bytes fails,ret=-110
+```
+
+直接结果是 AW36515 没有收到关闭 enable 寄存器的命令，torch 输出继续保持。
+
+### 8.2 根本原因
+
+根本原因是：**preloader 阶段没有为当前平台 AW36515 所在的 I2C7 补齐 SCL/SDA pinmux 和上拉配置。**
+
+具体表现为：
+
+- AW36515 在当前平台挂在 I2C7，SCL/SDA 对应 GPIO144/GPIO145。
+- preloader 原有 `i2c_hw_init()` 中已有 I2C5 的 GPIO mode/pull 配置，但没有 I2C7 的 GPIO144/GPIO145 配置。
+- 长按强制重启后进入 preloader，此时不能依赖 kernel pinctrl。
+- 因此 I2C7 控制器虽然 base 和地址正确，但物理引脚状态不满足 I2C 通信要求，导致 `i2c_write()` 等不到 transaction complete。
+
+### 8.3 证据链
+
+1. kernel DTS 证明 AW36515 挂在 I2C7：
+
+```dts
+&i2c7 {
+    aw36515: aw36515@63 {
+        reg = <0x63>;
+        flash-externel = <&pio 150 0>;
+    };
+};
+```
+
+2. kernel probe 证明硬件地址和芯片本身可访问：
+
+```text
+read chip id:48
+probe of 7-0063 returned 1
+```
+
+3. preloader 失败日志证明 bus/addr 正确但 transaction 未完成：
+
+```text
+id=7,addr: 63, transfer timeout
+base address 0x11F00000
+SLAVE_ADDR=C6
+INTR_STAT=0
+ret=-110
+```
+
+4. GPIO150 尝试证明单独拉 EN 不是闭环方案：
+
+```text
+gpio150 force low ret=0
+```
+
+但实际手电筒未灭。
+
+5. 最终 OK 日志证明补齐 I2C7 pinmux/pull 后 I2C 写成功：
+
+```text
+[17:54:33:471][pmic_check_rst] Long press shutdown
+[17:54:33:472][flashlight][kbkbkb] i2c7 cfg drv=0x3FFFFFFF pull=0x3FFFFFFF
+[17:54:33:472][flashlight][kbkbkb] aw36515 i2c force off try=0 ret=0
+```
+
+6. 实际现象证明问题闭环：
+
+```text
+合入该 patch 后，长按强制重启场景手电筒可以关闭。
+```
+
+## 9. 最终解决方案
+
+### 9.1 解决思路
+
+整体解决逻辑是：不再试图通过 Android/kernel 状态同步解决，也不依赖 GPIO150 单独拉低，而是在 preloader 识别到长按强制重启后，确保 I2C7 物理引脚已经处于可通信状态，然后通过 AW36515 标准关闭寄存器清 enable。
+
+需要修正的是 preloader I2C7 初始化能力：
+
+- 补定义 I2C7 对应 GPIO144/GPIO145。
+- 在 `i2c_hw_init()` 中配置 GPIO144/GPIO145 为 I2C mode。
+- 为 GPIO144/GPIO145 打开内部上拉。
+- 在长按关灯前重新调用 `i2c_hw_init()`，确保强制重启路径下 I2C7 pinmux/pull 被重新应用。
+- 对 I2C 写增加短延时重试，降低刚进入 preloader 时总线未稳定带来的偶发失败风险。
+
+### 9.2 修改位置
+
+```text
+U:/mt8781/mt8781_s/vendor/mediatek/proprietary/bootable/bootloader/preloader/platform/mt6789/src/drivers/pmic.c
+函数：flashlight_i2c_force_off_preloader()
+
+U:/mt8781/mt8781_s/vendor/mediatek/proprietary/bootable/bootloader/preloader/platform/mt6789/src/drivers/inc/i2c.h
+配置：GPIO_SCL7 / GPIO_SDA7 / SCL7 / SDA7
+
+U:/mt8781/mt8781_s/vendor/mediatek/proprietary/bootable/bootloader/preloader/platform/mt6789/src/drivers/i2c.c
+函数：i2c_hw_init()
+```
+
+### 9.3 修改前
+
+修改前的 preloader force-off 逻辑主要是直接发 I2C：
+
+```c
+#define AW36515_I2C_ID I2C7
+#define AW36515_I2C_ADDR 0x63
+#define AW36515_REG_ENABLE 0x01
+
+static void flashlight_i2c_force_off_preloader(void)
+{
+    struct mt_i2c_t i2c = {
+        .id = AW36515_I2C_ID,
+        .addr = AW36515_I2C_ADDR,
+        .mode = ST_MODE,
+    };
+    U8 write_buf[2] = {AW36515_REG_ENABLE, 0x00};
+    S32 ret;
+
+    ret = i2c_write(&i2c, write_buf, sizeof(write_buf));
+    pal_log_warn("[flashlight][kbkbkb] aw36515 i2c force off ret=%d\n", ret);
+}
+```
+
+存在问题：
+
+- I2C7 bus 和地址虽然正确，但没有保证 preloader 此时 I2C7 SCL/SDA 引脚已经切到 I2C 功能。
+- 没有保证 I2C7 SCL/SDA 内部上拉打开。
+- 没有重试机制。
+- 在长按强制重启路径中，kernel pinctrl 已失效，不能依赖 kernel 阶段的 I2C7 配置。
+
+修改前失败表现：
+
+```text
+id=7,addr: 63, transfer timeout
+INTR_STAT=0
+Write 2 bytes fails,ret=-110
+```
+
+### 9.4 修改后
+
+`i2c.h` 增加 I2C7 引脚定义：
+
+```c
+#define GPIO_SCL5 140
+#define GPIO_SDA5 141
+#define SCL5      1
+#define SDA5      1
+
+/* add-zlt: AW36515 is on I2C7, match mt6789 pinfunc GPIO144/GPIO145 */
+#define GPIO_SCL7 144
+#define GPIO_SDA7 145
+#define SCL7      1
+#define SDA7      1
+```
+
+`i2c.c` 的 `i2c_hw_init()` 中补 I2C7 pinmux/pull：
+
+```c
+mt_set_gpio_mode(GPIO_SCL5, SCL5);
+mt_set_gpio_pull_enable(GPIO_SCL5, 1);
+mt_set_gpio_pull_select(GPIO_SCL5, 1);
+mt_set_gpio_mode(GPIO_SDA5, SDA5);
+mt_set_gpio_pull_enable(GPIO_SDA5, 1);
+mt_set_gpio_pull_select(GPIO_SDA5, 1);
+
+/* add-zlt: keep I2C7 pins in I2C mode with pull-up for AW36515 force-off */
+mt_set_gpio_mode(GPIO_SCL7, SCL7);
+mt_set_gpio_pull_enable(GPIO_SCL7, 1);
+mt_set_gpio_pull_select(GPIO_SCL7, 1);
+mt_set_gpio_mode(GPIO_SDA7, SDA7);
+mt_set_gpio_pull_enable(GPIO_SDA7, 1);
+mt_set_gpio_pull_select(GPIO_SDA7, 1);
+```
+
+`pmic.c` 中在关灯前重新应用 I2C 初始化并增加重试：
+
+```c
+#include <mt6358.h>
+#include <timer.h>
+
+#define AW36515_I2C_ID I2C7
+#define AW36515_I2C_ADDR 0x63
+#define AW36515_REG_ENABLE 0x01
+
+extern int i2c_hw_init(void);
+
+static void flashlight_i2c_force_off_preloader(void)
+{
+    struct mt_i2c_t i2c = {
+        .id = AW36515_I2C_ID,
+        .addr = AW36515_I2C_ADDR,
+        .mode = ST_MODE,
+        .speed = 100,
+    };
+    U8 write_buf[2] = {AW36515_REG_ENABLE, 0x00};
+    S32 ret;
+    int i;
+
+    /* add-zlt: re-apply I2C driving/internal pull before longkey force-off */
+    i2c_hw_init();
+    pal_log_warn("[flashlight][kbkbkb] i2c7 cfg drv=0x%x pull=0x%x\n",
+        DRV_Reg32(IOCFG_LM_BASE + 0x80),
+        DRV_Reg32(IOCFG_LM_BASE + 0x1D0));
+
+    for (i = 0; i < 3; i++) {
+        ret = i2c_write(&i2c, write_buf, sizeof(write_buf));
+        pal_log_warn("[flashlight][kbkbkb] aw36515 i2c force off try=%d ret=%d\n",
+            i, ret);
+        if (ret == I2C_OK)
+            break;
+        mdelay(2);
+    }
+}
+```
+
+### 9.5 修改说明
+
+1. `i2c.h` 增加 `GPIO_SCL7=144`、`GPIO_SDA7=145`
+
+   这一步把当前平台 AW36515 所在 I2C7 的 SCL/SDA 物理 GPIO 显式告诉 preloader I2C 初始化代码。没有这个定义，`i2c_hw_init()` 无法配置 I2C7 对应引脚。
+
+2. `i2c.c` 在 `i2c_hw_init()` 中配置 I2C7 pinmux
+
+   `mt_set_gpio_mode(GPIO_SCL7, SCL7)` 和 `mt_set_gpio_mode(GPIO_SDA7, SDA7)` 将 GPIO144/GPIO145 切换为 I2C7 的 SCL/SDA 功能。这个修改作用于 preloader 的 GPIO/pinmux 层。
+
+3. `i2c.c` 在 `i2c_hw_init()` 中配置 I2C7 内部上拉
+
+   `mt_set_gpio_pull_enable(..., 1)` 和 `mt_set_gpio_pull_select(..., 1)` 为 SCL/SDA 打开上拉。I2C 总线要求空闲高电平，如果 SCL/SDA 没有上拉或状态不稳定，容易出现 timeout、无 ACK 或总线无法完成 transaction。
+
+4. `pmic.c` 在 force-off 前重新调用 `i2c_hw_init()`
+
+   虽然 `platform.c` 早期已经调用过一次 `i2c_hw_init()`，但长按强制重启路径下更稳妥的做法是在真正发 AW36515 关闭命令前重新应用 I2C driving/internal pull。这样可以避免前面流程、复位状态、GPIO 默认配置或其他初始化覆盖 I2C7 引脚状态。
+
+5. `pmic.c` 增加 `.speed = 100`
+
+   明确使用 100 kHz 标准速率，降低 preloader 早期或复位状态下通信不稳定的风险。当前日志中最终 `try=0 ret=0`，说明该配置至少没有引入负面影响。
+
+6. `pmic.c` 增加 3 次重试和 `mdelay(2)`
+
+   如果刚进入 preloader 时 I2C7 或 AW36515 状态还未完全稳定，短延时重试可以提高成功率。实际 OK 日志中第一次就成功：
+
+   ```text
+   aw36515 i2c force off try=0 ret=0
+   ```
+
+7. 是否会被后续流程覆盖
+
+   修改在 `pmic_check_rst()` 的 `Long press shutdown` 分支执行，也就是在实际关灯命令发出前重新配置 I2C7。即使早期初始化或其他流程曾覆盖过 GPIO144/GPIO145，这里仍会再次设置。关灯命令发出之后是否被后续流程覆盖，对本次关闭动作影响较小，因为 AW36515 已经收到 `REG_ENABLE=0x00`。
+
+8. 是否影响其他功能
+
+   该修改会让 preloader 的 `i2c_hw_init()` 多配置 I2C7 的 GPIO144/GPIO145 为 I2C 功能并打开上拉。理论风险是：如果其他板型或同平台变体将 GPIO144/GPIO145 用作非 I2C7 功能，可能产生冲突。因此该方案适用条件是当前硬件确认为 AW36515 挂在 I2C7，且 SCL/SDA 对应 GPIO144/GPIO145。
+
+### 9.6 解决原理
+
+完整链路如下：
+
+```text
+Android 打开手电筒
+  ↓
+AW36515 进入 torch mode，REG_ENABLE 保持使能
+  ↓
+长按电源键触发 PMIC long press reset
+  ↓
+AP/kernel 复位，kernel pinctrl 不再可靠
+  ↓
+设备重新进入 preloader
+  ↓
+pmic_init()
+  ↓
+pmic_dbg_status(1)
+  ↓
+pmic_check_rst(poff_sts)
+  ↓
+识别 poff_sts bit6，打印 Long press shutdown
+  ↓
+flashlight_force_off_preloader()
+  ↓
+i2c_hw_init() 重新配置 I2C7 GPIO144/GPIO145 为 SCL/SDA 并打开上拉
+  ↓
+i2c_write(I2C7, 0x63, {0x01, 0x00})
+  ↓
+AW36515 收到 REG_ENABLE=0x00
+  ↓
+torch 输出关闭，手电筒熄灭
+```
+
+原来的错误发生在：
+
+```text
+preloader I2C7 物理引脚未正确配置
+  ↓
+i2c_write 发起 START 后等不到 transaction complete
+  ↓
+ret=-110
+  ↓
+AW36515 未收到关闭寄存器命令
+```
+
+修改后修正的是：
+
+```text
+preloader GPIO/pinmux/pull 层
+```
+
+而不是 Android Framework 层，也不是 kernel AW36515 driver 层。
+
+## 10. 验证过程
+
+### 10.1 编译验证
+
+本次对话中未提供完整编译命令和编译日志。
+
+当前只能确认：
+
+```text
+最终 patch 已合入并烧录测试，用户反馈“合入这个就可以关掉了”。
+```
+
+编译是否有 warning、是否已进入正式构建流程：未提供。
+
+### 10.2 功能验证
+
+测试步骤：
+
+1. 开机进入 Android。
+2. 打开手电筒。
+3. 长按电源键触发强制重启。
+4. 观察重启阶段手电筒是否关闭。
+
+实际结果：
+
+```text
+合入最终 patch 后，强制重启场景手电筒可以关掉。
+```
+
+### 10.3 日志验证
+
+最终 OK 日志：
+
+```text
+[17:53:55:720] aw36515_mode_ctrl mode:2
+[17:53:55:720] aw36515_enable_ctrl led:0 enable:1 , mode:2
+[17:53:56:200] debug.tracing.battery_stats.flashlight=[1]
+
+[17:54:33:471][pmic_check_rst] Long press shutdown
+[17:54:33:472][flashlight][kbkbkb] i2c7 cfg drv=0x3FFFFFFF pull=0x3FFFFFFF
+[17:54:33:472][flashlight][kbkbkb] aw36515 i2c force off try=0 ret=0
+
+[17:54:38:731] androidboot.bootreason=reboot_longkey
+[17:54:49:449] sys.boot.reason=[reboot_longkey]
+```
+
+日志证明：
+
+- 手电筒在重启前确实处于打开状态。
+- preloader 识别到了 `Long press shutdown`。
+- preloader 在关灯前重新应用了 I2C7 配置。
+- AW36515 I2C 写第一次尝试就成功返回 `ret=0`。
+- 后续 bootreason 仍然是 `reboot_longkey`，说明验证场景正确。
+
+### 10.4 对比结果
+
+| 检查项 | 修改前 | 修改后 |
+| --- | --- | --- |
+| 问题是否复现 | 长按强制重启时手电筒不灭 | 用户反馈合入后可以关掉 |
+| I2C bus | `id=7` | `id=7` |
+| I2C 地址 | `addr=63`，`SLAVE_ADDR=C6` | `addr=63` |
+| I2C 结果 | `transfer timeout`，`ret=-110`，force off `ret=-1` | `aw36515 i2c force off try=0 ret=0` |
+| GPIO150 尝试 | `force low ret=0`，但实际未关灯 | 最终方案不依赖 GPIO150 作为主路径 |
+| 关键配置 | preloader 未配置 I2C7 GPIO144/GPIO145 pinmux/pull | `i2c_hw_init()` 配置 I2C7 SCL/SDA mode 和 pull-up |
+| 功能表现 | 重启阶段灯仍亮 | 重启阶段灯可关闭 |
+
+## 11. 最终结论
+
+本问题是 MT8781/MT6789 平台 AW36515 手电筒在长按电源键强制重启时无法关闭的问题。直接错误是 preloader 在 `Long press shutdown` 分支中通过 I2C7 写 AW36515 `REG_ENABLE=0x00` 时 transaction timeout，返回 `ret=-110`。根本原因是 preloader 原有 I2C 初始化没有补齐当前平台 I2C7 对应 GPIO144/GPIO145 的 pinmux 和上拉配置，导致强制重启进入 preloader 后 I2C7 物理总线不可可靠通信。
+
+最终修改在 preloader 的 `i2c.h` 中增加 I2C7 SCL/SDA GPIO 定义，在 `i2c.c` 的 `i2c_hw_init()` 中配置 GPIO144/GPIO145 为 I2C mode 并打开上拉，在 `pmic.c` 的 AW36515 force-off 前重新调用 `i2c_hw_init()` 并增加 I2C 写重试。修改后 OK 日志显示 `aw36515 i2c force off try=0 ret=0`，用户实测长按强制重启时手电筒可以关闭，问题已完成闭环。
+
+## 12. 经验总结
+
+- 长按电源键强制重启属于 PMIC/preloader 级别链路，不能默认依赖 kernel shutdown 或 Android 状态同步。
+- kernel probe 成功只能证明 kernel 阶段 pinctrl/I2C 配置正确，不能证明 preloader 阶段同一 I2C bus 可用。
+- I2C 日志中 `SLAVE_ADDR=C6` 对于 `0x63` 是正常现象，不能误判为地址错误。
+- `transfer timeout`、`INTR_STAT=0`、`ret=-110` 比上层状态日志更关键，说明 I2C transaction 没完成。
+- GPIO API 返回 `0` 只代表软件接口成功，不代表硬件输出已经被关闭；必须结合实际现象或示波器测量。
+- 参考平台 patch 不能直接照搬 bus 号和引脚配置，必须以当前平台 DTS、kernel probe 和 preloader pinfunc 为准。
+- 对 preloader 外设访问问题，应同时检查三层：控制器 base、slave 地址、GPIO pinmux/pull。
+- 如果 preloader 中已经调用过通用 init，也要确认它是否覆盖目标 bus；本问题中 `i2c_hw_init()` 原本只配置了 I2C5，没有配置 I2C7。
+- 最终闭环证据必须包含修改前失败日志、修改后成功日志和实际功能现象，不能只看代码合入。
+
+## 13. 后续事项
+
+- [x] 确认 AW36515 实际挂在 I2C7，地址为 `0x63`。
+- [x] 确认 kernel 阶段 AW36515 probe 成功，排除芯片地址和 kernel driver 基础问题。
+- [x] 确认长按强制重启会进入 preloader `pmic_check_rst()` 的 `Long press shutdown` 分支。
+- [x] 确认修改前 preloader I2C7 写 AW36515 timeout，`ret=-110`。
+- [x] 尝试 GPIO150 拉低并确认该方案不能单独闭环。
+- [x] 补齐 preloader I2C7 GPIO144/GPIO145 pinmux 和 pull-up。
+- [x] 在 AW36515 force-off 前重新调用 `i2c_hw_init()` 并增加 I2C 写重试。
+- [x] 通过 OK 日志确认 `aw36515 i2c force off try=0 ret=0`。
+- [x] 通过实际测试确认长按强制重启时手电筒可以关闭。
+- [ ] 补充正式编译日志或 CI 构建记录。
+- [ ] 用示波器补充 I2C7 SCL/SDA 修改前后波形对比，作为硬件层证据。
+- [ ] 确认 GPIO144/GPIO145 在所有目标板型中均用于 I2C7，避免影响其他硬件变体。
+- [ ] 清理调试 tag `kbkbkb`，整理为正式提交日志。
