@@ -323,14 +323,92 @@
   color: #fecdd3;
 }
 
+.doc-prose figure {
+  margin: 1.8rem auto;
+  max-width: min(100%, 46rem);
+}
+
+.doc-prose figure img {
+  margin: 0;
+}
+
+.doc-prose figcaption {
+  margin-top: 0.6rem;
+  text-align: center;
+  color: var(--subtle);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
 .doc-prose img {
   display: block;
   max-width: min(100%, 46rem);
   height: auto;
-  margin: 1.6rem auto;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
+  margin: 1.8rem auto;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18), 0 1px 4px rgba(0, 0, 0, 0.1);
+  cursor: zoom-in;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.doc-prose img:hover {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+
+/* ── Lightbox Overlay ── */
+.image-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  cursor: zoom-out;
+  transition: background 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+.image-zoom-overlay.active {
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(12px);
+}
+
+.image-zoom-overlay img {
+  max-width: 92vw;
+  max-height: 90vh;
+  border-radius: 10px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  transform: scale(0.92);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+}
+
+.image-zoom-overlay.active img {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.image-zoom-caption {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  max-width: 80vw;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  opacity: 0;
+  transition: opacity 0.35s ease 0.15s;
+  pointer-events: none;
+}
+
+.image-zoom-overlay.active .image-zoom-caption {
+  opacity: 1;
 }
 
 @media (max-width: 768px) {
@@ -447,8 +525,15 @@ html[data-theme="claude"] .doc-prose pre {
 }
 
 html[data-theme="claude"] .doc-prose img {
-  border-color: #d8d4c8;
-  background: #fbfaf5;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="claude"] .doc-prose img:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="claude"] .doc-prose figcaption {
+  color: #8a8578;
 }
 
 html[data-theme="claude"] .code-copy {
