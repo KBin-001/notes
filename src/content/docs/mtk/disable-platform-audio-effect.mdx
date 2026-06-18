@@ -1,24 +1,25 @@
 ---
-title: "[MTK]确认是否关掉平台音效"
-description: "adb shell am start -n com.mediatek.engineermode/.EngineerMode"
-category: "mtk"
-tags: ["mtk"]
-topics: ["audio"]
-visibility: "public"
+title: '[MTK]确认是否关掉平台音效'
+description: adb shell am start -n com.mediatek.engineermode/.EngineerMode
+category: mtk
+tags:
+  - mtk
+topics:
+  - audio
+visibility: public
 sensitive: true
-status: "整理中"
-date: "2026-06-06"
-updated: "2026-06-06"
+status: 已验证
+date: '2026-06-06'
+updated: '2026-06-18'
 ---
+# 设备进入工程模式
 
-# [MTK]确认是否关掉平台音效
-
-## 设备进入工程模式
-```bash
+```c
 adb shell am start -n com.mediatek.engineermode/.EngineerMode
 ```
+
 **打开ATCI模式**
 
-## 打开MTK audio tuning tool 工具
-图片：image.png
-图片：image.png
+# 打开MTK audio tuning tool 工具
+![mtkaudiotuningtool](./images/disable-platform-audio-effect/mtkaudiotuningtool.png)
+![image](./images/disable-platform-audio-effect/image.png)
