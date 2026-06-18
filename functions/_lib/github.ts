@@ -84,6 +84,20 @@ export async function putFile(env: Env, token: string, path: string, content: st
   });
 }
 
+export async function putBinaryFile(env: Env, token: string, path: string, base64Content: string, message: string, sha?: string) {
+  const { owner, repo, branch } = repoConfig(env);
+  return githubFetch(`/repos/${owner}/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}`, token, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      message,
+      content: base64Content,
+      branch,
+      ...(sha ? { sha } : {}),
+    }),
+  });
+}
+
 export function decodeBase64Content(content: string) {
   const cleaned = content.replace(/\s/g, '');
   const binary = atob(cleaned);
@@ -97,6 +111,15 @@ function encodeBase64(text: string) {
   const chunkSize = 0x8000;
   for (let index = 0; index < bytes.length; index += chunkSize) {
     binary += String.fromCharCode(...bytes.slice(index, index + chunkSize));
+  }
+  return btoa(binary);
+}
+
+export function encodeBinaryBase64(buffer: ArrayBuffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
   }
   return btoa(binary);
 }

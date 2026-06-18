@@ -5,4 +5,6 @@ export const allowedVisibilities = ['public', 'private', 'draft'] as const;
 
 export const docsRoot = 'src/content/docs';
 export const maxMarkdownBytes = 2 * 1024 * 1024;
+export const maxImageBytes = 5 * 1024 * 1024;
+export const allowedImageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'] as const;
 
