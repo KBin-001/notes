@@ -1,16 +1,17 @@
 ---
-title: "音量按键波形异常"
-description: "记录 音量按键波形异常 的问题现象、排查过程、修改方案和验证方法。"
-category: "audio"
-tags: ["audio"]
-topics: ["audio"]
-visibility: "public"
+title: 音量按键波形异常
+description: 记录 音量按键波形异常 的问题现象、排查过程、修改方案和验证方法。
+category: audio
+tags:
+  - audio
+topics:
+  - audio
+visibility: public
 sensitive: true
-status: "整理中"
-date: "2026-06-06"
-updated: "2026-06-06"
+status: 整理中
+date: '2026-06-06'
+updated: '2026-06-06'
 ---
-
 # 音量按键波形异常
 
 ---
@@ -20,7 +21,7 @@ updated: "2026-06-06"
 MT8781 项目中出现 **音量减按键异常** 问题。
 
 根据硬件原理图，音量减按键不是单独 GPIO 按键，而是 keypad 矩阵按键：
-
+![14](./images/volume-key-waveform-issue/14.png)
 ```text
 Volume Down = KPROW0 + KPCOL0
 ```
