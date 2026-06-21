@@ -20,14 +20,14 @@ const tocHeadings = headings.filter((heading) => {
   <div class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto px-4 py-6">
     {tocHeadings.length > 0 ? (
       <nav aria-label="当前页面大纲">
-        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">当前页面</p>
+        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-kb-subtle">当前页面</p>
         <ul class="space-y-1">
           {tocHeadings.map((heading) => (
             <li>
               <a
                 href={`#${heading.slug}`}
                 data-toc-link
-                class={`toc-link block rounded-md py-1.5 pr-2 text-sm leading-5 text-slate-500 transition hover:bg-slate-900/45 hover:text-slate-300 ${heading.depth === 3 ? 'pl-4 text-xs' : 'pl-2'}`}
+                class={`toc-link block rounded-md py-1.5 pr-2 text-sm leading-5 text-kb-subtle transition hover:bg-kb-surface-hover hover:text-kb-heading ${heading.depth === 3 ? 'pl-4 text-xs' : 'pl-2'}`}
               >
                 {heading.text}
               </a>

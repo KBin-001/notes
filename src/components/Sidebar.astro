@@ -20,13 +20,13 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
   <nav class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto px-4 py-6" aria-label="文档目录">
     <a
       href="/"
-      class={`sidebar-link mb-4 flex items-center justify-between rounded-md px-3 py-2 text-sm transition ${currentId === 'index' ? 'is-active bg-cyan-400/10 text-cyan-100' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}
+      class={`sidebar-link mb-4 flex items-center justify-between rounded-md px-3 py-2 text-sm transition ${currentId === 'index' ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:bg-kb-surface-hover hover:text-kb-heading'}`}
     >
       <span>知识库首页</span>
-      <span class="text-xs text-slate-500">Home</span>
+      <span class="text-xs text-kb-disabled">Home</span>
     </a>
 
-    <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-600">平台目录</p>
+    <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-kb-disabled">平台目录</p>
     {categoryOrder.map((category) => {
       const meta = categoryMeta[category];
       const categoryIndex = getCategoryIndex(docs, category);
@@ -37,7 +37,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
         <details class="group mb-2" data-category-section={category} open={isOpen}>
           <summary
             data-category-summary={category}
-            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-900 hover:text-slate-200'}`}
+            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-kb-surface-active text-kb-heading' : 'text-kb-subtle hover:bg-kb-surface-hover hover:text-kb-heading'}`}
           >
             <ChevronRight
               size={14}
@@ -45,7 +45,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
               class="shrink-0 transition-transform group-open:rotate-90"
             />
             <span class="min-w-0 flex-1 truncate">{meta?.title ?? category}</span>
-            <span class="text-[11px] text-slate-600">{notes.length}</span>
+            <span class="text-[11px] text-kb-disabled">{notes.length}</span>
           </summary>
 
           <ul
@@ -55,7 +55,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
               <li>
                 <a
                   href={docUrl(categoryIndex.id)}
-                  class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${currentId === categoryIndex.id ? 'is-active bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
+                  class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${currentId === categoryIndex.id ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:bg-kb-surface-hover hover:text-kb-heading'}`}
                 >
                   分类首页
                 </a>
@@ -67,7 +67,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
                 <li>
                   <a
                     href={docUrl(doc.id)}
-                    class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'is-active bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
+                    class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:bg-kb-surface-hover hover:text-kb-heading'}`}
                   >
                     {displayTitle(doc.data.title)}
                   </a>
@@ -79,7 +79,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
       );
     })}
 
-    <p class="mb-2 mt-6 px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-600">复盘专题</p>
+    <p class="mb-2 mt-6 px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-kb-disabled">复盘专题</p>
     {topicOrder.map((topic) => {
       const meta = topicMeta[topic];
       const notes = getTopicNotes(docs, topic);
@@ -89,7 +89,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
         <details class="group mb-2" data-topic-section={topic} open={isOpen}>
           <summary
             data-topic-summary={topic}
-            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-900 hover:text-slate-200'}`}
+            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-kb-surface-active text-kb-heading' : 'text-kb-subtle hover:bg-kb-surface-hover hover:text-kb-heading'}`}
           >
             <ChevronRight
               size={14}
@@ -97,7 +97,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
               class="shrink-0 transition-transform group-open:rotate-90"
             />
             <span class="min-w-0 flex-1 truncate">{meta.title}</span>
-            <span class="text-[11px] text-slate-600">{notes.length}</span>
+            <span class="text-[11px] text-kb-disabled">{notes.length}</span>
           </summary>
 
           <ul class="space-y-0.5 overflow-hidden">
@@ -105,13 +105,13 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
               <a
                 href={`/topics/${topic}/`}
                 data-topic-home-link={topic}
-                class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${currentTopic === topic ? 'is-active bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
+                class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${currentTopic === topic ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:bg-kb-surface-hover hover:text-kb-heading'}`}
               >
                 专题首页
               </a>
             </li>
             {notes.length === 0 && (
-              <li class="px-3 py-1.5 text-xs leading-6 text-slate-600">暂无明确归类</li>
+              <li class="px-3 py-1.5 text-xs leading-6 text-kb-disabled">暂无明确归类</li>
             )}
             {notes.map((doc) => {
               const active = currentId === doc.id;
@@ -120,10 +120,10 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
                   <a
                     href={topicDocUrl(doc.id, topic)}
                     data-topic-doc-link={topic}
-                    class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'is-active bg-cyan-400/10 text-cyan-100 ring-1 ring-cyan-400/20' : 'text-slate-400 hover:bg-slate-900/75 hover:text-slate-100'}`}
+                    class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:bg-kb-surface-hover hover:text-kb-heading'}`}
                   >
                     <span class="block truncate">{displayTitle(doc.data.title)}</span>
-                    <span class="text-[11px] text-slate-600">{categoryMeta[doc.data.category]?.title ?? doc.data.category}</span>
+                    <span class="text-[11px] text-kb-disabled">{categoryMeta[doc.data.category]?.title ?? doc.data.category}</span>
                   </a>
                 </li>
               );

@@ -1,16 +1,20 @@
+/* ══════════════════════════════════════════════════
+   PROSE STYLES – Markdown content
+   Based on fumadocs typography/styles.ts
+   ══════════════════════════════════════════════════ */
 .doc-prose {
   max-width: 48rem;
   overflow-x: clip;
-  color: var(--text);
+  color: var(--kb-text);
   font-size: 1rem;
-  line-height: 1.72;
+  line-height: 1.75;
 }
 
 .doc-prose h1,
 .doc-prose h2,
 .doc-prose h3,
 .doc-prose h4 {
-  color: var(--heading);
+  color: var(--kb-heading);
   letter-spacing: 0;
   scroll-margin-top: 5.5rem;
 }
@@ -19,50 +23,57 @@
   margin: 0 0 1.35rem;
   font-size: clamp(1.95rem, 5vw, 2.6rem);
   line-height: 1.16;
-  font-weight: 740;
+  font-weight: 800;
 }
 
 .doc-prose h2 {
   margin: 2.85rem 0 0.95rem;
   padding-top: 1.1rem;
-  border-top: 1px solid var(--border-soft);
+  border-top: 1px solid var(--kb-border);
   font-size: 1.38rem;
   line-height: 1.32;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .doc-prose h3 {
   margin: 2.15rem 0 0.7rem;
   font-size: 1.12rem;
   line-height: 1.4;
-  font-weight: 680;
+  font-weight: 600;
+}
+
+.doc-prose h4 {
+  margin: 1.5rem 0 0.5rem;
+  font-weight: 600;
 }
 
 .doc-prose p {
   margin: 0 0 1.05rem;
 }
 
+/* ── Links: fumadocs underline + opacity hover ── */
 .doc-prose a {
-  color: var(--accent);
+  color: var(--kb-text);
   text-decoration: underline;
-  text-underline-offset: 0.2em;
-  text-decoration-color: rgba(56, 189, 248, 0.38);
-  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+  text-underline-offset: 3.5px;
+  text-decoration-color: var(--kb-accent);
+  text-decoration-thickness: 1.5px;
+  font-weight: 500;
+  transition: opacity 0.2s;
 }
 
 .doc-prose a:hover {
-  color: #7dd3fc;
-  text-decoration-color: rgba(125, 211, 252, 0.72);
+  opacity: 0.8;
 }
 
 .doc-prose strong {
-  color: var(--heading);
-  font-weight: 650;
+  color: var(--kb-heading);
+  font-weight: 500;
 }
 
 .doc-prose ul,
 .doc-prose ol {
-  padding-left: 1.45rem;
+  padding-left: 1rem;
   margin: 0 0 1.15rem;
 }
 
@@ -72,31 +83,27 @@
 }
 
 .doc-prose li::marker {
-  color: rgba(56, 189, 248, 0.78);
+  color: var(--kb-muted);
 }
 
+/* ── Blockquote: fumadocs style — border-left only ── */
 .doc-prose blockquote {
-  margin: 1.4rem 0;
-  border: 1px solid var(--border);
-  border-left: 3px solid rgba(56, 189, 248, 0.58);
-  border-radius: 8px;
-  padding: 0.55rem 1rem;
-  color: #cbd5e1;
-  background:
-    linear-gradient(90deg, rgba(56, 189, 248, 0.08), rgba(139, 92, 246, 0.05));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  margin: 1.6rem 0;
+  padding-left: 1rem;
+  border-left: 0.25rem solid var(--kb-border);
+  color: var(--kb-text);
+  font-weight: 500;
+  font-style: italic;
 }
 
+/* ── Callout, Collapse, Code Tabs ── */
 .callout,
 .mdx-collapse,
 .code-tabs {
   margin: 1.5rem 0;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.76), rgba(15, 23, 42, 0.54));
-  box-shadow: var(--shadow-soft);
-  backdrop-filter: blur(10px) saturate(125%);
+  border: 1px solid var(--kb-border);
+  border-radius: 0.5rem;
+  background: var(--kb-code-bg);
 }
 
 .callout {
@@ -107,78 +114,82 @@
   margin-bottom: 0.45rem;
   font-size: 0.9rem;
   font-weight: 700;
+  color: var(--kb-heading);
 }
 
 .callout-body {
-  color: #b6c2d2;
+  color: var(--kb-text);
   font-size: 0.94rem;
   line-height: 1.72;
 }
 
 .callout-note {
-  border-color: rgba(56, 189, 248, 0.28);
+  border-left: 3px solid var(--kb-accent);
 }
 
 .callout-tip {
-  border-color: rgba(139, 92, 246, 0.3);
+  border-left: 3px solid var(--kb-success);
 }
 
 .callout-warn {
-  border-color: color-mix(in srgb, var(--warning) 34%, transparent);
+  border-left: 3px solid var(--kb-warning);
 }
 
 .callout-danger {
-  border-color: color-mix(in srgb, var(--danger) 34%, transparent);
+  border-left: 3px solid var(--kb-danger);
 }
 
+/* ── Badges ── */
 .mdx-badge {
   display: inline-flex;
   align-items: center;
   min-height: 1.45rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--kb-border);
   border-radius: 0.375rem;
-  background: rgba(30, 41, 59, 0.54);
-  color: var(--muted);
+  background: var(--kb-surface);
+  color: var(--kb-muted);
   padding: 0.05rem 0.45rem;
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 500;
   vertical-align: 0.05em;
 }
 
 .mdx-badge-success {
-  border-color: color-mix(in srgb, var(--accent-2) 32%, var(--border));
+  border-color: color-mix(in oklab, var(--kb-success) 32%, var(--kb-border));
 }
 
 .mdx-badge-warning {
-  border-color: color-mix(in srgb, var(--warning) 36%, var(--border));
+  border-color: color-mix(in oklab, var(--kb-warning) 36%, var(--kb-border));
 }
 
 .mdx-badge-danger {
-  border-color: color-mix(in srgb, var(--danger) 34%, var(--border));
+  border-color: color-mix(in oklab, var(--kb-danger) 34%, var(--kb-border));
 }
 
 .mdx-badge-info {
-  border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
+  border-color: var(--kb-border-strong);
 }
 
+/* ── Collapse ── */
 .mdx-collapse summary {
   cursor: pointer;
   padding: 0.8rem 1rem;
-  color: var(--text);
+  color: var(--kb-text);
   font-weight: 700;
 }
 
 .mdx-collapse-body {
-  border-top: 1px solid var(--border-soft);
+  border-top: 1px solid var(--kb-border);
   padding: 1rem;
 }
 
+/* ── Code Tabs ── */
 .code-tabs-list {
   display: flex;
   gap: 0.35rem;
   overflow-x: auto;
-  border-bottom: 1px solid var(--border-soft);
-  background: rgba(2, 6, 23, 0.18);
+  border-bottom: 1px solid var(--kb-border);
+  background: var(--kb-code-bg);
   padding: 0.55rem 0.65rem 0;
 }
 
@@ -187,16 +198,16 @@
   border-bottom: 0;
   border-radius: 6px 6px 0 0;
   background: transparent;
-  color: var(--subtle);
+  color: var(--kb-subtle);
   cursor: pointer;
   padding: 0.45rem 0.7rem;
   font-size: 0.82rem;
 }
 
 .code-tabs-tab[aria-selected="true"] {
-  border-color: var(--border);
-  background: rgba(30, 41, 59, 0.74);
-  color: var(--heading);
+  border-color: var(--kb-border);
+  background: var(--kb-surface);
+  color: var(--kb-heading);
 }
 
 .code-tabs pre {
@@ -205,30 +216,41 @@
   border-radius: 0 0 8px 8px;
 }
 
+/* ── Tables: fumadocs rounded table ── */
 .doc-prose table {
   width: 100%;
   margin: 1.5rem 0;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.92rem;
-  background: rgba(15, 23, 42, 0.5);
-  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--kb-border);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background: var(--kb-code-bg);
 }
 
 .doc-prose th,
 .doc-prose td {
-  border-bottom: 1px solid var(--border-soft);
-  border-right: 1px solid var(--border-soft);
-  padding: 0.75rem 0.9rem;
-  text-align: left;
+  border-bottom: 1px solid var(--kb-border);
+  padding: 0.625rem;
+  text-align: start;
   vertical-align: top;
 }
 
-.doc-prose th:last-child,
-.doc-prose td:last-child {
-  border-right: 0;
+.doc-prose th {
+  border-left: 1px solid var(--kb-border);
+}
+
+.doc-prose th:first-child {
+  border-left: 0;
+}
+
+.doc-prose td {
+  border-left: 1px solid var(--kb-border);
+}
+
+.doc-prose td:first-child {
+  border-left: 0;
 }
 
 .doc-prose tr:last-child td {
@@ -236,40 +258,33 @@
 }
 
 .doc-prose th {
-  color: var(--heading);
-  background: rgba(30, 41, 59, 0.56);
-  font-weight: 700;
+  color: var(--kb-heading);
+  background: var(--kb-surface);
+  font-weight: 600;
 }
 
-.doc-prose tbody tr:hover {
-  background: rgba(56, 189, 248, 0.035);
-}
-
+/* ── Inline Code: fumadocs — border solid 1px, bg muted, 5px radius ── */
 .doc-prose :not(pre) > code {
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  border-radius: 0.3rem;
-  background: var(--inline-code-bg);
-  color: #dbeafe;
-  padding: 0.1rem 0.32rem;
-  font-size: 0.9em;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--kb-border);
+  border-radius: 5px;
+  background: var(--kb-inline-code-bg);
+  color: var(--kb-heading);
+  padding: 3px;
+  font-size: 13px;
+  font-weight: 400;
 }
 
+/* ── Code Blocks ── */
 .doc-prose pre {
   margin: 1.4rem 0;
   max-width: 100%;
   overflow-x: auto;
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  border-radius: 8px;
-  background:
-    radial-gradient(circle at top left, rgba(56, 189, 248, 0.055), transparent 18rem),
-    var(--code-bg) !important;
+  border: 1px solid var(--kb-border);
+  border-radius: 0.5rem;
+  background: var(--kb-code-bg);
   padding: 1rem 1.1rem;
   font-size: 0.88rem;
   line-height: 1.72;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.035),
-    0 18px 48px rgba(2, 6, 23, 0.28);
 }
 
 .doc-prose pre code {
@@ -277,6 +292,7 @@
   min-width: max-content;
 }
 
+/* ── Code Copy Button ── */
 .code-shell {
   position: relative;
   margin: 1.4rem 0;
@@ -298,31 +314,28 @@
   justify-content: center;
   min-width: 4rem;
   height: 1.8rem;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--kb-border);
   border-radius: 6px;
-  background: rgba(15, 23, 42, 0.78);
-  color: #aebdd0;
+  background: var(--kb-surface);
+  color: var(--kb-muted);
   cursor: pointer;
   font-size: 0.75rem;
-  backdrop-filter: blur(10px);
 }
 
 .code-copy:hover {
-  border-color: rgba(56, 189, 248, 0.34);
-  background: rgba(30, 41, 59, 0.82);
-  color: var(--heading);
+  background: var(--kb-surface-hover);
+  color: var(--kb-heading);
 }
 
 .code-copy[data-copied="true"] {
-  border-color: rgba(134, 239, 172, 0.32);
-  color: #bbf7d0;
+  color: var(--kb-success);
 }
 
 .code-copy[data-copied="false"] {
-  border-color: rgba(251, 113, 133, 0.34);
-  color: #fecdd3;
+  color: var(--kb-danger);
 }
 
+/* ── Figures & Images ── */
 .doc-prose figure {
   margin: 1.8rem auto;
   max-width: min(100%, 46rem);
@@ -335,7 +348,7 @@
 .doc-prose figcaption {
   margin-top: 0.6rem;
   text-align: center;
-  color: var(--subtle);
+  color: var(--kb-subtle);
   font-size: 0.84rem;
   line-height: 1.5;
 }
@@ -348,13 +361,12 @@
   border: 0;
   border-radius: 10px;
   background: transparent;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18), 0 1px 4px rgba(0, 0, 0, 0.1);
   cursor: zoom-in;
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.25s ease;
 }
 
 .doc-prose img:hover {
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(0, 0, 0, 0.14);
+  opacity: 0.9;
 }
 
 /* ── Lightbox Overlay ── */
@@ -411,6 +423,7 @@
   opacity: 1;
 }
 
+/* ── Responsive ── */
 @media (max-width: 768px) {
   .doc-prose {
     font-size: 0.98rem;
@@ -427,134 +440,23 @@
   }
 }
 
-html[data-theme="claude"] .doc-prose {
-  color: #30302e;
-}
-
-html[data-theme="claude"] .doc-prose h1,
-html[data-theme="claude"] .doc-prose h2,
-html[data-theme="claude"] .doc-prose h3,
-html[data-theme="claude"] .doc-prose h4 {
-  color: #141413;
-}
-
-html[data-theme="claude"] .doc-prose h2 {
-  border-top-color: #d8d4c8;
-}
-
-html[data-theme="claude"] .doc-prose a {
-  color: #c95f3d;
-}
-
-html[data-theme="claude"] .doc-prose strong {
-  color: #141413;
-}
-
-html[data-theme="claude"] .doc-prose li::marker {
-  color: #d97757;
-}
-
+/* ══════════════════════════════════════════════════
+   CLAUDE LIGHT THEME – Prose overrides
+   Most colors adapt automatically via --kb-* variables.
+   ══════════════════════════════════════════════════ */
 html[data-theme="claude"] .doc-prose blockquote {
   border-top: 0;
   border-right: 0;
   border-bottom: 0;
-  border-left-color: #d97757;
   border-radius: 0;
-  background: rgba(217, 119, 87, 0.08);
-  color: #55524b;
-  box-shadow: none;
-}
-
-html[data-theme="claude"] .callout,
-html[data-theme="claude"] .mdx-collapse,
-html[data-theme="claude"] .code-tabs {
-  background: color-mix(in srgb, var(--surface) 86%, transparent);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
-  backdrop-filter: none;
-}
-
-html[data-theme="claude"] .callout-body {
-  color: var(--muted);
-}
-
-html[data-theme="claude"] .mdx-badge {
-  background: color-mix(in srgb, var(--surface-2) 80%, transparent);
-}
-
-html[data-theme="claude"] .code-tabs-list {
-  background: transparent;
-}
-
-html[data-theme="claude"] .code-tabs-tab[aria-selected="true"] {
-  background: color-mix(in srgb, var(--surface-2) 74%, transparent);
-  color: var(--text);
 }
 
 html[data-theme="claude"] .doc-prose table {
-  border-color: #d8d4c8;
-  background: transparent;
-  box-shadow: none;
+  border-collapse: collapse;
+  border-radius: 0;
 }
 
 html[data-theme="claude"] .doc-prose th,
 html[data-theme="claude"] .doc-prose td {
-  border-bottom-color: #d8d4c8;
-  border-right: 0;
-}
-
-html[data-theme="claude"] .doc-prose th {
-  color: #141413;
-  background: rgba(232, 230, 220, 0.72);
-}
-
-html[data-theme="claude"] .doc-prose tbody tr:hover {
-  background: transparent;
-}
-
-html[data-theme="claude"] .doc-prose :not(pre) > code {
-  border-color: rgba(217, 119, 87, 0.22);
-  background: rgba(232, 230, 220, 0.78);
-  color: #9f4d33;
-  box-shadow: none;
-}
-
-html[data-theme="claude"] .doc-prose pre {
-  border-color: #292722;
-  background: #151513 !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-html[data-theme="claude"] .doc-prose img {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-html[data-theme="claude"] .doc-prose img:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-html[data-theme="claude"] .doc-prose figcaption {
-  color: #8a8578;
-}
-
-html[data-theme="claude"] .code-copy {
-  border-color: #c9c5b8;
-  background: #f5f4ed;
-  color: #4d4a43;
-  backdrop-filter: none;
-}
-
-html[data-theme="claude"] .code-copy[data-copied="true"] {
-  border-color: #4f8f58;
-  color: #2f6f39;
-}
-
-html[data-theme="claude"] .code-copy[data-copied="false"] {
-  border-color: #b53d4a;
-  color: #8c2f39;
-}
-
-html[data-theme="claude"] .code-copy:hover {
-  border-color: #d97757;
-  background: #d97757;
-  color: #ffffff;
+  border-left: 0;
 }

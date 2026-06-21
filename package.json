@@ -22,6 +22,7 @@
   "devDependencies": {
     "@types/node": "^25.9.2",
     "pagefind": "^1.5.2",
+    "playwright": "^1.60.0",
     "tsx": "latest",
     "typescript": "latest",
     "wrangler": "^4.99.0"

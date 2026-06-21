@@ -12,27 +12,27 @@ interface Props {
 const { href, title, description, count = 0, accent = 'cyan' } = Astro.props;
 
 const accentClass: Record<string, string> = {
-  cyan: 'from-cyan-400/12 to-cyan-400/5 text-cyan-300/80',
-  emerald: 'from-emerald-400/12 to-emerald-400/5 text-emerald-300/80',
-  violet: 'from-violet-400/12 to-violet-400/5 text-violet-300/80',
-  amber: 'from-amber-400/12 to-amber-400/5 text-amber-300/80',
-  rose: 'from-rose-400/12 to-rose-400/5 text-rose-300/80',
-  sky: 'from-sky-400/12 to-sky-400/5 text-sky-300/80',
-  slate: 'from-slate-400/12 to-slate-400/5 text-slate-300/80',
+  cyan: 'kb-accent-cyan',
+  emerald: 'kb-accent-emerald',
+  violet: 'kb-accent-violet',
+  amber: 'kb-accent-amber',
+  rose: 'kb-accent-rose',
+  sky: 'kb-accent-sky',
+  slate: 'kb-accent-slate',
 };
 ---
 
 <a
   href={href}
-  class="kb-card group block rounded-lg border border-slate-800/90 bg-slate-950/35 p-5 transition duration-150 hover:border-cyan-400/25 hover:bg-slate-900/55"
+  class="kb-card group block rounded-lg border border-kb-border kb-card-bg p-5 transition duration-150 hover:border-kb-accent-ring hover:bg-kb-surface-hover"
 >
   <div class="mb-5 flex items-center justify-between">
-    <div class={`flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br ${accentClass[accent] ?? accentClass.cyan}`}>
+    <div class={`flex h-10 w-10 items-center justify-center rounded-lg ${accentClass[accent] ?? accentClass.cyan}`}>
       <FolderOpen size={19} aria-hidden="true" />
     </div>
-    <ArrowRight size={18} class="text-slate-600 transition group-hover:text-slate-400" aria-hidden="true" />
+    <ArrowRight size={18} class="text-kb-disabled transition group-hover:text-kb-muted" aria-hidden="true" />
   </div>
-  <h3 class="text-base font-semibold text-white">{title}</h3>
-  <p class="mt-2 min-h-12 text-sm leading-6 text-slate-400">{description}</p>
-  <p class="mt-5 text-xs text-slate-500">{count} 篇笔记</p>
+  <h3 class="text-base font-semibold text-kb-heading">{title}</h3>
+  <p class="mt-2 min-h-12 text-sm leading-6 text-kb-muted">{description}</p>
+  <p class="mt-5 text-xs text-kb-subtle">{count} 篇笔记</p>
 </a>

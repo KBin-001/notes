@@ -3,11 +3,11 @@ import { BookOpen, Menu, Search } from '@lucide/astro';
 import ThemeToggle from '@/components/ThemeToggle.astro';
 ---
 
-<header class="site-header sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur" data-pagefind-ignore>
+<header class="site-header sticky top-0 z-40" data-pagefind-ignore>
   <div class="mx-auto flex h-14 max-w-[92rem] items-center gap-3 px-4 lg:px-6">
     <button
       id="mobile-nav-open"
-      class="inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-800 text-slate-500 lg:hidden"
+      class="inline-flex h-10 w-10 items-center justify-center rounded-md border border-kb-border text-kb-subtle lg:hidden"
       type="button"
       aria-label="打开导航"
       title="打开导航"
@@ -16,24 +16,24 @@ import ThemeToggle from '@/components/ThemeToggle.astro';
     </button>
 
     <a href="/" class="site-brand flex min-w-0 items-center gap-2">
-      <span class="flex h-8 w-8 items-center justify-center rounded-md bg-cyan-400/8 text-slate-400">
+      <span class="flex h-8 w-8 items-center justify-center rounded-md bg-kb-accent-soft text-kb-muted">
         <BookOpen size={18} aria-hidden="true" />
       </span>
-      <span class="truncate text-sm font-semibold text-white sm:text-base">kevin知识库</span>
+      <span class="truncate text-sm font-semibold text-kb-heading sm:text-base">kevin知识库</span>
     </a>
 
     <div class="flex-1"></div>
 
     <button
       id="search-open"
-      class="search-trigger inline-flex h-10 min-w-10 items-center justify-center gap-2 rounded-md border border-slate-800 bg-slate-900/70 px-2.5 text-sm text-slate-400 transition hover:border-cyan-400/25 hover:text-slate-200 sm:min-w-56 sm:justify-start"
+      class="search-trigger inline-flex h-10 min-w-10 items-center justify-center gap-2 rounded-md border border-kb-border bg-kb-surface-glass px-2.5 text-sm text-kb-muted transition hover:border-kb-accent-ring hover:text-kb-heading sm:min-w-56 sm:justify-start"
       type="button"
       aria-label="打开搜索"
       title="搜索"
     >
       <Search size={16} aria-hidden="true" />
       <span class="hidden sm:inline">搜索笔记</span>
-      <span class="ml-auto hidden rounded border border-slate-700 px-1.5 py-0.5 text-[11px] text-slate-500 sm:inline">Ctrl K</span>
+      <span class="ml-auto hidden rounded border border-kb-border-strong px-1.5 py-0.5 text-[11px] text-kb-subtle sm:inline">Ctrl K</span>
     </button>
     <ThemeToggle />
   </div>

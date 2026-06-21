@@ -6,6 +6,6 @@ interface Props {
 const { tag } = Astro.props;
 ---
 
-<span class="tag-badge inline-flex h-6 items-center rounded-md border border-slate-800 bg-slate-900/70 px-2 text-xs font-medium text-slate-400">
+<span class="tag-badge inline-flex h-6 items-center rounded-md border border-kb-border bg-kb-surface-hover px-2 text-xs font-medium text-kb-muted">
   #{tag.replace(/^#+|#+$/g, '')}
 </span>
