@@ -23,8 +23,8 @@ const notes = getTopicNotes(docs, topic);
 ---
 
 <Layout title={meta.title} description={meta.description} currentTopic={topic}>
-  <section class="mx-auto max-w-[52rem]">
-    <header class="article-header mb-9 border-b border-kb-border pb-7">
+  <section class="mx-auto max-w-[54rem]">
+    <header class="article-header mb-8 rounded-lg border border-kb-border bg-kb-surface p-5 sm:p-6">
       <div class="breadcrumb mb-4 flex flex-wrap items-center gap-2 text-sm text-kb-subtle">
         <a href="/" class="hover:text-kb-accent">首页</a>
         <span>/</span>
@@ -45,7 +45,7 @@ const notes = getTopicNotes(docs, topic);
         </div>
       )}
       {notes.map((doc) => (
-        <a href={topicDocUrl(doc.id, topic)} class="kb-list-card block rounded-lg border border-kb-border bg-kb-surface p-5 transition hover:border-kb-accent-ring hover:bg-kb-surface-hover">
+        <a href={topicDocUrl(doc.id, topic)} class="kb-list-card block rounded-lg border border-kb-border bg-kb-surface p-4 transition hover:border-kb-border-strong hover:bg-kb-surface-hover sm:p-5">
           <div class="flex flex-wrap items-center gap-3">
             <h2 class="min-w-0 flex-1 text-base font-semibold text-kb-heading">{displayTitle(doc.data.title)}</h2>
             <StatusBadge status={doc.data.status} />

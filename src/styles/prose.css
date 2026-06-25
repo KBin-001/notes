@@ -3,7 +3,7 @@
    Based on fumadocs typography/styles.ts
    ══════════════════════════════════════════════════ */
 .doc-prose {
-  max-width: 48rem;
+  max-width: 49rem;
   overflow-x: clip;
   color: var(--kb-text);
   font-size: 1rem;
@@ -21,16 +21,16 @@
 
 .doc-prose h1 {
   margin: 0 0 1.35rem;
-  font-size: clamp(1.95rem, 5vw, 2.6rem);
+  font-size: clamp(1.9rem, 4vw, 2.45rem);
   line-height: 1.16;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .doc-prose h2 {
-  margin: 2.85rem 0 0.95rem;
-  padding-top: 1.1rem;
+  margin: 2.7rem 0 0.9rem;
+  padding-top: 1rem;
   border-top: 1px solid var(--kb-border);
-  font-size: 1.38rem;
+  font-size: 1.32rem;
   line-height: 1.32;
   font-weight: 600;
 }
@@ -103,7 +103,7 @@
   margin: 1.5rem 0;
   border: 1px solid var(--kb-border);
   border-radius: 0.5rem;
-  background: var(--kb-code-bg);
+  background: var(--kb-surface);
 }
 
 .callout {
@@ -189,7 +189,7 @@
   gap: 0.35rem;
   overflow-x: auto;
   border-bottom: 1px solid var(--kb-border);
-  background: var(--kb-code-bg);
+  background: var(--kb-elevated);
   padding: 0.55rem 0.65rem 0;
 }
 
@@ -226,7 +226,7 @@
   border: 1px solid var(--kb-border);
   border-radius: 0.5rem;
   font-size: 0.875rem;
-  background: var(--kb-code-bg);
+  background: var(--kb-surface);
 }
 
 .doc-prose th,
@@ -259,7 +259,7 @@
 
 .doc-prose th {
   color: var(--kb-heading);
-  background: var(--kb-surface);
+  background: var(--kb-elevated);
   font-weight: 600;
 }
 
@@ -358,9 +358,9 @@
   max-width: min(100%, 46rem);
   height: auto;
   margin: 1.8rem auto;
-  border: 0;
+  border: 1px solid var(--kb-border);
   border-radius: 10px;
-  background: transparent;
+  background: var(--kb-surface);
   cursor: zoom-in;
   transition: opacity 0.25s ease;
 }
@@ -449,14 +449,37 @@ html[data-theme="claude"] .doc-prose blockquote {
   border-right: 0;
   border-bottom: 0;
   border-radius: 0;
+  color: var(--kb-muted);
 }
 
 html[data-theme="claude"] .doc-prose table {
-  border-collapse: collapse;
-  border-radius: 0;
+  border-collapse: separate;
+  border-radius: 0.5rem;
+  box-shadow: var(--kb-shadow-sm);
 }
 
 html[data-theme="claude"] .doc-prose th,
 html[data-theme="claude"] .doc-prose td {
-  border-left: 0;
+  border-color: var(--kb-border-subtle);
+}
+
+html[data-theme="claude"] .callout,
+html[data-theme="claude"] .mdx-collapse,
+html[data-theme="claude"] .code-tabs,
+html[data-theme="claude"] .doc-prose pre {
+  box-shadow: var(--kb-shadow-sm);
+}
+
+html[data-theme="claude"] .doc-prose pre {
+  background: #ebe7dc !important;
+  color: var(--kb-text) !important;
+}
+
+html[data-theme="claude"] .doc-prose pre code,
+html[data-theme="claude"] .doc-prose pre span {
+  color: var(--kb-text) !important;
+}
+
+html[data-theme="claude"] .doc-prose img {
+  box-shadow: var(--kb-shadow-sm);
 }

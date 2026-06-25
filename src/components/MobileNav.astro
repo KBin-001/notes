@@ -17,8 +17,8 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
 ---
 
 <div id="mobile-nav-overlay" class="fixed inset-0 z-50 hidden bg-kb-overlay backdrop-blur-sm lg:hidden" data-pagefind-ignore aria-hidden="true"></div>
-<aside id="mobile-nav-panel" class="fixed left-0 top-0 z-50 h-full w-[82vw] max-w-sm -translate-x-full overflow-y-auto border-r border-kb-border bg-kb-surface transition-transform duration-200 lg:hidden" data-pagefind-ignore aria-hidden="true">
-  <div class="sticky top-0 flex h-14 items-center justify-between border-b border-kb-border bg-kb-surface px-4">
+<aside id="mobile-nav-panel" class="fixed left-0 top-0 z-50 h-full w-[84vw] max-w-sm -translate-x-full overflow-y-auto border-r border-kb-border bg-kb-surface transition-transform duration-200 lg:hidden" data-pagefind-ignore aria-hidden="true">
+  <div class="sticky top-0 flex h-14 items-center justify-between border-b border-kb-border bg-kb-surface-glass px-4">
     <span class="text-sm font-semibold text-kb-heading">文档目录</span>
     <button id="mobile-nav-close" class="inline-flex h-10 w-10 items-center justify-center rounded-md text-kb-muted hover:bg-kb-surface-hover hover:text-kb-heading" type="button" aria-label="关闭导航" title="关闭导航">
       <X size={18} aria-hidden="true" />
@@ -36,7 +36,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
         <details class="group mb-3" data-category-section={category} open={isOpen}>
           <summary
             data-category-summary={category}
-            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-kb-surface-active text-kb-heading' : 'text-kb-muted'}`}
+            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-kb-surface-active text-kb-heading' : 'text-kb-muted hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}
           >
             <ChevronRight
               size={14}
@@ -49,14 +49,14 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
           <ul class="space-y-1">
             {categoryIndex && (
               <li>
-                <a href={docUrl(categoryIndex.id)} class={`sidebar-link block rounded-md px-3 py-2 text-sm ${currentId === categoryIndex.id ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted'}`}>
+                <a href={docUrl(categoryIndex.id)} class={`sidebar-link block rounded-md px-3 py-2 text-sm transition ${currentId === categoryIndex.id ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}>
                   分类首页
                 </a>
               </li>
             )}
             {notes.map((doc) => (
               <li>
-                <a href={docUrl(doc.id)} class={`sidebar-link block rounded-md px-3 py-2 text-sm ${currentId === doc.id ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted'}`}>
+                <a href={docUrl(doc.id)} class={`sidebar-link block rounded-md px-3 py-2 text-sm transition ${currentId === doc.id ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}>
                   {displayTitle(doc.data.title)}
                 </a>
               </li>
@@ -75,7 +75,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
         <details class="group mb-3" data-topic-section={topic} open={isOpen}>
           <summary
             data-topic-summary={topic}
-            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-kb-surface-active text-kb-heading' : 'text-kb-muted'}`}
+            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-kb-surface-active text-kb-heading' : 'text-kb-muted hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}
           >
             <ChevronRight
               size={14}
@@ -87,7 +87,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
           </summary>
           <ul class="space-y-1">
             <li>
-              <a href={`/topics/${topic}/`} data-topic-home-link={topic} class={`sidebar-link block rounded-md px-3 py-2 text-sm ${currentTopic === topic ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted'}`}>
+              <a href={`/topics/${topic}/`} data-topic-home-link={topic} class={`sidebar-link block rounded-md px-3 py-2 text-sm transition ${currentTopic === topic ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}>
                 专题首页
               </a>
             </li>
@@ -96,7 +96,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
             )}
             {notes.map((doc) => (
               <li>
-                <a href={topicDocUrl(doc.id, topic)} data-topic-doc-link={topic} class={`sidebar-link block rounded-md px-3 py-2 text-sm ${currentId === doc.id ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted'}`}>
+                <a href={topicDocUrl(doc.id, topic)} data-topic-doc-link={topic} class={`sidebar-link block rounded-md px-3 py-2 text-sm transition ${currentId === doc.id ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}>
                   <span class="block truncate">{displayTitle(doc.data.title)}</span>
                   <span class="text-[11px] text-kb-disabled">{categoryMeta[doc.data.category]?.title ?? doc.data.category}</span>
                 </a>

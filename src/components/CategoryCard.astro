@@ -11,28 +11,28 @@ interface Props {
 
 const { href, title, description, count = 0, accent = 'cyan' } = Astro.props;
 
+// Semantic accent families — converged from 7 unrelated colors to 3.
+// Each conveys a category domain rather than a random hue.
 const accentClass: Record<string, string> = {
-  cyan: 'kb-accent-cyan',
-  emerald: 'kb-accent-emerald',
-  violet: 'kb-accent-violet',
-  amber: 'kb-accent-amber',
-  rose: 'kb-accent-rose',
-  sky: 'kb-accent-sky',
-  slate: 'kb-accent-slate',
+  cyan: 'kb-accent-cyan',    // 平台 / 系统类（MTK、GMS）
+  amber: 'kb-accent-amber',  // 硬件模块类（相机、音频、显示）
+  slate: 'kb-accent-slate',  // 工作流类（工具、模板）
 };
 ---
 
 <a
   href={href}
-  class="kb-card group block rounded-lg border border-kb-border kb-card-bg p-5 transition duration-150 hover:border-kb-accent-ring hover:bg-kb-surface-hover"
+  class="kb-card group flex min-h-48 flex-col rounded-lg border border-kb-border bg-kb-surface p-5 transition duration-150 hover:border-kb-border-strong hover:bg-kb-surface-hover"
 >
-  <div class="mb-5 flex items-center justify-between">
-    <div class={`flex h-10 w-10 items-center justify-center rounded-lg ${accentClass[accent] ?? accentClass.cyan}`}>
-      <FolderOpen size={19} aria-hidden="true" />
+  <div class="flex items-center gap-3">
+    <div class={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${accentClass[accent] ?? accentClass.cyan}`}>
+      <FolderOpen size={18} aria-hidden="true" />
     </div>
-    <ArrowRight size={18} class="text-kb-disabled transition group-hover:text-kb-muted" aria-hidden="true" />
+    <h3 class="min-w-0 flex-1 text-base font-semibold text-kb-heading">{title}</h3>
   </div>
-  <h3 class="text-base font-semibold text-kb-heading">{title}</h3>
-  <p class="mt-2 min-h-12 text-sm leading-6 text-kb-muted">{description}</p>
-  <p class="mt-5 text-xs text-kb-subtle">{count} 篇笔记</p>
+  <p class="mt-3 min-h-12 flex-1 text-sm leading-6 text-kb-muted">{description}</p>
+  <div class="mt-5 flex items-center justify-between border-t border-kb-border-subtle pt-4">
+    <span class="text-xs text-kb-subtle">{count} 篇笔记</span>
+    <ArrowRight size={16} class="text-kb-disabled transition group-hover:translate-x-0.5 group-hover:text-kb-muted" aria-hidden="true" />
+  </div>
 </a>

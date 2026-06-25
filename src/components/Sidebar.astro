@@ -20,10 +20,9 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
   <nav class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto px-4 py-6" aria-label="文档目录">
     <a
       href="/"
-      class={`sidebar-link mb-4 flex items-center justify-between rounded-md px-3 py-2 text-sm transition ${currentId === 'index' ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:bg-kb-surface-hover hover:text-kb-heading'}`}
+      class={`sidebar-link mb-4 flex items-center justify-between rounded-md px-3 py-2 text-sm transition ${currentId === 'index' ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}
     >
       <span>知识库首页</span>
-      <span class="text-xs text-kb-disabled">Home</span>
     </a>
 
     <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-kb-disabled">平台目录</p>
@@ -37,7 +36,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
         <details class="group mb-2" data-category-section={category} open={isOpen}>
           <summary
             data-category-summary={category}
-            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-kb-surface-active text-kb-heading' : 'text-kb-subtle hover:bg-kb-surface-hover hover:text-kb-heading'}`}
+            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-kb-surface-active text-kb-heading' : 'text-kb-subtle hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}
           >
             <ChevronRight
               size={14}
@@ -55,7 +54,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
               <li>
                 <a
                   href={docUrl(categoryIndex.id)}
-                  class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${currentId === categoryIndex.id ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:bg-kb-surface-hover hover:text-kb-heading'}`}
+                  class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${currentId === categoryIndex.id ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}
                 >
                   分类首页
                 </a>
@@ -67,7 +66,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
                 <li>
                   <a
                     href={docUrl(doc.id)}
-                    class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:bg-kb-surface-hover hover:text-kb-heading'}`}
+                    class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}
                   >
                     {displayTitle(doc.data.title)}
                   </a>
@@ -89,7 +88,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
         <details class="group mb-2" data-topic-section={topic} open={isOpen}>
           <summary
             data-topic-summary={topic}
-            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-kb-surface-active text-kb-heading' : 'text-kb-subtle hover:bg-kb-surface-hover hover:text-kb-heading'}`}
+            class={`sidebar-summary mb-1 flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.08em] transition [&::-webkit-details-marker]:hidden ${isOpen ? 'is-active bg-kb-surface-active text-kb-heading' : 'text-kb-subtle hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}
           >
             <ChevronRight
               size={14}
@@ -105,7 +104,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
               <a
                 href={`/topics/${topic}/`}
                 data-topic-home-link={topic}
-                class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${currentTopic === topic ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:bg-kb-surface-hover hover:text-kb-heading'}`}
+                class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${currentTopic === topic ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}
               >
                 专题首页
               </a>
@@ -120,7 +119,7 @@ const currentTopics = currentTopic ? [currentTopic] : currentDoc?.data.topics ??
                   <a
                     href={topicDocUrl(doc.id, topic)}
                     data-topic-doc-link={topic}
-                    class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:bg-kb-surface-hover hover:text-kb-heading'}`}
+                    class={`sidebar-link block rounded-md px-3 py-1.5 text-sm leading-6 transition ${active ? 'is-active bg-kb-accent-soft text-kb-heading' : 'text-kb-muted hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading'}`}
                   >
                     <span class="block truncate">{displayTitle(doc.data.title)}</span>
                     <span class="text-[11px] text-kb-disabled">{categoryMeta[doc.data.category]?.title ?? doc.data.category}</span>

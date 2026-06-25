@@ -97,11 +97,11 @@
    UTILITY CLASSES
    ══════════════════════════════════════════════════ */
 @utility kb-card-bg {
-  background: var(--kb-code-bg);
+  background: var(--kb-surface);
 }
 
 @utility kb-hero-bg {
-  background: var(--kb-code-bg);
+  background: var(--kb-surface);
 }
 
 /* Category accent colors — neutral, low-opacity variants */
@@ -163,82 +163,92 @@
 
 /* ══════════════════════════════════════════════════
    BASE STYLES
+   Wrapped in @layer base so that Tailwind utility
+   classes (e.g. text-kb-bg on links) win the cascade
+   over these element selectors. Without the layer,
+   bare `a { color: inherit }` defeated every color
+   utility on <a> tags (the invisible primary button bug).
    ══════════════════════════════════════════════════ */
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-html {
-  background: var(--kb-bg);
-  overflow-x: clip;
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  html {
+    background: var(--kb-bg);
+    overflow-x: clip;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  overflow-x: clip;
-  background: var(--kb-bg);
-  color: var(--kb-text);
-  font-family: var(--font-sans);
-}
+  body {
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: clip;
+    background: var(--kb-bg);
+    color: var(--kb-text);
+    font-family: var(--font-sans);
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-button,
-input {
-  font: inherit;
-}
+  button,
+  input {
+    font: inherit;
+  }
 
-svg {
-  color: currentColor;
-}
+  svg {
+    color: currentColor;
+  }
 
-code,
-pre {
-  font-family: var(--font-mono);
-}
+  code,
+  pre {
+    font-family: var(--font-mono);
+  }
 
-/* ── Focus ── */
-:where(a[href], button, input, summary, [tabindex]):focus-visible {
-  outline: 2px solid var(--kb-focus-ring);
-  outline-offset: 3px;
-  border-radius: 0.375rem;
-}
+  /* ── Focus ── */
+  :where(a[href], button, input, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--kb-focus-ring);
+    outline-offset: 3px;
+    border-radius: 0.375rem;
+  }
 
-/* ── Selection ── */
-::selection {
-  background: hsla(0, 0%, 100%, 0.15);
-}
+  /* ── Selection ── */
+  ::selection {
+    background: hsla(0, 0%, 100%, 0.15);
+  }
 
-/* ── Scrollbar ── */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: var(--kb-border);
-  border-radius: 5px;
-}
+  ::-webkit-scrollbar-thumb {
+    background: var(--kb-border);
+    border-radius: 5px;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--kb-border-strong);
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--kb-border-strong);
+  }
 }
 
 /* ══════════════════════════════════════════════════
    LAYOUT COMPONENTS
+   Wrapped in @layer components so Tailwind utility
+   classes (colors/borders set in markup) override
+   these defaults in the cascade.
    ══════════════════════════════════════════════════ */
-
+@layer components {
 /* ── Reading Progress Bar ── */
 #reading-progress {
   background: var(--kb-heading);
@@ -247,7 +257,7 @@ pre {
 /* ── Site Header ──
    fumadocs: backdrop-blur-sm, bg-fd-background/80, border-b, no heavy shadow */
 .site-header {
-  background: hsla(0, 0%, 7.04%, 0.8);
+  background: var(--kb-surface-glass);
   border-bottom: 1px solid var(--kb-border);
   backdrop-filter: blur(4px);
 }
@@ -299,12 +309,12 @@ pre {
 
 #mobile-nav-panel {
   border-color: var(--kb-border);
-  background: var(--kb-bg);
+  background: var(--kb-surface);
 }
 
 #mobile-nav-panel > div {
   border-color: var(--kb-border);
-  background-color: var(--kb-bg);
+  background-color: var(--kb-surface-glass);
 }
 
 /* ── Search Dialog ──
@@ -316,7 +326,7 @@ pre {
 
 .search-panel {
   border: 1px solid var(--kb-border);
-  background: var(--kb-elevated);
+  background: var(--kb-surface);
   border-radius: 0.75rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
@@ -334,6 +344,7 @@ pre {
 .search-result:hover,
 .search-result:focus-visible {
   background: var(--kb-surface-hover);
+  border-color: var(--kb-border);
 }
 
 /* ══════════════════════════════════════════════════
@@ -345,6 +356,7 @@ pre {
 .sidebar-summary,
 .toc-link {
   position: relative;
+  border: 1px solid transparent;
 }
 
 .sidebar-link.is-active::before,
@@ -354,7 +366,7 @@ pre {
   left: 0.625rem;
   width: 1px;
   border-radius: 999px;
-  background: var(--kb-heading);
+  background: var(--kb-accent);
   content: "";
 }
 
@@ -362,7 +374,7 @@ pre {
 .sidebar-link > span:last-child:not(:only-child) {
   border-radius: 999px;
   padding-inline: 0.35rem;
-  background: var(--kb-surface);
+  background: var(--kb-elevated);
 }
 
 .sidebar-summary {
@@ -379,6 +391,8 @@ pre {
 
 [data-toc-link][data-active="true"] {
   color: var(--kb-heading);
+  background: var(--kb-accent-soft);
+  border-color: var(--kb-border);
 }
 
 /* Sidebar scrollbar — fumadocs: 5px, border color thumb */
@@ -417,7 +431,8 @@ aside[data-pagefind-ignore] > div::-webkit-scrollbar-thumb,
 }
 
 .kb-hero {
-  box-shadow: none;
+  background: var(--kb-surface);
+  box-shadow: var(--kb-shadow-sm);
 }
 
 .kb-card,
@@ -429,6 +444,7 @@ aside[data-pagefind-ignore] > div::-webkit-scrollbar-thumb,
 
 .kb-card {
   min-height: 12.5rem;
+  background: var(--kb-surface);
 }
 
 .kb-card:hover,
@@ -447,7 +463,13 @@ aside[data-pagefind-ignore] > div::-webkit-scrollbar-thumb,
 }
 
 .kb-list-card {
+  background: var(--kb-surface);
   box-shadow: none;
+}
+
+.kb-panel {
+  background: var(--kb-surface);
+  box-shadow: var(--kb-shadow-sm);
 }
 
 .kb-update-link {
@@ -507,53 +529,87 @@ aside[data-pagefind-ignore] > div::-webkit-scrollbar-thumb,
 .glass-line {
   border-color: var(--kb-border);
 }
+} /* end @layer components */
 
 /* ══════════════════════════════════════════════════
    CLAUDE LIGHT THEME — preserved, only variable overrides
+   Wrapped in @layer base so utility classes still win.
    ══════════════════════════════════════════════════ */
 html[data-theme="claude"] {
   color-scheme: light;
 
-  --kb-bg:             #f5f4ed;
-  --kb-surface:        #fbfaf5;
-  --kb-elevated:       #efede3;
-  --kb-overlay:        rgba(20, 20, 19, 0.24);
-  --kb-surface-glass:  rgba(245, 244, 237, 0.90);
-  --kb-surface-hover:  rgba(20, 20, 19, 0.06);
-  --kb-surface-active: rgba(20, 20, 19, 0.10);
+  --kb-bg:             #f5f2e9;
+  --kb-surface:        #fffdf7;
+  --kb-elevated:       #f1eee4;
+  --kb-overlay:        rgba(35, 31, 24, 0.24);
+  --kb-surface-glass:  rgba(255, 253, 247, 0.86);
+  --kb-surface-hover:  rgba(87, 73, 52, 0.07);
+  --kb-surface-active: rgba(87, 73, 52, 0.11);
   --kb-heading:        #141413;
-  --kb-text:           #30302e;
-  --kb-muted:          #696861;
-  --kb-subtle:         #87867f;
-  --kb-disabled:       #a8a69d;
-  --kb-accent:         #d97757;
-  --kb-accent-hover:   #c95f3d;
-  --kb-accent-soft:    rgba(217, 119, 87, 0.10);
-  --kb-accent-ring:    rgba(217, 119, 87, 0.24);
-  --kb-accent-2:       #eda100;
-  --kb-border:         rgba(201, 197, 184, 0.60);
-  --kb-border-subtle:  #ddd9cb;
-  --kb-border-strong:  #c9c5b8;
-  --kb-link:           #c95f3d;
-  --kb-code-bg:        #151513;
-  --kb-inline-code-bg: rgba(232, 230, 220, 0.78);
-  --kb-focus-ring:     rgba(217, 119, 87, 0.55);
-  --kb-warning:  #a86f00;
-  --kb-danger:   #b53d4a;
-  --kb-success:  #4f8f58;
-  --kb-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-  --kb-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-  --kb-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.10);
+  --kb-text:           #34312c;
+  --kb-muted:          #69645c;
+  --kb-subtle:         #817b71;
+  --kb-disabled:       #aaa397;
+  --kb-accent:         #c96442;
+  --kb-accent-hover:   #b65335;
+  --kb-accent-soft:    rgba(201, 100, 66, 0.12);
+  --kb-accent-ring:    rgba(201, 100, 66, 0.26);
+  --kb-accent-2:       #b98218;
+  --kb-border:         rgba(202, 194, 178, 0.78);
+  --kb-border-subtle:  rgba(216, 210, 195, 0.72);
+  --kb-border-strong:  #beb5a4;
+  --kb-link:           #b65335;
+  --kb-code-bg:        #f0ede4;
+  --kb-inline-code-bg: rgba(232, 226, 213, 0.82);
+  --kb-focus-ring:     rgba(201, 100, 66, 0.55);
+  --kb-warning:  #9a6700;
+  --kb-danger:   #ad3a45;
+  --kb-success:  #4d8355;
+  --kb-shadow-sm: 0 1px 0 rgba(57, 47, 33, 0.04), 0 8px 20px rgba(57, 47, 33, 0.05);
+  --kb-shadow-md: 0 12px 32px rgba(57, 47, 33, 0.08);
+  --kb-shadow-lg: 0 20px 56px rgba(57, 47, 33, 0.10);
 }
 
 html[data-theme="claude"],
 html[data-theme="claude"] body {
-  background: #f5f4ed;
+  background: var(--kb-bg);
 }
 
 html[data-theme="claude"] .site-header {
   backdrop-filter: none;
   background: var(--kb-surface-glass);
+}
+
+html[data-theme="claude"] .kb-card,
+html[data-theme="claude"] .kb-list-card,
+html[data-theme="claude"] .kb-panel,
+html[data-theme="claude"] .kb-hero,
+html[data-theme="claude"] .search-panel,
+html[data-theme="claude"] #mobile-nav-panel {
+  box-shadow: var(--kb-shadow-sm);
+}
+
+html[data-theme="claude"] .kb-card:hover,
+html[data-theme="claude"] .kb-list-card:hover,
+html[data-theme="claude"] .kb-update-link:hover,
+html[data-theme="claude"] .kb-quick-link:hover,
+html[data-theme="claude"] .search-result:hover {
+  background: #faf7ef;
+}
+
+html[data-theme="claude"] .kb-accent-cyan {
+  background: rgba(45, 112, 122, 0.11);
+  color: #2d707a;
+}
+
+html[data-theme="claude"] .kb-accent-amber {
+  background: rgba(171, 116, 24, 0.13);
+  color: #926113;
+}
+
+html[data-theme="claude"] .kb-accent-slate {
+  background: rgba(78, 76, 70, 0.10);
+  color: #5b574f;
 }
 
 html[data-theme="claude"] #mobile-nav-overlay,
@@ -562,7 +618,7 @@ html[data-theme="claude"] #search-dialog {
 }
 
 html[data-theme="claude"] .search-panel {
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--kb-shadow-md);
 }
 
 html[data-theme="claude"] ::-webkit-scrollbar-thumb {

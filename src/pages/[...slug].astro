@@ -27,14 +27,14 @@ const categoryNotes = isCategoryPage ? getCategoryNotes(docs, entry.data.categor
 ---
 
 <Layout title={displayTitle(entry.data.title)} description={entry.data.description} currentId={entry.id} headings={headings}>
-  <article class="mx-auto max-w-[52rem]" data-pagefind-body>
-    <header class="article-header mb-9 border-b border-kb-border pb-7">
-      <div class="breadcrumb mb-4 flex flex-wrap items-center gap-2 text-sm text-kb-subtle">
+  <article class="mx-auto max-w-[54rem]" data-pagefind-body>
+    <header class="article-header mb-8 rounded-lg border border-kb-border bg-kb-surface p-5 sm:p-6">
+      <div class="breadcrumb mb-4 flex min-w-0 flex-wrap items-center gap-2 text-sm text-kb-subtle">
         <a href="/" class="hover:text-kb-accent">首页</a>
         <span>/</span>
         <a href={`/${entry.data.category}/`} class="hover:text-kb-accent">{category?.title ?? entry.data.category}</a>
         <span>/</span>
-        <span>{canonicalUrl}</span>
+        <span class="min-w-0 break-all">{canonicalUrl}</span>
       </div>
       <div class="flex flex-wrap items-center gap-3">
         <StatusBadge status={entry.data.status} />
@@ -65,7 +65,7 @@ const categoryNotes = isCategoryPage ? getCategoryNotes(docs, entry.data.categor
         </div>
         <div class="grid gap-3">
           {categoryNotes.map((doc) => (
-            <a href={docUrl(doc.id)} class="kb-list-card block rounded-lg border border-kb-border bg-kb-surface p-4 transition hover:border-kb-accent-ring hover:bg-kb-surface-hover">
+            <a href={docUrl(doc.id)} class="kb-list-card block rounded-lg border border-kb-border bg-kb-surface p-4 transition hover:border-kb-border-strong hover:bg-kb-surface-hover sm:p-5">
               <div class="flex flex-wrap items-center gap-3">
                 <h3 class="min-w-0 flex-1 text-base font-semibold text-kb-heading">{displayTitle(doc.data.title)}</h3>
                 <StatusBadge status={doc.data.status} />

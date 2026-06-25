@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { BookMarked, Clock3, FilePlus2, Wrench } from '@lucide/astro';
+import { Clock3, FilePlus2, Wrench } from '@lucide/astro';
 import CategoryCard from '@/components/CategoryCard.astro';
 import StatusBadge from '@/components/StatusBadge.astro';
 import Layout from '@/layouts/Layout.astro';
@@ -12,19 +12,15 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
 ---
 
 <Layout title="kevin知识库" description="面向驱动开发、系统定制和认证问题排查的个人知识库。" currentId="index">
-  <section class="mx-auto max-w-5xl">
-    <div class="kb-hero mb-10 rounded-lg border border-kb-border kb-hero-bg p-6 sm:p-8">
-      <div class="mb-7 inline-flex items-center gap-2 rounded-md border border-kb-accent-ring bg-kb-accent-soft px-3 py-1 text-sm text-kb-accent">
-        <BookMarked size={16} aria-hidden="true" />
-        kevin知识库
-      </div>
-      <h1 class="max-w-3xl text-3xl font-semibold leading-tight text-kb-heading sm:text-4xl">
+  <section class="mx-auto max-w-6xl">
+    <div class="kb-hero mb-9 rounded-lg border border-kb-border bg-kb-surface p-6 sm:p-8">
+      <h1 class="max-w-3xl text-2xl font-semibold leading-tight text-kb-heading sm:text-3xl">
         驱动问题、日志线索和修改记录，沉淀成可复用的排查路径。
       </h1>
-      <p class="mt-5 max-w-3xl text-base leading-8 text-kb-muted">
+      <p class="mt-5 max-w-2xl text-base leading-8 text-kb-muted">
         这里用于整理 MTK、GMS、Camera、Audio、Display 与工具链相关笔记。每篇内容都按现象、平台、日志、代码路径、排查过程、修改方案和验证方法组织，便于后续快速复盘。
       </p>
-      <div class="mt-8 flex flex-wrap gap-3">
+      <div class="mt-7 flex flex-wrap gap-3">
         <a href="/mtk/hall-driver/" class="kb-button-primary inline-flex h-10 items-center gap-2 rounded-md bg-kb-accent px-4 text-sm font-semibold text-kb-bg transition hover:bg-kb-accent-hover">
           <Wrench size={16} aria-hidden="true" />
           查看霍尔驱动笔记
@@ -36,8 +32,8 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
       </div>
     </div>
 
-    <section class="mb-14">
-      <div class="mb-5 flex items-end justify-between gap-4">
+    <section class="mb-12">
+      <div class="mb-4 flex items-end justify-between gap-4">
         <div>
           <h2 class="text-xl font-semibold text-kb-heading">分类入口</h2>
           <p class="mt-1 text-sm text-kb-subtle">按平台、模块和工作流浏览笔记。</p>
@@ -60,8 +56,8 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
       </div>
     </section>
 
-    <section class="mb-14">
-      <div class="mb-5 flex items-end justify-between gap-4">
+    <section class="mb-12">
+      <div class="mb-4 flex items-end justify-between gap-4">
         <div>
           <h2 class="text-xl font-semibold text-kb-heading">复盘专题</h2>
           <p class="mt-1 text-sm text-kb-subtle">同一篇笔记可按明确专题再次归档，便于跨平台复盘。</p>
@@ -84,8 +80,8 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
       </div>
     </section>
 
-    <section class="mb-12 grid gap-6 xl:grid-cols-[1fr_20rem]">
-      <div class="kb-panel rounded-lg border border-kb-border bg-kb-surface">
+    <section class="mb-12 grid gap-5 xl:grid-cols-[1fr_20rem]">
+      <div class="kb-panel overflow-hidden rounded-lg border border-kb-border bg-kb-surface">
         <div class="flex items-center gap-2 border-b border-kb-border px-5 py-4">
           <Clock3 size={18} class="text-kb-accent" aria-hidden="true" />
           <h2 class="text-base font-semibold text-kb-heading">最近更新</h2>

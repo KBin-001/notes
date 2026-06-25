@@ -2,8 +2,8 @@
 import { Search, X } from '@lucide/astro';
 ---
 
-<div id="search-dialog" class="fixed inset-0 z-50 hidden items-start justify-center bg-kb-overlay px-4 pt-20 backdrop-blur-sm" data-pagefind-ignore aria-hidden="true">
-  <div class="search-panel w-full max-w-2xl rounded-lg border border-kb-border bg-kb-surface shadow-2xl">
+<div id="search-dialog" class="fixed inset-0 z-50 hidden items-start justify-center bg-kb-overlay px-4 pt-16 backdrop-blur-sm sm:pt-20" data-pagefind-ignore aria-hidden="true">
+  <div class="search-panel w-full max-w-2xl overflow-hidden rounded-lg border border-kb-border bg-kb-surface shadow-2xl">
     <div class="flex items-center gap-3 border-b border-kb-border px-4 py-3">
       <Search size={18} class="text-kb-muted" aria-hidden="true" />
       <input
@@ -18,7 +18,7 @@ import { Search, X } from '@lucide/astro';
     <div id="search-status" class="border-b border-kb-border px-4 py-3 text-xs text-kb-subtle">
       输入关键词开始搜索。
     </div>
-    <div id="search-results" class="max-h-[60vh] overflow-y-auto p-2"></div>
+    <div id="search-results" class="max-h-[62vh] overflow-y-auto p-2"></div>
   </div>
 </div>
 
@@ -95,7 +95,7 @@ import { Search, X } from '@lucide/astro';
     const primaryUrl = firstHashUrl(result);
     renderLink(
       primaryUrl,
-      'search-result block rounded-md px-3 py-3 text-sm transition hover:bg-kb-surface-hover',
+      'search-result block rounded-md px-3 py-3 text-sm transition hover:border-kb-border hover:bg-kb-surface-hover',
       result.meta?.title || primaryUrl,
       result.excerpt || result.url,
     );
@@ -108,7 +108,7 @@ import { Search, X } from '@lucide/astro';
       .forEach((sub: any) => {
         renderLink(
           sub.url,
-          'search-result ml-4 block rounded-md border-l border-kb-border px-3 py-2 text-xs leading-6 text-kb-subtle transition hover:bg-kb-surface-hover hover:text-kb-heading',
+          'search-result ml-4 block rounded-md border-l border-kb-border px-3 py-2 text-xs leading-6 text-kb-subtle transition hover:border-kb-border hover:bg-kb-surface-hover hover:text-kb-heading',
           sub.title || sub.excerpt || sub.url,
         );
       });

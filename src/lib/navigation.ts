@@ -12,7 +12,7 @@ export const topicMeta: Record<TopicId, { title: string; description: string }> 
     description: '充电路径、节点、电流策略、PD/USB 相关问题复盘。',
   },
   camera: {
-    title: 'Camera',
+    title: '相机',
     description: '摄像头 bring-up、供电时序、FOV、方向和画质问题复盘。',
   },
   display_tp: {
@@ -24,7 +24,7 @@ export const topicMeta: Record<TopicId, { title: string; description: string }> 
     description: '功放、音效、通路、耳机、音量和音频测试问题复盘。',
   },
   sensor: {
-    title: 'Sensor',
+    title: '传感器',
     description: 'G-sensor、陀螺仪、距离传感器和相关声明问题复盘。',
   },
 };
@@ -38,30 +38,30 @@ export const categoryMeta: Record<string, { title: string; description: string; 
   gms: {
     title: 'GMS 认证',
     description: '认证项、声明裁剪、测试失败与兼容性处理。',
-    accent: 'emerald',
+    accent: 'cyan',
   },
   camera: {
-    title: 'Camera',
+    title: '相机',
     description: 'Camera bring-up、FOV、供电时序和调试经验。',
-    accent: 'violet',
+    accent: 'amber',
   },
   audio: {
-    title: 'Audio',
+    title: '音频',
     description: '音频效果、功放调试、通路与测试记录。',
     accent: 'amber',
   },
   display: {
-    title: 'Display',
+    title: '显示',
     description: '屏幕亮度、刷新率、分辨率和显示相关配置。',
-    accent: 'rose',
+    accent: 'amber',
   },
   tools: {
-    title: 'Tools',
+    title: '工具',
     description: 'ADB、Git、Logcat 等常用排查工具速查。',
-    accent: 'sky',
+    accent: 'slate',
   },
   templates: {
-    title: 'Templates',
+    title: '模板',
     description: '问题记录、调试复盘和 Diff 归档模板。',
     accent: 'slate',
   },
