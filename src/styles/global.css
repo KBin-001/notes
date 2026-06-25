@@ -612,6 +612,36 @@ html[data-theme="claude"] .kb-accent-slate {
   color: #5b574f;
 }
 
+html[data-theme="claude"] .kb-status-active {
+  border-color: #e2cda4;
+  background-color: #fbf1dc;
+  color: #76551b;
+}
+
+html[data-theme="claude"] .kb-status-verified {
+  border-color: #bdd3b8;
+  background-color: #edf6e9;
+  color: #356c3f;
+}
+
+html[data-theme="claude"] .kb-status-pending {
+  border-color: #dfc08a;
+  background-color: #fbefd5;
+  color: #805a10;
+}
+
+html[data-theme="claude"] .kb-status-incomplete {
+  border-color: #e1b6b8;
+  background-color: #fae8e8;
+  color: #9b2f3a;
+}
+
+html[data-theme="claude"] .kb-status-deprecated {
+  border-color: #d8d1c3;
+  background-color: #f4efe6;
+  color: #6f685d;
+}
+
 html[data-theme="claude"] #mobile-nav-overlay,
 html[data-theme="claude"] #search-dialog {
   backdrop-filter: none;
