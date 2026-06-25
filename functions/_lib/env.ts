@@ -20,7 +20,7 @@ export function repoConfig(env: Env) {
   return {
     owner: env.GITHUB_OWNER || 'KBin-001',
     repo: env.GITHUB_REPO || 'notes',
-    branch: env.GITHUB_BRANCH || 'main',
+    branch: env.GITHUB_BRANCH || 'kb',
   };
 }
 
