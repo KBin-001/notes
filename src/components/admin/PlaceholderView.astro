@@ -1,0 +1,74 @@
+---
+import { Wrench } from '@lucide/astro';
+
+interface Props {
+  route: 'storage' | 'settings' | 'logs';
+}
+
+const { route } = Astro.props;
+
+const meta: Record<string, { title: string; desc: string; needs: string[] }> = {
+  storage: {
+    title: '存储管理',
+    desc: '查看图片、附件占用，清理无引用资源，监控仓库体积。',
+    needs: [
+      '新增 /api/storage/stats 接口：扫描 images/ 目录并统计体积',
+      '新增 /api/storage/list 接口：列出所有图片及引用次数',
+      '新增 /api/storage/delete 接口：删除无引用图片',
+    ],
+  },
+  settings: {
+    title: '站点设置',
+    desc: '配置站点标题、描述、导航、首页宣传语等全局参数。',
+    needs: [
+      '新增 site config 数据源（如 src/content/settings.json 或环境变量）',
+      '新增 /api/settings/get、/api/settings/update 接口',
+      '前台 Layout 读取动态配置',
+    ],
+  },
+  logs: {
+    title: '操作日志',
+    desc: '记录后台所有写操作（发布、更新、删除、图片上传）的时间线。',
+    needs: [
+      '新增日志存储（仓库内 JSON 或外部 KV）',
+      '在 save / upload-image / delete 接口写入日志',
+      '新增 /api/logs/list 接口读取日志',
+    ],
+  },
+};
+
+const info = meta[route];
+---
+
+<section class="admin-view" data-view={route}>
+  <div class="admin-page-head">
+    <div class="title-block">
+      <h2>{info.title}</h2>
+      <p>{info.desc}</p>
+    </div>
+  </div>
+
+  <div class="admin-card admin-card-pad" style="max-width:640px">
+    <div class="admin-flex admin-items-center admin-gap-2 admin-mb-3">
+      <span class="stat-icon" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;background:var(--kb-accent-soft);color:var(--kb-accent)">
+        <Wrench size={20} />
+      </span>
+      <div>
+        <div style="font-weight:700;color:var(--kb-heading);font-size:1.05rem">即将上线</div>
+        <div class="admin-text-xs admin-subtle">该模块需要后端能力扩展</div>
+      </div>
+    </div>
+
+    <p class="admin-text-sm admin-muted admin-mb-3" style="line-height:1.7">
+      「{info.title}」目前还没有对应的后端接口支撑。下面列出后续实现该功能所需的工作项，
+      方便规划迭代。在此之前，相关操作可手动在 GitHub 仓库完成。
+    </p>
+
+    <div class="admin-section-title">需要新增的能力</div>
+    <ul style="margin:0;padding-left:1.2em;color:var(--kb-text);font-size:0.88rem;line-height:2">
+      {info.needs.map((n) => (
+        <li><code class="admin-mono admin-text-xs">{n}</code></li>
+      ))}
+    </ul>
+  </div>
+</section>

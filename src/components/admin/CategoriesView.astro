@@ -1,0 +1,94 @@
+---
+import { getCollection } from 'astro:content';
+import { FolderTree } from '@lucide/astro';
+import StatusBadge from '@/components/StatusBadge.astro';
+import {
+  categoryMeta,
+  categoryOrder,
+  displayTitle,
+  formatDate,
+  isIndexDoc,
+  sortDocsByUpdated,
+} from '@/lib/navigation';
+
+const all = await getCollection('docs');
+const notes = all.filter((d) => !isIndexDoc(d.id));
+
+const rows = categoryOrder.map((cat) => {
+  const docs = notes.filter((d) => d.data.category === cat);
+  const latest = sortDocsByUpdated(docs)[0];
+  const statusCount = docs.reduce<Record<string, number>>((acc, d) => {
+    acc[d.data.status] = (acc[d.data.status] || 0) + 1;
+    return acc;
+  }, {});
+  return {
+    cat,
+    meta: categoryMeta[cat],
+    total: docs.length,
+    latest,
+    statusCount,
+  };
+});
+---
+
+<section class="admin-view" data-view="categories">
+  <div class="admin-page-head">
+    <div class="title-block">
+      <h2>分类管理</h2>
+      <p>按工作平台 / 模块归档的笔记分类概览（只读）。</p>
+    </div>
+  </div>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>分类</th>
+          <th>标题</th>
+          <th>笔记数</th>
+          <th>状态分布</th>
+          <th>最近更新</th>
+          <th style="text-align:right">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr>
+            <td><span class="admin-tag" style="font-family:var(--font-mono)">{row.cat}</span></td>
+            <td class="col-title">{row.meta?.title ?? row.cat}</td>
+            <td><strong style="color:var(--kb-heading)">{row.total}</strong></td>
+            <td>
+              {Object.entries(row.statusCount).map(([s, n]) => (
+                <span style="display:inline-flex;align-items:center;gap:4px;margin-right:8px">
+                  <StatusBadge status={s as any} />
+                  <span class="admin-text-xs admin-subtle">{n}</span>
+                </span>
+              ))}
+            </td>
+            <td class="admin-table-meta">{row.latest ? formatDate(row.latest.data.updated) : '—'}</td>
+            <td>
+              <div class="col-actions">
+                <a class="admin-icon-btn" href={`/#/notes`} title="去笔记管理">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="admin-card admin-card-pad admin-mt-4" style="display:flex;gap:12px;align-items:flex-start">
+    <span class="stat-icon" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:var(--kb-accent-soft);color:var(--kb-accent);flex-shrink:0">
+      <FolderTree size={18} />
+    </span>
+    <div>
+      <div style="font-weight:600;color:var(--kb-heading)">说明</div>
+      <p class="admin-text-sm admin-muted admin-mt-2" style="margin:6px 0 0">
+        当前版本的分类由 <code class="admin-mono admin-text-xs">content.config.ts</code> 与仓库目录结构共同决定。
+        新增分类需要同时在配置文件、目录结构和 <code class="admin-mono admin-text-xs">navigation.ts</code> 中登记。
+      </p>
+    </div>
+  </div>
+</section>

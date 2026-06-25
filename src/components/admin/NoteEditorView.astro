@@ -1,0 +1,211 @@
+---
+import {
+  Eye,
+  Code2,
+  Columns2,
+  ImagePlus,
+  ListChecks,
+  RefreshCw,
+  Save,
+  Send,
+  ArrowLeft,
+} from '@lucide/astro';
+
+const categories = ['mtk', 'gms', 'camera', 'audio', 'display', 'tools'];
+const statuses = ['整理中', '已验证', '待验证', '未完成', '废弃'];
+const visibilities = ['public', 'private', 'draft'];
+const topics = [
+  { value: 'charging', label: '充电' },
+  { value: 'camera', label: 'Camera' },
+  { value: 'display_tp', label: '屏幕 / TP' },
+  { value: 'audio', label: '音频' },
+  { value: 'sensor', label: 'Sensor' },
+];
+---
+
+<section class="admin-view" data-view="editor">
+  <div class="admin-page-head">
+    <div class="title-block">
+      <h2 id="editor-page-title">新建笔记</h2>
+      <p id="editor-page-sub">填写笔记内容与元信息，支持编辑 / 预览 / 分屏切换。</p>
+    </div>
+    <div class="admin-page-actions">
+      <a class="admin-btn secondary sm" href="/#/notes">
+        <ArrowLeft size={14} aria-hidden="true" />
+        返回列表
+      </a>
+    </div>
+  </div>
+
+  <form id="note-form" class="editor-layout">
+    <!-- ============ 左侧主编辑区 ============ -->
+    <div class="editor-main">
+      <!-- 源文件载入（新建/编辑通用入口） -->
+      <div class="admin-card admin-mb-3" style="padding:14px 16px">
+        <div class="admin-flex admin-items-center admin-gap-2 admin-flex-wrap">
+          <label class="admin-btn secondary sm">
+            <ImagePlus size={14} aria-hidden="true" />
+            选择 Markdown / MDX 文件
+            <input id="file-input" type="file" accept=".md,.mdx,text/markdown,text/x-markdown" hidden />
+          </label>
+          <span class="admin-text-xs admin-subtle" id="file-source-name">未选择文件</span>
+          <span class="admin-flex admin-items-center admin-gap-1" style="margin-left:auto">
+            <button class="admin-btn ghost sm" type="button" id="load-list-button">
+              <RefreshCw size={13} aria-hidden="true" />
+              读取 GitHub 笔记列表
+            </button>
+            <select id="note-list" class="admin-select" style="width:280px">
+              <option value="">先读取列表，再选择文章</option>
+            </select>
+          </span>
+        </div>
+      </div>
+
+      <!-- 基本字段 -->
+      <div class="admin-card admin-card-pad">
+        <div class="admin-row cols-2 admin-mb-3">
+          <div class="admin-field">
+            <label for="title">标题</label>
+            <input id="title" name="title" class="admin-input" required placeholder="笔记标题" />
+          </div>
+          <div class="admin-field">
+            <label for="slug">Slug（URL 片段）</label>
+            <input id="slug" name="slug" class="admin-input" required pattern="[a-z0-9-]+" placeholder="note-slug" />
+            <span class="admin-field-hint">仅小写字母、数字、短横线</span>
+          </div>
+        </div>
+        <div class="admin-field">
+          <label for="description">描述</label>
+          <textarea id="description" name="description" class="admin-textarea" rows="2" placeholder="一句话简介，用于列表和 SEO"></textarea>
+        </div>
+      </div>
+
+      <!-- 正文编辑器 -->
+      <div class="admin-card admin-mt-3" style="overflow:hidden">
+        <div class="editor-toolbar">
+          <div class="admin-flex admin-items-center admin-gap-2">
+            <span class="admin-section-title admin-mb-0" style="border:none;padding:0;margin:0">正文 Markdown / MDX</span>
+          </div>
+          <div class="admin-flex admin-items-center admin-gap-2">
+            <button id="insert-image-button" class="admin-btn secondary sm" type="button" disabled title="请先填写 Slug">
+              <ImagePlus size={13} aria-hidden="true" />
+              插入图片
+            </button>
+            <div class="editor-mode-tabs" id="editor-mode-tabs">
+              <button class="editor-mode-tab is-active" type="button" data-mode="edit">
+                <Code2 size={13} aria-hidden="true" /> 编辑
+              </button>
+              <button class="editor-mode-tab" type="button" data-mode="split">
+                <Columns2 size={13} aria-hidden="true" /> 分屏
+              </button>
+              <button class="editor-mode-tab" type="button" data-mode="preview">
+                <Eye size={13} aria-hidden="true" /> 预览
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-body" id="editor-body">
+          <!-- 编辑模式 -->
+          <textarea id="body" name="body" class="editor-textarea" spellcheck="false" placeholder="# 标题&#10;&#10;在这里开始写正文..."></textarea>
+          <!-- 预览模式（默认隐藏） -->
+          <div id="editor-preview" class="editor-preview admin-hidden"></div>
+        </div>
+        <input id="image-input" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" multiple class="admin-hidden" />
+      </div>
+
+      <!-- 消息 / 警告 -->
+      <div id="warnings" class="admin-warnings admin-hidden admin-mt-3"></div>
+      <div id="message" class="admin-message admin-hidden admin-mt-3"></div>
+
+      <!-- 底部固定操作栏 -->
+      <div class="admin-action-bar admin-card">
+        <div class="left">
+          <button id="reset-button" class="admin-btn ghost" type="button">
+            <ListChecks size={14} aria-hidden="true" />
+            清空表单
+          </button>
+        </div>
+        <div class="right">
+          <button id="save-draft-button" class="admin-btn secondary" type="button">
+            <Save size={14} aria-hidden="true" />
+            保存草稿
+          </button>
+          <button id="publish-button" class="admin-btn primary" type="submit" data-publish="true">
+            <Send size={14} aria-hidden="true" />
+            <span id="publish-button-text">发布笔记</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 右侧元信息（sticky） ============ -->
+    <aside class="editor-side">
+      <!-- 发布设置 -->
+      <div class="admin-card admin-card-pad">
+        <div class="admin-section-title">发布设置</div>
+        <div class="admin-field admin-mb-3">
+          <label for="status">状态</label>
+          <select id="status" name="status" class="admin-select">
+            {statuses.map((s) => <option value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div class="admin-field admin-mb-3">
+          <label for="visibility">公开状态</label>
+          <select id="visibility" name="visibility" class="admin-select">
+            {visibilities.map((v) => <option value={v}>{v}</option>)}
+          </select>
+        </div>
+        <label class="admin-check admin-mb-3">
+          <input id="sensitive" name="sensitive" type="checkbox" checked />
+          <span>sensitive（含敏感/内部内容）</span>
+        </label>
+        <div class="admin-row cols-2">
+          <div class="admin-field">
+            <label for="date">创建日期</label>
+            <input id="date" name="date" type="date" class="admin-input" required />
+          </div>
+          <div class="admin-field">
+            <label for="updated">更新日期</label>
+            <input id="updated" name="updated" type="date" class="admin-input" required />
+          </div>
+        </div>
+      </div>
+
+      <!-- 归档设置 -->
+      <div class="admin-card admin-card-pad">
+        <div class="admin-section-title">归档设置</div>
+        <div class="admin-field admin-mb-3">
+          <label for="category">分类</label>
+          <select id="category" name="category" class="admin-select">
+            {categories.map((c) => <option value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div class="admin-field admin-mb-3">
+          <label for="tags">标签 tags</label>
+          <input id="tags" name="tags" class="admin-input" placeholder="用英文逗号分隔，例：mtk,hall" />
+        </div>
+        <div class="admin-field">
+          <label>复盘专题 topics</label>
+          <div class="admin-flex admin-flex-wrap admin-gap-2" style="margin-top:4px">
+            {topics.map((t) => (
+              <label class="admin-check">
+                <input type="checkbox" name="topics" value={t.value} />
+                <span>{t.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- 路径信息 -->
+      <div class="admin-card admin-card-pad">
+        <div class="admin-section-title">路径信息</div>
+        <div class="admin-path-box" id="target-path">等待填写字段</div>
+        <div class="admin-text-xs admin-subtle admin-mt-2">
+          新建：路径由「分类 / slug」生成；编辑：会更新原文件路径。
+        </div>
+      </div>
+    </aside>
+  </form>
+</section>

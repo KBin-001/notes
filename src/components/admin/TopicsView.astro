@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content';
+import { Layers } from '@lucide/astro';
+import StatusBadge from '@/components/StatusBadge.astro';
+import {
+  formatDate,
+  isIndexDoc,
+  sortDocsByUpdated,
+  topicMeta,
+  topicOrder,
+} from '@/lib/navigation';
+
+const all = await getCollection('docs');
+const notes = all.filter((d) => !isIndexDoc(d.id));
+
+const rows = topicOrder.map((topic) => {
+  const docs = notes.filter((d) => d.data.topics.includes(topic));
+  const latest = sortDocsByUpdated(docs)[0];
+  const statusCount = docs.reduce<Record<string, number>>((acc, d) => {
+    acc[d.data.status] = (acc[d.data.status] || 0) + 1;
+    return acc;
+  }, {});
+  return { topic, meta: topicMeta[topic], docs, latest, statusCount };
+});
+---
+
+<section class="admin-view" data-view="topics">
+  <div class="admin-page-head">
+    <div class="title-block">
+      <h2>专题管理</h2>
+      <p>跨平台复盘专题归档概览（只读）。</p>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+    {rows.map((row) => (
+      <div class="admin-card admin-card-pad">
+        <div class="admin-flex admin-items-center admin-gap-2 admin-mb-2">
+          <span class="stat-icon" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:var(--kb-accent-soft);color:var(--kb-accent)">
+            <Layers size={17} />
+          </span>
+          <div>
+            <div style="font-weight:700;color:var(--kb-heading)">{row.meta.title}</div>
+            <div class="admin-text-xs admin-subtle admin-mono">{row.topic}</div>
+          </div>
+          <span class="admin-nav-badge" style="margin-left:auto">{row.docs.length}</span>
+        </div>
+        <p class="admin-text-sm admin-muted" style="margin:8px 0 12px;line-height:1.6">{row.meta.description}</p>
+        <div class="admin-flex admin-flex-wrap admin-gap-1 admin-mb-2">
+          {Object.entries(row.statusCount).map(([s, n]) => (
+            <span style="display:inline-flex;align-items:center;gap:4px">
+              <StatusBadge status={s as any} />
+              <span class="admin-text-xs admin-subtle">{n}</span>
+            </span>
+          ))}
+        </div>
+        <div class="admin-text-xs admin-subtle">最近更新：{row.latest ? formatDate(row.latest.data.updated) : '—'}</div>
+      </div>
+    ))}
+  </div>
+</section>

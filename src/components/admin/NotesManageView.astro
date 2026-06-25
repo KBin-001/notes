@@ -1,0 +1,113 @@
+---
+import {
+  FilePlus2,
+  RefreshCw,
+  Search,
+  Upload,
+} from '@lucide/astro';
+
+const categories = ['mtk', 'gms', 'camera', 'audio', 'display', 'tools'];
+const statuses = ['整理中', '已验证', '待验证', '未完成', '废弃'];
+const visibilities = ['public', 'private', 'draft'];
+---
+
+<section class="admin-view" data-view="notes">
+  <div class="admin-page-head">
+    <div class="title-block">
+      <h2>笔记管理</h2>
+      <p>查看、筛选和管理知识库中的全部笔记。</p>
+    </div>
+    <div class="admin-page-actions">
+      <label class="admin-btn secondary">
+        <Upload size={15} aria-hidden="true" />
+        批量导入
+        <input
+          id="admin-batch-input"
+          type="file"
+          accept=".md,.mdx,text/markdown,text/x-markdown"
+          multiple
+          hidden
+        />
+      </label>
+      <button class="admin-btn secondary" type="button" id="admin-sync-btn">
+        <RefreshCw size={15} aria-hidden="true" />
+        同步 GitHub
+      </button>
+      <a class="admin-btn primary" href="/#/new">
+        <FilePlus2 size={15} aria-hidden="true" />
+        新建笔记
+      </a>
+    </div>
+  </div>
+
+  <!-- 工具栏：搜索 + 筛选 -->
+  <div class="admin-toolbar">
+    <div class="admin-search">
+      <Search size={15} aria-hidden="true" />
+      <input
+        id="admin-notes-search"
+        class="admin-input"
+        type="search"
+        placeholder="搜索标题或路径..."
+      />
+    </div>
+    <select id="admin-filter-category" class="admin-select" style="width:auto;flex:0 0 auto">
+      <option value="">全部分类</option>
+      {categories.map((c) => <option value={c}>{c}</option>)}
+    </select>
+    <select id="admin-filter-status" class="admin-select" style="width:auto;flex:0 0 auto">
+      <option value="">全部状态</option>
+      {statuses.map((s) => <option value={s}>{s}</option>)}
+    </select>
+    <select id="admin-filter-visibility" class="admin-select" style="width:auto;flex:0 0 auto">
+      <option value="">全部公开状态</option>
+      {visibilities.map((v) => <option value={v}>{v}</option>)}
+    </select>
+    <select id="admin-filter-sensitive" class="admin-select" style="width:auto;flex:0 0 auto">
+      <option value="">全部 sensitivity</option>
+      <option value="yes">仅 sensitive</option>
+      <option value="no">仅非 sensitive</option>
+    </select>
+    <span
+      id="admin-notes-count"
+      class="admin-text-xs admin-subtle admin-mono"
+      style="margin-left:auto"
+    >—</span>
+  </div>
+
+  <!-- 消息条 -->
+  <div id="admin-notes-message"></div>
+
+  <!-- 表格 -->
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>标题</th>
+          <th>分类</th>
+          <th>状态</th>
+          <th>公开状态</th>
+          <th>tags</th>
+          <th>更新时间</th>
+          <th style="text-align:right">操作</th>
+        </tr>
+      </thead>
+      <tbody id="admin-notes-tbody">
+        <tr>
+          <td colspan="7">
+            <div class="admin-loading" id="admin-notes-loading">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px;animation:admin-spin 1s linear infinite"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+              正在加载笔记列表...
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <style>
+    @keyframes admin-spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</section>

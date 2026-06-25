@@ -1,0 +1,95 @@
+---
+import {
+  BarChart3,
+  Box,
+  FilePlus2,
+  Files,
+  FolderTree,
+  HardDrive,
+  Layers,
+  ListChecks,
+  Settings,
+  Tags,
+  ScrollText,
+} from '@lucide/astro';
+
+interface NavItem {
+  route: string;
+  label: string;
+  icon: any;
+  badge?: number;
+}
+
+interface NavGroup {
+  title: string;
+  items: NavItem[];
+}
+
+const { noteCount = 0 } = Astro.props;
+
+const groups: NavGroup[] = [
+  {
+    title: '概览',
+    items: [{ route: 'dashboard', label: '仪表盘', icon: BarChart3 }],
+  },
+  {
+    title: '内容',
+    items: [
+      { route: 'notes', label: '笔记管理', icon: Files, badge: noteCount },
+      { route: 'new', label: '新建笔记', icon: FilePlus2 },
+      { route: 'edit', label: '编辑笔记', icon: ListChecks },
+    ],
+  },
+  {
+    title: '归档',
+    items: [
+      { route: 'categories', label: '分类管理', icon: FolderTree },
+      { route: 'tags', label: '标签管理', icon: Tags },
+      { route: 'topics', label: '专题管理', icon: Layers },
+    ],
+  },
+  {
+    title: '系统',
+    items: [
+      { route: 'storage', label: '存储管理', icon: HardDrive },
+      { route: 'settings', label: '站点设置', icon: Settings },
+      { route: 'logs', label: '操作日志', icon: ScrollText },
+    ],
+  },
+];
+---
+
+<aside class="admin-sidebar" id="admin-sidebar" data-admin-sidebar>
+  {groups.map((group) => (
+    <div class="admin-nav-group">
+      <p class="admin-nav-title">{group.title}</p>
+      {group.items.map((item) => (
+        <button
+          class="admin-nav-item"
+          type="button"
+          data-nav-route={item.route}
+          aria-label={item.label}
+        >
+          <item.icon size={17} aria-hidden="true" />
+          <span>{item.label}</span>
+          {item.badge !== undefined && item.badge > 0 && (
+            <span class="admin-nav-badge">{item.badge}</span>
+          )}
+        </button>
+      ))}
+    </div>
+  ))}
+  <div class="admin-nav-group" style="margin-top:auto;padding-top:12px">
+    <a
+      href="/"
+      class="admin-nav-item"
+      style="text-decoration:none"
+      title="返回前台知识库"
+    >
+      <Box size={17} aria-hidden="true" />
+      <span>返回前台</span>
+    </a>
+  </div>
+</aside>
+
+<div class="admin-sidebar-backdrop" id="admin-sidebar-backdrop" data-admin-sidebar-backdrop></div>
