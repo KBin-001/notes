@@ -447,6 +447,16 @@ aside[data-pagefind-ignore] > div::-webkit-scrollbar-thumb,
   background: var(--kb-surface);
 }
 
+/* Hero 右侧统计卡片 */
+.kb-stats-card {
+  background: var(--kb-elevated);
+  border-color: var(--kb-border-subtle);
+}
+
+.kb-stats-card .font-semibold {
+  font-weight: 600;
+}
+
 .kb-card:hover,
 .kb-list-card:hover,
 .kb-update-link:hover,
@@ -663,6 +673,11 @@ html[data-theme="claude"] .kb-update-link:hover,
 html[data-theme="claude"] .kb-quick-link:hover,
 html[data-theme="claude"] .search-result:hover {
   background: #faf7ef;
+}
+
+html[data-theme="claude"] .kb-stats-card {
+  background: #f8f5ec;
+  border-color: rgba(202, 194, 178, 0.5);
 }
 
 html[data-theme="claude"] .kb-accent-cyan {

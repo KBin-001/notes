@@ -73,9 +73,10 @@ const buildYearData = (year: number) => {
 const yearData = years.map((year) => ({ year, ...buildYearData(year) }));
 ---
 
-<section class="kb-contribution mb-12 rounded-lg border border-kb-border bg-kb-surface p-5 sm:p-6" data-contribution-heatmap>
+<section class="kb-contribution mb-12 rounded-xl border border-kb-border bg-kb-surface p-5 sm:p-6" data-contribution-heatmap>
   <div class="flex flex-col gap-5">
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <!-- 标题行 + 年份切换（右上角） -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div class="flex items-start gap-4">
         <span class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-kb-accent-soft text-kb-accent">
           <Leaf size={23} aria-hidden="true" />
@@ -141,16 +142,14 @@ const yearData = years.map((year) => ({ year, ...buildYearData(year) }));
         ))}
       </div>
 
+      <!-- 底部：左下角统计链接 + 右下角图例 -->
       <div class="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <a href="/topics/charging/" class="inline-flex items-center gap-2 text-sm font-medium text-kb-muted transition hover:text-kb-heading">
-          <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-kb-accent-soft text-kb-accent-2">
-            <BarChart3 size={17} aria-hidden="true" />
-          </span>
+        <a href="/topics/charging/" class="inline-flex items-center gap-2 text-sm text-kb-muted transition hover:text-kb-heading">
           查看整理统计
-          <ChevronRight size={16} aria-hidden="true" />
+          <ChevronRight size={14} aria-hidden="true" />
         </a>
 
-        <div class="flex items-center gap-3 text-sm text-kb-muted">
+        <div class="flex items-center gap-3 text-xs text-kb-subtle">
           <span>较少</span>
           <div class="flex items-center gap-2" aria-hidden="true">
             {[0, 1, 2, 3, 4, 5].map((level) => (

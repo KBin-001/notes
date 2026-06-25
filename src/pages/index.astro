@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { Clock3, FilePlus2, Wrench } from '@lucide/astro';
+import { BookMarked, Clock3, FileText, Layers, Wrench } from '@lucide/astro';
 import CategoryCard from '@/components/CategoryCard.astro';
 import ContributionHeatmap from '@/components/ContributionHeatmap.astro';
 import StatusBadge from '@/components/StatusBadge.astro';
@@ -14,34 +14,69 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
 
 <Layout title="kevin知识库" description="这里用于沉淀技术笔记、问题复盘、项目记录、工具使用和学习资料。" currentId="index">
   <section class="mx-auto max-w-6xl">
-    <div class="kb-hero mb-9 rounded-lg border border-kb-border bg-kb-surface p-6 sm:p-8">
-      <h1 class="max-w-3xl text-2xl font-semibold leading-tight text-kb-heading sm:text-3xl">
-        把零散问题、学习记录和项目经验，整理成可复用的知识路径。
-      </h1>
-      <p class="mt-5 max-w-2xl text-base leading-8 text-kb-muted">
-        这里用于沉淀技术笔记、问题复盘、项目记录、工具使用和学习资料。
-        内容按主题、场景和处理过程归档，方便之后快速查找、复盘和复用。
-      </p>
-      <div class="mt-7 flex flex-wrap gap-3">
-        <a href="#all-notes" class="kb-button-primary inline-flex h-10 items-center gap-2 rounded-md bg-kb-accent px-4 text-sm font-semibold text-kb-bg transition hover:bg-kb-accent-hover">
-          <Wrench size={16} aria-hidden="true" />
-          浏览全部笔记
-        </a>
-        <a href="/templates/issue-template/" class="kb-button-secondary inline-flex h-10 items-center gap-2 rounded-md border border-kb-border-strong px-4 text-sm font-medium text-kb-text transition hover:border-kb-accent-ring hover:text-kb-heading">
-          <FilePlus2 size={16} aria-hidden="true" />
-          查看整理模板
-        </a>
+    <div class="kb-hero mb-9 flex flex-col gap-6 rounded-xl border border-kb-border bg-kb-surface p-6 sm:p-8 lg:flex-row lg:items-center lg:gap-10">
+      <!-- 左侧：标题、描述、按钮 -->
+      <div class="flex-1 min-w-0">
+        <h1 class="max-w-2xl text-2xl font-semibold leading-tight text-kb-heading sm:text-3xl">
+          把零散问题、学习记录和项目经验，整理成可复用的知识路径。
+        </h1>
+        <p class="mt-4 max-w-xl text-base leading-8 text-kb-muted">
+          这里用于沉淀技术笔记、问题复盘、项目记录、工具使用和学习资料。
+          内容按主题、场景和处理过程归档，方便之后快速查找、复盘和复用。
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="#all-notes" class="kb-button-primary inline-flex h-10 items-center gap-2 rounded-lg bg-kb-accent px-5 text-sm font-semibold text-white transition hover:bg-kb-accent-hover">
+            <BookMarked size={16} aria-hidden="true" />
+            浏览全部笔记
+          </a>
+          <a href="/tools/templates/" class="kb-button-secondary inline-flex h-10 items-center gap-2 rounded-lg border border-kb-border px-5 text-sm font-semibold text-kb-muted transition hover:border-kb-border-strong hover:text-kb-heading">
+            <Layers size={16} aria-hidden="true" />
+            查看整理模板
+          </a>
+        </div>
+      </div>
+
+      <!-- 右侧：统计信息卡片 -->
+      <div class="shrink-0 lg:w-64">
+        <div class="kb-stats-card relative overflow-hidden rounded-xl border border-kb-border-subtle bg-kb-elevated/50 p-5">
+          <!-- 淡纹理装饰 -->
+          <div class="pointer-events-none absolute -right-4 -top-4 h-24 w-24 rounded-full bg-kb-accent-soft opacity-40" aria-hidden="true"></div>
+          <div class="pointer-events-none absolute -bottom-6 -left-6 h-20 w-20 rounded-full bg-kb-accent-ring opacity-30" aria-hidden="true"></div>
+
+          <p class="relative text-xs font-medium uppercase tracking-widest text-kb-subtle">知识库概览</p>
+          <div class="relative mt-4 space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-kb-accent-soft text-kb-accent">
+                <FileText size={15} aria-hidden="true" />
+              </span>
+              <span class="text-sm text-kb-text"><span class="font-semibold text-kb-heading">{notes.length}</span> 篇笔记</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-kb-accent-soft text-kb-accent">
+                <Layers size={15} aria-hidden="true" />
+              </span>
+              <span class="text-sm text-kb-text"><span class="font-semibold text-kb-heading">{categoryOrder.length}</span> 个分类</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-kb-accent-soft text-kb-accent">
+                <Clock3 size={15} aria-hidden="true" />
+              </span>
+              <span class="text-sm text-kb-text font-medium text-kb-heading">持续更新中</span>
+            </div>
+          </div>
+          <p class="relative mt-4 border-t border-kb-border-subtle pt-3 text-[11px] leading-relaxed text-kb-subtle italic">
+            保持沉淀，持续迭代。
+          </p>
+        </div>
       </div>
     </div>
 
     <ContributionHeatmap notes={notes} />
 
     <section id="all-notes" class="mb-12 scroll-mt-24">
-      <div class="mb-4 flex items-end justify-between gap-4">
-        <div>
-          <h2 class="text-xl font-semibold text-kb-heading">分类入口</h2>
-          <p class="mt-1 text-sm text-kb-subtle">按平台、模块和工作流浏览笔记。</p>
-        </div>
+      <div class="mb-5">
+        <h2 class="text-xl font-semibold text-kb-heading">分类入口</h2>
+        <p class="mt-1 text-sm text-kb-subtle">按平台、模块和工作流浏览笔记。</p>
       </div>
       <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {categoryOrder.map((category) => {
@@ -61,11 +96,9 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
     </section>
 
     <section class="mb-12">
-      <div class="mb-4 flex items-end justify-between gap-4">
-        <div>
-          <h2 class="text-xl font-semibold text-kb-heading">复盘专题</h2>
-          <p class="mt-1 text-sm text-kb-subtle">同一篇笔记可按明确专题再次归档，便于跨平台复盘。</p>
-        </div>
+      <div class="mb-5">
+        <h2 class="text-xl font-semibold text-kb-heading">复盘专题</h2>
+        <p class="mt-1 text-sm text-kb-subtle">同一篇笔记可按明确专题再次归档，便于跨平台复盘。</p>
       </div>
       <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {topicOrder.map((topic) => {
@@ -111,7 +144,6 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
             ['MTK 霍尔驱动', '/mtk/hall-driver/'],
             ['ADB TOOL 使用指南', '/tools/adb-tool-guide/'],
             ['MTK debug 关键词', '/tools/mtk-debug-keywords/'],
-            ['问题记录模板', '/templates/issue-template/'],
           ].map(([label, href]) => (
             <a href={href} class="kb-quick-link rounded-md border border-kb-border px-3 py-2 text-sm text-kb-muted transition hover:border-kb-accent-ring hover:bg-kb-surface-hover hover:text-kb-heading">
               {label}

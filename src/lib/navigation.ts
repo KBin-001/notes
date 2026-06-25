@@ -1,6 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 
-export const categoryOrder = ['mtk', 'gms', 'camera', 'audio', 'display', 'tools', 'templates'];
+export const categoryOrder = ['mtk', 'gms', 'camera', 'audio', 'display', 'tools'];
 
 export const topicOrder = ['charging', 'camera', 'display_tp', 'audio', 'sensor'] as const;
 
@@ -58,11 +58,6 @@ export const categoryMeta: Record<string, { title: string; description: string; 
   tools: {
     title: '工具',
     description: 'ADB、Git、Logcat 等常用排查工具速查。',
-    accent: 'slate',
-  },
-  templates: {
-    title: '模板',
-    description: '问题记录、调试复盘和 Diff 归档模板。',
     accent: 'slate',
   },
   home: {
