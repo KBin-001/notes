@@ -11,28 +11,29 @@ const notes = docs.filter((doc) => !isIndexDoc(doc.id));
 const latest = sortDocsByUpdated(notes).slice(0, 6);
 ---
 
-<Layout title="kevin知识库" description="面向驱动开发、系统定制和认证问题排查的个人知识库。" currentId="index">
+<Layout title="kevin知识库" description="这里用于沉淀技术笔记、问题复盘、项目记录、工具使用和学习资料。" currentId="index">
   <section class="mx-auto max-w-6xl">
     <div class="kb-hero mb-9 rounded-lg border border-kb-border bg-kb-surface p-6 sm:p-8">
       <h1 class="max-w-3xl text-2xl font-semibold leading-tight text-kb-heading sm:text-3xl">
-        驱动问题、日志线索和修改记录，沉淀成可复用的排查路径。
+        把零散问题、学习记录和项目经验，整理成可复用的知识路径。
       </h1>
       <p class="mt-5 max-w-2xl text-base leading-8 text-kb-muted">
-        这里用于整理 MTK、GMS、Camera、Audio、Display 与工具链相关笔记。每篇内容都按现象、平台、日志、代码路径、排查过程、修改方案和验证方法组织，便于后续快速复盘。
+        这里用于沉淀技术笔记、问题复盘、项目记录、工具使用和学习资料。
+        内容按主题、场景和处理过程归档，方便之后快速查找、复盘和复用。
       </p>
       <div class="mt-7 flex flex-wrap gap-3">
-        <a href="/mtk/hall-driver/" class="kb-button-primary inline-flex h-10 items-center gap-2 rounded-md bg-kb-accent px-4 text-sm font-semibold text-kb-bg transition hover:bg-kb-accent-hover">
+        <a href="#all-notes" class="kb-button-primary inline-flex h-10 items-center gap-2 rounded-md bg-kb-accent px-4 text-sm font-semibold text-kb-bg transition hover:bg-kb-accent-hover">
           <Wrench size={16} aria-hidden="true" />
-          查看霍尔驱动笔记
+          浏览全部笔记
         </a>
         <a href="/templates/issue-template/" class="kb-button-secondary inline-flex h-10 items-center gap-2 rounded-md border border-kb-border-strong px-4 text-sm font-medium text-kb-text transition hover:border-kb-accent-ring hover:text-kb-heading">
           <FilePlus2 size={16} aria-hidden="true" />
-          使用问题模板
+          查看整理模板
         </a>
       </div>
     </div>
 
-    <section class="mb-12">
+    <section id="all-notes" class="mb-12 scroll-mt-24">
       <div class="mb-4 flex items-end justify-between gap-4">
         <div>
           <h2 class="text-xl font-semibold text-kb-heading">分类入口</h2>
