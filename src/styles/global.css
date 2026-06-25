@@ -472,6 +472,74 @@ aside[data-pagefind-ignore] > div::-webkit-scrollbar-thumb,
   box-shadow: var(--kb-shadow-sm);
 }
 
+.kb-contribution {
+  --contribution-cell: 0.66rem;
+  --contribution-gap: 0.18rem;
+  --contribution-step: calc(var(--contribution-cell) + var(--contribution-gap));
+  background: var(--kb-surface);
+  box-shadow: var(--kb-shadow-sm);
+}
+
+.contribution-year {
+  min-width: max-content;
+}
+
+.contribution-grid,
+.contribution-weekdays {
+  gap: var(--contribution-gap);
+}
+
+.contribution-weekdays {
+  height: calc((var(--contribution-cell) * 7) + (var(--contribution-gap) * 6) + 0.25rem);
+}
+
+.contribution-cell {
+  display: inline-block;
+  width: var(--contribution-cell);
+  height: var(--contribution-cell);
+  border: 1px solid var(--kb-border-subtle);
+  border-radius: 0.18rem;
+  background: var(--kb-elevated);
+}
+
+.contribution-cell.is-outside {
+  opacity: 0;
+}
+
+.contribution-level-0 {
+  background: var(--kb-elevated);
+}
+
+.contribution-level-1 {
+  background: color-mix(in oklab, var(--kb-success) 18%, var(--kb-elevated));
+}
+
+.contribution-level-2 {
+  background: color-mix(in oklab, var(--kb-success) 34%, var(--kb-elevated));
+}
+
+.contribution-level-3 {
+  background: color-mix(in oklab, var(--kb-success) 50%, var(--kb-elevated));
+}
+
+.contribution-level-4 {
+  background: color-mix(in oklab, var(--kb-success) 66%, var(--kb-elevated));
+}
+
+.contribution-level-5 {
+  background: color-mix(in oklab, var(--kb-success) 82%, var(--kb-elevated));
+}
+
+.contribution-year-tab {
+  color: var(--kb-muted);
+}
+
+.contribution-year-tab:hover,
+.contribution-year-tab.is-active {
+  background: var(--kb-accent-soft);
+  color: var(--kb-heading);
+}
+
 .kb-update-link {
   overflow-wrap: anywhere;
   transition-property: color, background-color;
@@ -610,6 +678,46 @@ html[data-theme="claude"] .kb-accent-amber {
 html[data-theme="claude"] .kb-accent-slate {
   background: rgba(78, 76, 70, 0.10);
   color: #5b574f;
+}
+
+html[data-theme="claude"] .kb-contribution {
+  background: #fffdf7;
+}
+
+html[data-theme="claude"] .contribution-year-tabs {
+  background: #fffaf0;
+}
+
+html[data-theme="claude"] .contribution-cell {
+  border-color: #eee6d8;
+}
+
+html[data-theme="claude"] .contribution-level-0 {
+  background: #f5efe4;
+}
+
+html[data-theme="claude"] .contribution-level-1 {
+  background: #e9e5c7;
+}
+
+html[data-theme="claude"] .contribution-level-2 {
+  background: #cdd99b;
+}
+
+html[data-theme="claude"] .contribution-level-3 {
+  background: #a9c46c;
+}
+
+html[data-theme="claude"] .contribution-level-4 {
+  background: #75a64f;
+}
+
+html[data-theme="claude"] .contribution-level-5 {
+  background: #3f7f32;
+}
+
+html[data-theme="claude"] .contribution-year-tab.is-active {
+  background: #f3e3ca;
 }
 
 html[data-theme="claude"] .kb-status-active {

@@ -1,0 +1,209 @@
+---
+import { BarChart3, ChevronRight, Leaf } from '@lucide/astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  notes: CollectionEntry<'docs'>[];
+}
+
+const { notes } = Astro.props;
+
+const today = new Date();
+const currentYear = today.getFullYear();
+const noteYears = notes.flatMap((note) => [note.data.date.getFullYear(), note.data.updated.getFullYear()]);
+const years = Array.from(new Set([currentYear, currentYear - 1, currentYear - 2, ...noteYears]))
+  .sort((a, b) => b - a)
+  .slice(0, 5);
+
+const dateKey = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const monthLabel = (date: Date) => `${date.getMonth() + 1}月`;
+
+const buildYearData = (year: number) => {
+  const counts = new Map<string, number>();
+
+  notes.forEach((note) => {
+    const updated = note.data.updated;
+    if (updated.getFullYear() !== year) return;
+    const key = dateKey(updated);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  });
+
+  const firstDay = new Date(year, 0, 1);
+  const lastDay = new Date(year, 11, 31);
+  const gridStart = new Date(firstDay);
+  gridStart.setDate(firstDay.getDate() - ((firstDay.getDay() + 6) % 7));
+
+  const weeks: Array<Array<{ date: Date; count: number; inYear: boolean; level: number }>> = [];
+  const monthMarkers: Array<{ label: string; week: number }> = [];
+  let previousMonth = -1;
+  let total = 0;
+  const maxCount = Math.max(1, ...counts.values());
+
+  for (let weekIndex = 0; weekIndex < 53; weekIndex += 1) {
+    const week = [];
+
+    for (let dayIndex = 0; dayIndex < 7; dayIndex += 1) {
+      const date = new Date(gridStart);
+      date.setDate(gridStart.getDate() + weekIndex * 7 + dayIndex);
+      const inYear = date >= firstDay && date <= lastDay;
+      const count = inYear ? counts.get(dateKey(date)) ?? 0 : 0;
+      const level = count === 0 ? 0 : Math.min(5, Math.ceil((count / maxCount) * 5));
+
+      if (inYear && count > 0) total += count;
+      if (inYear && date.getMonth() !== previousMonth) {
+        monthMarkers.push({ label: monthLabel(date), week: weekIndex });
+        previousMonth = date.getMonth();
+      }
+
+      week.push({ date, count, inYear, level });
+    }
+
+    weeks.push(week);
+  }
+
+  return { weeks, monthMarkers, total };
+};
+
+const yearData = years.map((year) => ({ year, ...buildYearData(year) }));
+---
+
+<section class="kb-contribution mb-12 rounded-lg border border-kb-border bg-kb-surface p-5 sm:p-6" data-contribution-heatmap>
+  <div class="flex flex-col gap-5">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div class="flex items-start gap-4">
+        <span class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-kb-accent-soft text-kb-accent">
+          <Leaf size={23} aria-hidden="true" />
+        </span>
+        <div class="min-w-0">
+          <h2 class="text-xl font-semibold text-kb-heading">知识沉淀热力图</h2>
+          <p class="mt-1 text-sm text-kb-muted">
+            <span data-contribution-summary>{yearData[0]?.year === currentYear ? '今年已' : `${yearData[0]?.year} 年`}整理了 {yearData[0]?.total ?? 0} 篇内容</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="contribution-year-tabs flex w-fit gap-1 rounded-lg border border-kb-border bg-kb-surface p-1">
+        {yearData.map(({ year }, index) => (
+          <button
+            class={`contribution-year-tab rounded-md px-4 py-2 text-sm transition ${index === 0 ? 'is-active' : ''}`}
+            type="button"
+            data-contribution-tab={year}
+            aria-pressed={index === 0 ? 'true' : 'false'}
+          >
+            {year}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div class="min-w-0">
+      <div class="overflow-x-auto pb-2">
+        {yearData.map(({ year, weeks, monthMarkers }, index) => (
+          <div class={`contribution-year ${index === 0 ? '' : 'hidden'}`} data-contribution-year={year}>
+            <div class="relative ml-12 h-6">
+              {monthMarkers.map((marker) => (
+                <span class="absolute top-0 text-sm text-kb-muted" style={`left: calc(${marker.week} * var(--contribution-step))`}>
+                  {marker.label}
+                </span>
+              ))}
+            </div>
+
+            <div class="flex gap-3">
+              <div class="contribution-weekdays grid grid-rows-7 pt-1 text-sm text-kb-muted">
+                <span></span>
+                <span>周一</span>
+                <span></span>
+                <span>周三</span>
+                <span></span>
+                <span>周五</span>
+                <span></span>
+              </div>
+
+              <div class="contribution-grid grid grid-flow-col grid-rows-7" aria-label={`${year} 年知识沉淀热力图`}>
+                {weeks.flatMap((week) =>
+                  week.map((day) => (
+                    <span
+                      class={`contribution-cell contribution-level-${day.level} ${day.inYear ? '' : 'is-outside'}`}
+                      title={`${dateKey(day.date)}：${day.count} 篇更新`}
+                      aria-label={`${dateKey(day.date)}：${day.count} 篇更新`}
+                    />
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <a href="/topics/charging/" class="inline-flex items-center gap-2 text-sm font-medium text-kb-muted transition hover:text-kb-heading">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-kb-accent-soft text-kb-accent-2">
+            <BarChart3 size={17} aria-hidden="true" />
+          </span>
+          查看整理统计
+          <ChevronRight size={16} aria-hidden="true" />
+        </a>
+
+        <div class="flex items-center gap-3 text-sm text-kb-muted">
+          <span>较少</span>
+          <div class="flex items-center gap-2" aria-hidden="true">
+            {[0, 1, 2, 3, 4, 5].map((level) => (
+              <span class={`contribution-cell contribution-level-${level}`} />
+            ))}
+          </div>
+          <span>较多</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const heatmap = document.querySelector('[data-contribution-heatmap]');
+
+  if (heatmap) {
+    const tabs = [...heatmap.querySelectorAll('[data-contribution-tab]')];
+    const panels = [...heatmap.querySelectorAll('[data-contribution-year]')];
+    const summary = heatmap.querySelector('[data-contribution-summary]');
+    const totals = new Map(
+      panels.map((panel) => {
+        const year = panel.getAttribute('data-contribution-year') ?? '';
+        const total = [...panel.querySelectorAll('.contribution-cell:not(.is-outside)')]
+          .reduce((sum, cell) => {
+            const text = cell.getAttribute('aria-label') ?? '';
+            const match = text.match(/：(\d+) 篇更新/);
+            return sum + (match ? Number(match[1]) : 0);
+          }, 0);
+        return [year, total];
+      })
+    );
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const year = tab.getAttribute('data-contribution-tab');
+        if (!year) return;
+
+        tabs.forEach((item) => {
+          const active = item === tab;
+          item.classList.toggle('is-active', active);
+          item.setAttribute('aria-pressed', String(active));
+        });
+
+        panels.forEach((panel) => {
+          panel.classList.toggle('hidden', panel.getAttribute('data-contribution-year') !== year);
+        });
+
+        if (summary) {
+          const currentYear = new Date().getFullYear().toString();
+          summary.textContent = `${year === currentYear ? '今年已' : `${year} 年`}整理了 ${totals.get(year) ?? 0} 篇内容`;
+        }
+      });
+    });
+  }
+</script>

@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { Clock3, FilePlus2, Wrench } from '@lucide/astro';
 import CategoryCard from '@/components/CategoryCard.astro';
+import ContributionHeatmap from '@/components/ContributionHeatmap.astro';
 import StatusBadge from '@/components/StatusBadge.astro';
 import Layout from '@/layouts/Layout.astro';
 import { categoryMeta, categoryOrder, displayTitle, docUrl, formatDate, getCategoryNotes, getTopicNotes, isIndexDoc, publicDocs, sortDocsByUpdated, topicMeta, topicOrder } from '@/lib/navigation';
@@ -32,6 +33,8 @@ const latest = sortDocsByUpdated(notes).slice(0, 6);
         </a>
       </div>
     </div>
+
+    <ContributionHeatmap notes={notes} />
 
     <section id="all-notes" class="mb-12 scroll-mt-24">
       <div class="mb-4 flex items-end justify-between gap-4">
