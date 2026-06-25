@@ -1,0 +1,160 @@
+---
+title: '[MTK]UFS 限速修改记录'
+description: ''
+category: mtk
+tags:
+  - mtk
+topics:
+  - sensor
+visibility: public
+sensitive: true
+status: 已验证
+date: '2026-06-25'
+updated: '2026-06-25'
+---
+## 1. 修改目标
+
+本次修改目标是限制 UFS 最大 Gear，避免设备进入更高 Gear 模式，用于安全 bring-up 或稳定性验证。
+
+当前策略：
+
+- Vendor bootloader 阶段：限制 UFS 最大 Gear 为 `G1`
+- Kernel 阶段：限制 host capability 最大 HS Gear 为 `G1`
+- 验证方式：通过 `/proc/ufs_debug` 查询实际 Gear 状态
+
+---
+
+## 2. Vendor 修改
+
+修改文件：
+
+```bash
+vendor/mediatek/proprietary/bootable/bootloader/lk2/platform/mediatek/mt8189/ufs/include/ufs_cfg.h
+```
+
+修改内容：
+
+```diff
+diff --git a/mediatek/proprietary/bootable/bootloader/lk2/platform/mediatek/mt8189/ufs/include/ufs_cfg.h b/mediatek/proprietary/bootable/bootloader/lk2/platform/mediatek/mt8189/ufs/include/ufs_cfg.h
+--- a/mediatek/proprietary/bootable/bootloader/lk2/platform/mediatek/mt8189/ufs/include/ufs_cfg.h
++++ b/mediatek/proprietary/bootable/bootloader/lk2/platform/mediatek/mt8189/ufs/include/ufs_cfg.h
+@@ -67,9 +67,9 @@ enum {
+ #else
+
+-/* Use PWM-G4 for safe bring-up case */
+-#define UFS_DEV_MAX_GEAR_RX (4)
+-#define UFS_DEV_MAX_GEAR_TX (4)
++/* Use PWM-G1 for safe bring-up case */
++#define UFS_DEV_MAX_GEAR_RX (1)
++#define UFS_DEV_MAX_GEAR_TX (1)
+
+ #define UFS_DEV_MAX_LANE_RX (1)
+ #define UFS_DEV_MAX_LANE_TX (1)
+ #define UFS_DEV_DEFAULT_HS_RATE (PA_HS_MODE_A)
+```
+
+说明：
+
+```c
+#define UFS_DEV_MAX_GEAR_RX (1)
+#define UFS_DEV_MAX_GEAR_TX (1)
+```
+
+表示限制 UFS 设备侧 RX / TX 最大 Gear 为 `G1`。
+
+---
+
+## 3. Kernel 修改
+
+修改文件：
+
+```bash
+kernel/kernel_device_modules-6.1/drivers/ufs/ufs-mediatek.c
+```
+
+整理后的 diff 如下：
+
+```diff
+diff --git a/kernel_device_modules-6.1/drivers/ufs/ufs-mediatek.c b/kernel_device_modules-6.1/drivers/ufs/ufs-mediatek.c
+index bbc61d74..37835b65 100644
+--- a/kernel_device_modules-6.1/drivers/ufs/ufs-mediatek.c
++++ b/kernel_device_modules-6.1/drivers/ufs/ufs-mediatek.c
+@@ -1762,8 +1762,8 @@ static int ufs_mtk_pre_pwr_change(struct ufs_hba *hba,
+        int ret;
+
+        ufshcd_init_pwr_dev_param(&host_cap);
+
+-       host_cap.hs_rx_gear = UFS_HS_G5;
+-       host_cap.hs_tx_gear = UFS_HS_G5;
++       host_cap.hs_rx_gear = UFS_HS_G1;
++       host_cap.hs_tx_gear = UFS_HS_G1;
+
+        if ((dev_max_params->pwr_rx == SLOW_MODE) ||
+            (dev_max_params->pwr_tx == SLOW_MODE)) {
+```
+
+表示限制 Kernel UFS host capability 的 HS RX / TX Gear 为 `G1`，防止协商到更高 Gear。
+
+---
+
+## 4. 验证命令
+
+设备开机后，进入 adb shell 查询 UFS 当前 Gear：
+
+```bash
+adb shell
+cat /proc/ufs_debug | grep -i gear
+```
+
+---
+
+## 5. 预期验证结果
+
+如果限制生效，查询结果中应看到 RX / TX Gear 被限制到 `1`，类似：
+
+```bash
+[RX, TX]: gear=[1, 1]
+```
+
+如果仍然显示：
+
+```bash
+[RX, TX]: gear=[4, 4]
+```
+
+或：
+
+```bash
+[RX, TX]: gear=[5, 5]
+```
+
+则说明限制没有生效，需要继续确认：
+
+1. 修改是否编译进当前 bootloader / kernel 镜像；
+2. 设备实际启动的是否为最新烧录版本；
+3. vendor 与 kernel 是否属于同一套代码版本；
+4. `/proc/ufs_debug` 打印的是当前实际协商结果，还是初始化阶段最大能力值；
+5. 是否还有其他位置覆盖了 `desired_pwr_mode->gear_rx / gear_tx`。
+
+---
+
+## 6. 本次修改总结
+
+本次 UFS 限速主要修改两个位置：
+
+| 模块 | 文件 | 修改内容 |
+| --- | --- | --- |
+| vendor / lk2 | `ufs_cfg.h` | `UFS_DEV_MAX_GEAR_RX/TX` 从 `4` 改为 `1` |
+| kernel | `ufs-mediatek.c` | `host_cap.hs_rx_gear / hs_tx_gear` 从 `UFS_HS_G5` 改为 `UFS_HS_G1` |
+
+最终通过以下命令确认实际 Gear：
+
+```bash
+adb shell "cat /proc/ufs_debug | grep -i gear"
+```
+
+目标结果：
+
+```bash
+gear=[1, 1]
+```
