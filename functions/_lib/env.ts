@@ -6,6 +6,7 @@ export type Env = {
   GITHUB_OWNER?: string;
   GITHUB_REPO?: string;
   GITHUB_BRANCH?: string;
+  GITHUB_TOKEN?: string;
   GITHUB_OAUTH_SCOPE?: string;
   CLOUDFLARE_DEPLOY_HOOK_URL?: string;
   DEPLOY_HOOK_URL?: string;
@@ -35,5 +36,10 @@ export function allowedAdmins(env: Env) {
 
 export function deployHookUrl(env: Env) {
   return env.CLOUDFLARE_DEPLOY_HOOK_URL || env.DEPLOY_HOOK_URL || '';
+}
+
+export function isLocalRequest(request: Request) {
+  const hostname = new URL(request.url).hostname;
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]' || hostname === '::1';
 }
 

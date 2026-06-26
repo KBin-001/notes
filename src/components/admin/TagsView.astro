@@ -36,7 +36,7 @@ const tags = Array.from(tagMap.entries())
       <div class="admin-flex admin-flex-wrap admin-gap-2">
         {tags.map((t) => (
           <a
-            href={`/#/notes`}
+            href={`#/notes`}
             class="admin-tag"
             style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:0.85rem;background:var(--kb-surface-hover);color:var(--kb-text);text-decoration:none"
             title={`最近更新：${t.latest ? formatDate(t.latest) : '—'}`}

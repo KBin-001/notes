@@ -497,6 +497,7 @@ ADMIN_GITHUB_USERS=KBin-001
 GITHUB_OWNER=KBin-001
 GITHUB_REPO=notes
 GITHUB_BRANCH=kb
+GITHUB_TOKEN=ghp_your_local_development_token
 CLOUDFLARE_DEPLOY_HOOK_URL=https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/your_hook_id
 ```
 

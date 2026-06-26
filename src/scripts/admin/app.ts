@@ -55,6 +55,28 @@ async function checkAuth(): Promise<boolean> {
 
     return true;
   } catch {
+    const host = window.location.hostname;
+    const isLocal = host === 'localhost' || host === '127.0.0.1' || host === '::1';
+    if (isLocal) {
+      authed = true;
+      const userEl = $('#admin-user');
+      const nameEl = $('#admin-user-name');
+      const avatarEl = $('#admin-user-avatar');
+      if (nameEl) nameEl.textContent = 'local-dev';
+      if (avatarEl) avatarEl.textContent = 'L';
+      if (userEl) userEl.hidden = false;
+      const branchEl = $('#admin-repo-branch');
+      if (branchEl) {
+        branchEl.textContent = 'local preview';
+        branchEl.removeAttribute('hidden');
+      }
+      $('#admin-login-link')?.setAttribute('hidden', '');
+      $('#admin-logout-btn')?.setAttribute('hidden', '');
+      $('[data-admin-layout]')?.classList.remove('admin-hidden');
+      $('#admin-gate')?.classList.add('admin-hidden');
+      return true;
+    }
+
     authed = false;
     if (gateStatus) gateStatus.textContent = '检测到未登录，请使用 GitHub 登录。';
     $('[data-admin-layout]')?.classList.add('admin-hidden');

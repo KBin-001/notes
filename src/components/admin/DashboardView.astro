@@ -47,7 +47,9 @@ const approxBytes = notes.reduce((sum, doc) => sum + (doc.body?.length || 0), 0)
 const storageMb = (approxBytes / 1024 / 1024).toFixed(2);
 
 function editHref(doc: any) {
-  const path = `src/content/docs/${doc.data.category}/${doc.id.split('/').pop()}.${doc.id.endsWith('.mdx') ? 'mdx' : 'md'}`;
+  const filePath = typeof doc.filePath === 'string' ? doc.filePath.replace(/\\/g, '/') : '';
+  const slug = doc.id.split('/').pop()?.replace(/\.(md|mdx)$/i, '') || '';
+  const path = filePath || `src/content/docs/${doc.data.category}/${slug}.mdx`;
   return `#/edit?path=${encodeURIComponent(path)}`;
 }
 
@@ -68,11 +70,11 @@ const stats = [
       <p>欢迎回来，这里是知识库的整体概览与最近动态。</p>
     </div>
     <div class="admin-page-actions">
-      <a class="admin-btn secondary" href="/#/new">
+      <a class="admin-btn secondary" href="#/new">
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         新建笔记
       </a>
-      <a class="admin-btn primary" href="/#/notes">
+      <a class="admin-btn primary" href="#/notes">
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         管理笔记
       </a>
@@ -104,7 +106,7 @@ const stats = [
           <Clock3 size={16} aria-hidden="true" />
           最近笔记
         </h3>
-        <a class="admin-btn ghost sm" href="/#/notes">查看全部
+        <a class="admin-btn ghost sm" href="#/notes">查看全部
           <ArrowUpRight size={13} aria-hidden="true" />
         </a>
       </div>

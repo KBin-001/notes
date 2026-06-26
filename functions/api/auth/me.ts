@@ -1,10 +1,20 @@
-import { allowedAdmins, repoConfig, requireEnv, type Env } from '../../_lib/env';
+import { allowedAdmins, isLocalRequest, repoConfig, requireEnv, type Env } from '../../_lib/env';
 import { getGitHubUser } from '../../_lib/github';
 import { forbidden, json, unauthorized, serverError } from '../../_lib/http';
 import { readSession } from '../../_lib/session';
 
 export async function onRequestGet(context: { request: Request; env: Env }) {
   try {
+    if (isLocalRequest(context.request)) {
+      const login = allowedAdmins(context.env)[0] || 'local-dev';
+      return json({
+        ok: true,
+        local: true,
+        user: { login, avatarUrl: '', url: '' },
+        repo: repoConfig(context.env),
+      });
+    }
+
     requireEnv(context.env, ['SESSION_SECRET']);
     const session = await readSession(context.request, context.env.SESSION_SECRET!);
     if (!session?.token) return unauthorized();
