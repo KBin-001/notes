@@ -58,6 +58,13 @@ export interface SaveResult {
   path: string;
   commit?: { sha?: string };
   content?: { sha?: string };
+  deploy?: {
+    configured: boolean;
+    ok: boolean;
+    status?: number;
+    statusText?: string;
+    error?: string;
+  };
 }
 
 /** 通用 JSON 请求，失败抛错 */

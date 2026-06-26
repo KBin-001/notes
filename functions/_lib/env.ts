@@ -7,6 +7,8 @@ export type Env = {
   GITHUB_REPO?: string;
   GITHUB_BRANCH?: string;
   GITHUB_OAUTH_SCOPE?: string;
+  CLOUDFLARE_DEPLOY_HOOK_URL?: string;
+  DEPLOY_HOOK_URL?: string;
 };
 
 export function requireEnv(env: Env, keys: Array<keyof Env>) {
@@ -29,5 +31,9 @@ export function allowedAdmins(env: Env) {
     .split(',')
     .map((user) => user.trim().toLowerCase())
     .filter(Boolean);
+}
+
+export function deployHookUrl(env: Env) {
+  return env.CLOUDFLARE_DEPLOY_HOOK_URL || env.DEPLOY_HOOK_URL || '';
 }
 

@@ -497,6 +497,7 @@ ADMIN_GITHUB_USERS=KBin-001
 GITHUB_OWNER=KBin-001
 GITHUB_REPO=notes
 GITHUB_BRANCH=kb
+CLOUDFLARE_DEPLOY_HOOK_URL=https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/your_hook_id
 ```
 
 本地预览时，可以复制 `.dev.vars.example` 为 `.dev.vars` 并填入自己的测试配置；`.dev.vars` 已被 `.gitignore` 忽略，不要提交真实密钥。

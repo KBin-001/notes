@@ -5,4 +5,4 @@ ADMIN_GITHUB_USERS="KBin-001"
 GITHUB_OWNER="KBin-001"
 GITHUB_REPO="notes"
 GITHUB_BRANCH="kb"
-
+CLOUDFLARE_DEPLOY_HOOK_URL="https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/your_hook_id"

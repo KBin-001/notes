@@ -1,8 +1,29 @@
 import { requireAdmin } from '../../_lib/auth';
-import { type Env } from '../../_lib/env';
+import { deployHookUrl, type Env } from '../../_lib/env';
 import { getFile, putFile } from '../../_lib/github';
 import { badRequest, conflict, json, serverError } from '../../_lib/http';
 import { assertSafeNotePath, notePath, serializeNote, validateNote, type NotePayload } from '../../_lib/notes';
+
+async function triggerDeploy(env: Env) {
+  const url = deployHookUrl(env);
+  if (!url) return { configured: false, ok: false };
+
+  try {
+    const response = await fetch(url, { method: 'POST' });
+    return {
+      configured: true,
+      ok: response.ok,
+      status: response.status,
+      statusText: response.statusText,
+    };
+  } catch (error) {
+    return {
+      configured: true,
+      ok: false,
+      error: error instanceof Error ? error.message : 'Deploy hook failed',
+    };
+  }
+}
 
 export async function onRequestPost(context: { request: Request; env: Env }) {
   try {
@@ -28,7 +49,8 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     }
 
     const result = await putFile(context.env, auth.session!.token, path, content, message, note.sha);
-    return json({ ok: true, path, commit: result.commit, content: result.content });
+    const deploy = await triggerDeploy(context.env);
+    return json({ ok: true, path, commit: result.commit, content: result.content, deploy });
   } catch (error) {
     return serverError(error instanceof Error ? error.message : 'Save failed');
   }

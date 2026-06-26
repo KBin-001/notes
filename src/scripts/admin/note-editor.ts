@@ -392,10 +392,12 @@ async function submitNote(asDraft: boolean) {
     state.mode = 'edit';
     setPageTitle(false);
     updateTargetPath();
-    showMessage(
-      `${asDraft ? '草稿已保存' : '提交成功'}：${data.path}`,
-      'success',
-    );
+    const deployText = data.deploy?.configured
+      ? data.deploy.ok
+        ? '，已触发网站重新部署'
+        : `，但触发部署失败${data.deploy.status ? ` (${data.deploy.status})` : ''}`
+      : '，未配置部署 Hook，前台需等待手动部署';
+    showMessage(`${asDraft ? '草稿已保存' : '提交成功'}：${data.path}${deployText}`, 'success');
   } catch (err) {
     showMessage((err as Error).message, 'error');
   }
