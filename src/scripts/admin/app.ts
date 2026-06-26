@@ -28,7 +28,8 @@ let notesEventsBound = false;
 async function checkAuth(): Promise<boolean> {
   const gateStatus = $('#admin-gate-status');
   try {
-    const user = await fetchCurrentUser();
+    const auth = await fetchCurrentUser();
+    const { user, repo } = auth;
     authed = true;
 
     // 用户信息
@@ -38,6 +39,11 @@ async function checkAuth(): Promise<boolean> {
     if (nameEl) nameEl.textContent = user.login;
     if (avatarEl) avatarEl.textContent = (user.login || 'K').slice(0, 1).toUpperCase();
     if (userEl) userEl.hidden = false;
+    const branchEl = $('#admin-repo-branch');
+    if (branchEl) {
+      branchEl.textContent = `${repo.owner}/${repo.repo}@${repo.branch}`;
+      branchEl.removeAttribute('hidden');
+    }
 
     // 隐藏登录按钮，显示退出
     $('#admin-login-link')?.setAttribute('hidden', '');
@@ -55,6 +61,7 @@ async function checkAuth(): Promise<boolean> {
     $('#admin-gate')?.classList.remove('admin-hidden');
     $('#admin-login-link')?.removeAttribute('hidden');
     $('#admin-user')?.setAttribute('hidden', '');
+    $('#admin-repo-branch')?.setAttribute('hidden', '');
     $('#admin-logout-btn')?.setAttribute('hidden', '');
     return false;
   }

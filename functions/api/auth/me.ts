@@ -1,4 +1,4 @@
-import { allowedAdmins, requireEnv, type Env } from '../../_lib/env';
+import { allowedAdmins, repoConfig, requireEnv, type Env } from '../../_lib/env';
 import { getGitHubUser } from '../../_lib/github';
 import { forbidden, json, unauthorized, serverError } from '../../_lib/http';
 import { readSession } from '../../_lib/session';
@@ -14,7 +14,11 @@ export async function onRequestGet(context: { request: Request; env: Env }) {
       return forbidden('GitHub user is not allowed');
     }
 
-    return json({ ok: true, user: { login: user.login, avatarUrl: user.avatar_url, url: user.html_url } });
+    return json({
+      ok: true,
+      user: { login: user.login, avatarUrl: user.avatar_url, url: user.html_url },
+      repo: repoConfig(context.env),
+    });
   } catch (error) {
     return serverError(error instanceof Error ? error.message : 'Failed to read current user');
   }

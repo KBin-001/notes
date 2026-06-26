@@ -10,6 +10,17 @@ export interface AdminUser {
   url?: string;
 }
 
+export interface RepoConfig {
+  owner: string;
+  repo: string;
+  branch: string;
+}
+
+export interface AuthState {
+  user: AdminUser;
+  repo: RepoConfig;
+}
+
 export interface NoteListItem {
   path: string;
   category: string;
@@ -60,9 +71,8 @@ export async function api<T = any>(path: string, options: RequestInit = {}): Pro
 }
 
 /** 鉴权：获取当前登录用户 */
-export async function fetchCurrentUser(): Promise<AdminUser> {
-  const data = await api<{ user: AdminUser }>('/api/auth/me');
-  return data.user;
+export async function fetchCurrentUser(): Promise<AuthState> {
+  return api<AuthState>('/api/auth/me');
 }
 
 /** 退出登录 */
