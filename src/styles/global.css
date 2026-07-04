@@ -360,17 +360,6 @@
   border: 1px solid transparent;
 }
 
-.sidebar-link.is-active::before,
-.sidebar-summary.is-active::before {
-  position: absolute;
-  inset-block: 0.625rem;
-  left: 0.625rem;
-  width: 1px;
-  border-radius: 999px;
-  background: var(--kb-accent);
-  content: "";
-}
-
 .sidebar-summary > span:last-child,
 .sidebar-link > span:last-child:not(:only-child) {
   border-radius: 999px;
@@ -748,29 +737,29 @@ html[data-theme="claude"] .contribution-cell {
   border-color: rgba(176, 174, 165, 0.3);
 }
 
-/* Contribution heatmap — brand Green #788c5d ramp */
+/* Contribution heatmap — vivid brand Green ramp (#788c5d family) */
 html[data-theme="claude"] .contribution-level-0 {
   background: #e8e6dc;
 }
 
 html[data-theme="claude"] .contribution-level-1 {
-  background: #c5cdb0;
+  background: #c2d68a;
 }
 
 html[data-theme="claude"] .contribution-level-2 {
-  background: #9fb288;
+  background: #8fb84a;
 }
 
 html[data-theme="claude"] .contribution-level-3 {
-  background: #788c5d;
+  background: #5f9a2a;
 }
 
 html[data-theme="claude"] .contribution-level-4 {
-  background: #5f7048;
+  background: #437a18;
 }
 
 html[data-theme="claude"] .contribution-level-5 {
-  background: #465537;
+  background: #2c5a0a;
 }
 
 html[data-theme="claude"] .contribution-year-tab.is-active {
@@ -846,4 +835,19 @@ html[data-theme="claude"] .kb-button-primary {
 
 html[data-theme="claude"] .kb-button-primary:hover {
   background: var(--kb-accent-hover);
+}
+
+/* ── Dark mode primary button — high-contrast light bg + dark text ──
+   Overrides bg-kb-accent / text-white utilities so the CTA reads as
+   near-white surface with brand-dark label in dark theme. */
+html[data-theme="dark"] .kb-button-primary,
+html.dark .kb-button-primary {
+  background-color: rgb(250, 250, 250);
+  color: rgb(22, 4, 4);
+}
+
+html[data-theme="dark"] .kb-button-primary:hover,
+html.dark .kb-button-primary:hover {
+  background-color: rgb(255, 255, 255);
+  color: rgb(22, 4, 4);
 }
