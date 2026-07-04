@@ -3,6 +3,7 @@ import { requireAdmin } from '../../_lib/auth';
 import { type Env } from '../../_lib/env';
 import { deleteFile } from '../../_lib/github';
 import { badRequest, json, serverError } from '../../_lib/http';
+import { appendLog } from '../../_lib/logs';
 
 interface DeleteBody {
   path?: string;
@@ -35,6 +36,15 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
       sha,
       `chore: delete unused image ${relativePath}`,
     );
+
+    // 写入操作日志
+    await appendLog(context.env, auth.session!.token, {
+      action: 'image.delete',
+      actor: auth.session!.login,
+      target: fullPath,
+      title: relativePath.split('/').pop(),
+      commit: result?.commit?.sha,
+    });
 
     return json({ ok: true, path: relativePath, commit: result?.commit });
   } catch (error) {

@@ -7,6 +7,7 @@ import { mountNotesManage, bindNotesManageEvents } from './notes-manage';
 import { mountEditor, loadNoteByHash } from './note-editor';
 import { mountTopicDetail } from './topic-detail';
 import { mountStorage, bindStorageEvents } from './storage';
+import { mountLogs, bindLogsEvents } from './logs';
 
 /** 路由 → 视图 data-view 映射（new/edit 共用 editor 视图） */
 const ROUTE_TO_VIEW: Record<string, string> = {
@@ -27,6 +28,7 @@ let authed = false;
 let editorMounted = false;
 let notesEventsBound = false;
 let storageEventsBound = false;
+let logsEventsBound = false;
 
 /* ---------------- 鉴权 ---------------- */
 async function checkAuth(): Promise<boolean> {
@@ -130,6 +132,12 @@ async function handleRoute() {
       storageEventsBound = true;
     }
     await mountStorage();
+  } else if (route === 'logs') {
+    if (!logsEventsBound) {
+      bindLogsEvents();
+      logsEventsBound = true;
+    }
+    await mountLogs();
   } else if (route === 'new' || route === 'edit') {
     if (!editorMounted) {
       mountEditor();

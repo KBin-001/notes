@@ -171,3 +171,48 @@ export async function deleteStorageImage(path: string, sha: string): Promise<{ o
     body: JSON.stringify({ path, sha }),
   });
 }
+
+/* ---------------- 操作日志 ---------------- */
+
+export type LogAction =
+  | 'note.create'
+  | 'note.update'
+  | 'note.delete'
+  | 'image.upload'
+  | 'image.delete';
+
+export interface LogEntry {
+  id: string;
+  ts: string;
+  action: LogAction;
+  actor: string;
+  target: string;
+  title?: string;
+  details?: Record<string, unknown>;
+  commit?: string;
+}
+
+export interface LogsListResponse {
+  ok: boolean;
+  entries: LogEntry[];
+  total: number;
+  filtered: number;
+  stats: Record<string, number>;
+  actors: Record<string, number>;
+}
+
+/** 拉取操作日志（支持 action / actor / q 过滤） */
+export async function fetchLogs(params: {
+  action?: string;
+  actor?: string;
+  q?: string;
+  limit?: number;
+} = {}): Promise<LogsListResponse> {
+  const qs = new URLSearchParams();
+  if (params.action) qs.set('action', params.action);
+  if (params.actor) qs.set('actor', params.actor);
+  if (params.q) qs.set('q', params.q);
+  if (params.limit) qs.set('limit', String(params.limit));
+  const suffix = qs.toString() ? `?${qs.toString()}` : '';
+  return api<LogsListResponse>(`/api/logs/list${suffix}`);
+}

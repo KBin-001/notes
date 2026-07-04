@@ -2,6 +2,7 @@ import { requireAdmin } from '../../_lib/auth';
 import { deployHookUrl, type Env } from '../../_lib/env';
 import { getFile, putFile } from '../../_lib/github';
 import { badRequest, conflict, json, serverError } from '../../_lib/http';
+import { appendLog } from '../../_lib/logs';
 import { assertSafeNotePath, notePath, serializeNote, validateNote, type NotePayload } from '../../_lib/notes';
 
 async function triggerDeploy(env: Env) {
@@ -50,6 +51,16 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
 
     const result = await putFile(context.env, auth.session!.token, path, content, message, note.sha);
     const deploy = await triggerDeploy(context.env);
+
+    // 写入操作日志
+    await appendLog(context.env, auth.session!.token, {
+      action: note.sha ? 'note.update' : 'note.create',
+      actor: auth.session!.login,
+      target: path,
+      title: note.title,
+      commit: result?.commit?.sha,
+    });
+
     return json({ ok: true, path, commit: result.commit, content: result.content, deploy });
   } catch (error) {
     return serverError(error instanceof Error ? error.message : 'Save failed');

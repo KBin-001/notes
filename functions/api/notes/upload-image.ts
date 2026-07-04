@@ -3,6 +3,7 @@ import { allowedCategories, allowedImageExtensions, docsRoot, maxImageBytes } fr
 import { type Env } from '../../_lib/env';
 import { encodeBinaryBase64, getFile, putBinaryFile } from '../../_lib/github';
 import { badRequest, conflict, json, serverError } from '../../_lib/http';
+import { appendLog } from '../../_lib/logs';
 
 function sanitizeFilename(name: string) {
   return name
@@ -57,6 +58,16 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     const commitMessage = `docs: add image ${safeFilename} for ${slug}`;
 
     const result = await putBinaryFile(context.env, auth.session!.token, path, base64, commitMessage);
+
+    // 写入操作日志
+    await appendLog(context.env, auth.session!.token, {
+      action: 'image.upload',
+      actor: auth.session!.login,
+      target: path,
+      title: safeFilename,
+      details: { size: file.size, category, slug },
+      commit: result?.commit?.sha,
+    });
 
     return json({
       ok: true,
