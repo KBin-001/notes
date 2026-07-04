@@ -504,7 +504,7 @@
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .admin-search {
@@ -525,6 +525,100 @@
 
 .admin-search input {
   padding-left: 34px;
+}
+
+/* ---------------- 筛选器面板（chip 风格） ---------------- */
+.admin-filter-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px 18px;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--kb-border);
+  border-radius: var(--admin-radius);
+  background: var(--kb-surface);
+}
+
+.admin-filter-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.admin-filter-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--kb-subtle);
+  text-transform: uppercase;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.admin-filter-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.admin-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 11px;
+  border: 1px solid var(--kb-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--kb-muted);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.admin-chip:hover {
+  background: var(--kb-surface-hover);
+  color: var(--kb-heading);
+  border-color: var(--kb-border-strong);
+}
+
+.admin-chip.is-active {
+  background: var(--kb-accent);
+  border-color: var(--kb-accent);
+  /* --kb-bg 自动适配：dark 模式为深色文字配浅灰 chip；
+     claude 模式为浅色文字配橙色 chip */
+  color: var(--kb-bg);
+}
+
+.admin-filter-clear {
+  margin-left: auto;
+  align-self: center;
+  height: 26px;
+  padding: 0 12px;
+  border: 1px solid var(--kb-border-subtle);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--kb-subtle);
+  font: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+.admin-filter-clear:hover {
+  color: var(--kb-danger);
+  border-color: var(--kb-danger);
+}
+
+@media (max-width: 640px) {
+  .admin-filter-clear {
+    margin-left: 0;
+  }
 }
 
 /* ---------------- 表单控件（统一） ---------------- */

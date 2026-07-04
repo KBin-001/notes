@@ -137,6 +137,7 @@ export const ROUTES = [
   'categories',
   'tags',
   'topics',
+  'topic',
   'storage',
   'settings',
   'logs',

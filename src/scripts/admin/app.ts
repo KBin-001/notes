@@ -5,6 +5,7 @@ import { fetchCurrentUser, logout } from './api';
 import { $, $$, parseHash, ROUTES } from './shared';
 import { mountNotesManage, bindNotesManageEvents } from './notes-manage';
 import { mountEditor, loadNoteByHash } from './note-editor';
+import { mountTopicDetail } from './topic-detail';
 
 /** 路由 → 视图 data-view 映射（new/edit 共用 editor 视图） */
 const ROUTE_TO_VIEW: Record<string, string> = {
@@ -15,6 +16,7 @@ const ROUTE_TO_VIEW: Record<string, string> = {
   categories: 'categories',
   tags: 'tags',
   topics: 'topics',
+  topic: 'topic',
   storage: 'storage',
   settings: 'settings',
   logs: 'logs',
@@ -118,6 +120,8 @@ async function handleRoute() {
       notesEventsBound = true;
     }
     await mountNotesManage();
+  } else if (route === 'topic') {
+    mountTopicDetail();
   } else if (route === 'new' || route === 'edit') {
     if (!editorMounted) {
       mountEditor();

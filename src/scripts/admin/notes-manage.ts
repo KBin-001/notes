@@ -26,13 +26,33 @@ interface Filters {
 }
 
 function readFilters(): Filters {
+  // 从激活的 chip 读取筛选值（每个 group 同一时刻只有一个 chip 处于 is-active）
+  const chipValue = (key: string): string => {
+    const chip = $(`#admin-filter-panel .admin-chip.is-active[data-filter-key="${key}"]`);
+    return chip?.getAttribute('data-filter-value') ?? '';
+  };
   return {
     keyword: ($('#admin-notes-search') as HTMLInputElement)?.value?.trim().toLowerCase() ?? '',
-    category: ($('#admin-filter-category') as HTMLSelectElement)?.value ?? '',
-    status: ($('#admin-filter-status') as HTMLSelectElement)?.value ?? '',
-    visibility: ($('#admin-filter-visibility') as HTMLSelectElement)?.value ?? '',
-    sensitive: ($('#admin-filter-sensitive') as HTMLSelectElement)?.value ?? '',
+    category: chipValue('category'),
+    status: chipValue('status'),
+    visibility: chipValue('visibility'),
+    sensitive: chipValue('sensitive'),
   };
+}
+
+/** 同步 chip 激活态：清除同组其他 chip，激活当前 chip */
+function setActiveChip(key: string, value: string): void {
+  $$(`#admin-filter-panel .admin-chip[data-filter-key="${key}"]`).forEach((chip) => {
+    chip.classList.toggle('is-active', chip.getAttribute('data-filter-value') === value);
+  });
+}
+
+/** 清除所有筛选（chip 全部回到「全部」） */
+function clearAllFilters(): void {
+  ['category', 'status', 'visibility', 'sensitive'].forEach((key) => setActiveChip(key, ''));
+  const search = $('#admin-notes-search') as HTMLInputElement | null;
+  if (search) search.value = '';
+  applyFilters();
 }
 
 function showMessage(text: string, type: 'info' | 'success' | 'error' = 'info') {
@@ -173,17 +193,23 @@ export async function mountNotesManage(forceRefresh = false): Promise<void> {
 
 export function bindNotesManageEvents(): void {
   const search = $('#admin-notes-search');
-  const category = $('#admin-filter-category');
-  const status = $('#admin-filter-status');
-  const visibility = $('#admin-filter-visibility');
-  const sensitive = $('#admin-filter-sensitive');
   const syncBtn = $('#admin-sync-btn');
   const batchInput = $('#admin-batch-input');
 
-  [search, category, status, visibility, sensitive].forEach((el) => {
-    el?.addEventListener('input', applyFilters);
-    el?.addEventListener('change', applyFilters);
+  search?.addEventListener('input', applyFilters);
+
+  // 筛选 chip 点击：切换激活态并触发筛选
+  $$('#admin-filter-panel .admin-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const key = chip.getAttribute('data-filter-key') || '';
+      const value = chip.getAttribute('data-filter-value') || '';
+      setActiveChip(key, value);
+      applyFilters();
+    });
   });
+
+  // 清除筛选
+  $('#admin-filter-clear')?.addEventListener('click', clearAllFilters);
 
   syncBtn?.addEventListener('click', async () => {
     if (syncBtn) {

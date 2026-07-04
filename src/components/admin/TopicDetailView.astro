@@ -1,0 +1,115 @@
+---
+import { getCollection } from 'astro:content';
+import { ArrowLeft, Layers } from '@lucide/astro';
+import {
+  isIndexDoc,
+  sortDocsByUpdated,
+  topicMeta,
+  topicOrder,
+} from '@/lib/navigation';
+
+const all = await getCollection('docs');
+const notes = all.filter((d) => !isIndexDoc(d.id));
+
+// 预渲染所有专题的笔记数据，前端根据 hash 中的 id 切换显示
+const topicData = topicOrder.map((topic) => {
+  const meta = topicMeta[topic];
+  const docs = sortDocsByUpdated(notes.filter((d) => d.data.topics.includes(topic))).map((d) => ({
+    id: d.id,
+    title: d.data.title,
+    status: d.data.status,
+    updated: d.data.updated.toISOString(),
+  }));
+  const statusCount = docs.reduce<Record<string, number>>((acc, d) => {
+    acc[d.status] = (acc[d.status] || 0) + 1;
+    return acc;
+  }, {});
+  return { topic, meta, docs, statusCount };
+});
+---
+
+<section class="admin-view" data-view="topic">
+  <div class="admin-page-head">
+    <div class="title-block">
+      <a href="#/topics" class="topic-back-link">
+        <ArrowLeft size={15} aria-hidden="true" />
+        <span>返回专题管理</span>
+      </a>
+      <h2 data-topic-title>专题详情</h2>
+      <p data-topic-desc class="admin-muted admin-text-sm"></p>
+    </div>
+  </div>
+
+  <div class="topic-detail-meta">
+    <div class="admin-flex admin-items-center admin-gap-2">
+      <span class="stat-icon">
+        <Layers size={17} />
+      </span>
+      <div style="min-width:0">
+        <div class="admin-text-xs admin-subtle admin-mono" data-topic-id>—</div>
+        <div class="admin-flex admin-flex-wrap admin-gap-1 admin-mt-1" data-topic-status></div>
+      </div>
+      <span class="admin-nav-badge" style="margin-left:auto" data-topic-count>0</span>
+    </div>
+  </div>
+
+  <!-- 笔记列表 -->
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>标题</th>
+          <th>状态</th>
+          <th>更新时间</th>
+          <th style="text-align:right">操作</th>
+        </tr>
+      </thead>
+      <tbody id="topic-notes-tbody">
+        <tr><td colspan="4"><div class="admin-empty">请从专题管理选择一个专题。</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 预渲染数据：每个专题对应一个 script 节点 -->
+<template id="topic-notes-data">
+  {topicData.map((row) => (
+    <script type="application/json" data-topic={row.topic} set:html={JSON.stringify(row)} />
+  ))}
+</template>
+
+<style>
+  .topic-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    color: var(--kb-muted);
+    font-size: 0.82rem;
+    transition: color 0.12s;
+  }
+
+  .topic-back-link:hover {
+    color: var(--kb-accent);
+  }
+
+  .topic-detail-meta {
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--kb-border);
+    border-radius: var(--admin-radius);
+    background: var(--kb-surface);
+  }
+
+  .topic-detail-meta .stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--kb-accent-soft);
+    color: var(--kb-accent);
+    flex-shrink: 0;
+  }
+</style>

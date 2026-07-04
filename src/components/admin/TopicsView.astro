@@ -14,8 +14,8 @@ const all = await getCollection('docs');
 const notes = all.filter((d) => !isIndexDoc(d.id));
 
 const rows = topicOrder.map((topic) => {
-  const docs = notes.filter((d) => d.data.topics.includes(topic));
-  const latest = sortDocsByUpdated(docs)[0];
+  const docs = sortDocsByUpdated(notes.filter((d) => d.data.topics.includes(topic)));
+  const latest = docs[0];
   const statusCount = docs.reduce<Record<string, number>>((acc, d) => {
     acc[d.data.status] = (acc[d.data.status] || 0) + 1;
     return acc;
@@ -28,34 +28,102 @@ const rows = topicOrder.map((topic) => {
   <div class="admin-page-head">
     <div class="title-block">
       <h2>专题管理</h2>
-      <p>跨平台复盘专题归档概览（只读）。</p>
+      <p>跨平台复盘专题归档概览（只读）。点击专题卡片查看其中笔记。</p>
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+  <div class="admin-topics-grid">
     {rows.map((row) => (
-      <div class="admin-card admin-card-pad">
+      <a
+        class="admin-card admin-card-pad admin-topic-card"
+        href={`#/topic?id=${row.topic}`}
+        data-topic={row.topic}
+      >
         <div class="admin-flex admin-items-center admin-gap-2 admin-mb-2">
-          <span class="stat-icon" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:var(--kb-accent-soft);color:var(--kb-accent)">
+          <span class="stat-icon">
             <Layers size={17} />
           </span>
-          <div>
-            <div style="font-weight:700;color:var(--kb-heading)">{row.meta.title}</div>
+          <div style="min-width:0">
+            <div class="admin-topic-title">{row.meta.title}</div>
             <div class="admin-text-xs admin-subtle admin-mono">{row.topic}</div>
           </div>
           <span class="admin-nav-badge" style="margin-left:auto">{row.docs.length}</span>
         </div>
-        <p class="admin-text-sm admin-muted" style="margin:8px 0 12px;line-height:1.6">{row.meta.description}</p>
+        <p class="admin-text-sm admin-muted admin-topic-desc">{row.meta.description}</p>
         <div class="admin-flex admin-flex-wrap admin-gap-1 admin-mb-2">
           {Object.entries(row.statusCount).map(([s, n]) => (
-            <span style="display:inline-flex;align-items:center;gap:4px">
+            <span class="admin-topic-status">
               <StatusBadge status={s as any} />
               <span class="admin-text-xs admin-subtle">{n}</span>
             </span>
           ))}
         </div>
-        <div class="admin-text-xs admin-subtle">最近更新：{row.latest ? formatDate(row.latest.data.updated) : '—'}</div>
-      </div>
+        <div class="admin-topic-foot">
+          <span class="admin-text-xs admin-subtle">最近更新：{row.latest ? formatDate(row.latest.data.updated) : '—'}</span>
+        </div>
+      </a>
     ))}
   </div>
 </section>
+
+<style>
+  .admin-topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .admin-topic-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .admin-topic-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--kb-accent-ring);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  .admin-topic-card .stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--kb-accent-soft);
+    color: var(--kb-accent);
+    flex-shrink: 0;
+  }
+
+  .admin-topic-title {
+    font-weight: 700;
+    color: var(--kb-heading);
+    transition: color 0.12s;
+  }
+
+  .admin-topic-card:hover .admin-topic-title {
+    color: var(--kb-accent);
+  }
+
+  .admin-topic-desc {
+    margin: 8px 0 12px;
+    line-height: 1.6;
+  }
+
+  .admin-topic-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .admin-topic-foot {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--kb-border-subtle);
+  }
+</style>

@@ -51,29 +51,54 @@ const visibilities = ['public', 'private', 'draft'];
         placeholder="搜索标题或路径..."
       />
     </div>
-    <select id="admin-filter-category" class="admin-select" style="width:auto;flex:0 0 auto">
-      <option value="">全部分类</option>
-      {categories.map((c) => <option value={c}>{c}</option>)}
-    </select>
-    <select id="admin-filter-status" class="admin-select" style="width:auto;flex:0 0 auto">
-      <option value="">全部状态</option>
-      {statuses.map((s) => <option value={s}>{s}</option>)}
-    </select>
-    <select id="admin-filter-visibility" class="admin-select" style="width:auto;flex:0 0 auto">
-      <option value="">全部公开状态</option>
-      {visibilities.map((v) => <option value={v}>{v}</option>)}
-    </select>
-    <select id="admin-filter-sensitive" class="admin-select" style="width:auto;flex:0 0 auto">
-      <option value="">全部 sensitivity</option>
-      <option value="yes">仅 sensitive</option>
-      <option value="no">仅非 sensitive</option>
-    </select>
     <span
       id="admin-notes-count"
       class="admin-text-xs admin-subtle admin-mono"
       style="margin-left:auto"
     >—</span>
   </div>
+
+  <!-- 筛选器：分类 / 状态 / 公开状态 chip 风格 -->
+  <div class="admin-filter-panel" id="admin-filter-panel">
+    <div class="admin-filter-group" data-filter="category">
+      <span class="admin-filter-label">分类</span>
+      <div class="admin-filter-chips" role="group" aria-label="按分类筛选">
+        <button type="button" class="admin-chip is-active" data-filter-key="category" data-filter-value="">全部</button>
+        {categories.map((c) => (
+          <button type="button" class="admin-chip" data-filter-key="category" data-filter-value={c}>{c}</button>
+        ))}
+      </div>
+    </div>
+    <div class="admin-filter-group" data-filter="status">
+      <span class="admin-filter-label">状态</span>
+      <div class="admin-filter-chips" role="group" aria-label="按状态筛选">
+        <button type="button" class="admin-chip is-active" data-filter-key="status" data-filter-value="">全部</button>
+        {statuses.map((s) => (
+          <button type="button" class="admin-chip" data-filter-key="status" data-filter-value={s}>{s}</button>
+        ))}
+      </div>
+    </div>
+    <div class="admin-filter-group" data-filter="visibility">
+      <span class="admin-filter-label">公开状态</span>
+      <div class="admin-filter-chips" role="group" aria-label="按公开状态筛选">
+        <button type="button" class="admin-chip is-active" data-filter-key="visibility" data-filter-value="">全部</button>
+        {visibilities.map((v) => (
+          <button type="button" class="admin-chip" data-filter-key="visibility" data-filter-value={v}>{v}</button>
+        ))}
+      </div>
+    </div>
+    <div class="admin-filter-group" data-filter="sensitive">
+      <span class="admin-filter-label">敏感</span>
+      <div class="admin-filter-chips" role="group" aria-label="按敏感度筛选">
+        <button type="button" class="admin-chip is-active" data-filter-key="sensitive" data-filter-value="">全部</button>
+        <button type="button" class="admin-chip" data-filter-key="sensitive" data-filter-value="yes">仅 sensitive</button>
+        <button type="button" class="admin-chip" data-filter-key="sensitive" data-filter-value="no">仅非 sensitive</button>
+      </div>
+    </div>
+    <button type="button" class="admin-filter-clear" id="admin-filter-clear">清除筛选</button>
+  </div>
+
+  <!-- 隐藏的 select 兼容旧逻辑（仍由 readFilters 读取，但 UI 不可见） -->
 
   <!-- 消息条 -->
   <div id="admin-notes-message"></div>
