@@ -13,7 +13,7 @@ import TopicsView from '@/components/admin/TopicsView.astro';
 import TopicDetailView from '@/components/admin/TopicDetailView.astro';
 import StorageView from '@/components/admin/StorageView.astro';
 import LogsView from '@/components/admin/LogsView.astro';
-import PlaceholderView from '@/components/admin/PlaceholderView.astro';
+import SettingsView from '@/components/admin/SettingsView.astro';
 
 const allDocs = publicDocs(await getCollection('docs'));
 const noteCount = allDocs.filter((d) => !isIndexDoc(d.id)).length;
@@ -38,8 +38,8 @@ const noteCount = allDocs.filter((d) => !isIndexDoc(d.id)).length;
       <TopicsView />
       <TopicDetailView />
       <StorageView />
-      <PlaceholderView route="settings" />
       <LogsView />
+      <SettingsView />
     </AdminShell>
 
     <script>

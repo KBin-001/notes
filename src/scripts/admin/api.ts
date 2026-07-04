@@ -216,3 +216,38 @@ export async function fetchLogs(params: {
   const suffix = qs.toString() ? `?${qs.toString()}` : '';
   return api<LogsListResponse>(`/api/logs/list${suffix}`);
 }
+
+/* ---------------- 站点设置 ---------------- */
+
+export interface SiteConfig {
+  siteTitle: string;
+  siteDescription: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  heroPrimaryLabel: string;
+  heroPrimaryHref: string;
+  heroSecondaryLabel: string;
+  heroSecondaryHref: string;
+  sidebarTagline: string;
+  sidebarSubtagline: string;
+}
+
+export interface SiteConfigResponse {
+  ok: boolean;
+  config: SiteConfig;
+  sha: string;
+}
+
+/** 读取站点配置 */
+export async function fetchSiteConfig(): Promise<SiteConfigResponse> {
+  return api<SiteConfigResponse>('/api/settings/get');
+}
+
+/** 更新站点配置 */
+export async function updateSiteConfig(config: SiteConfig, sha?: string): Promise<{ ok: boolean; sha: string; commit?: string }> {
+  return api('/api/settings/update', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ config, sha }),
+  });
+}

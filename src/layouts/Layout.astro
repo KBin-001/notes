@@ -5,6 +5,7 @@ import SearchDialog from '@/components/SearchDialog.astro';
 import Sidebar from '@/components/Sidebar.astro';
 import TableOfContents from '@/components/TableOfContents.astro';
 import type { TopicId } from '@/lib/navigation';
+import { getSiteConfig } from '@/lib/site-config';
 import '@/styles/global.css';
 import '@/styles/prose.css';
 
@@ -23,7 +24,8 @@ interface Props {
 }
 
 const { title, description, currentId = 'index', currentTopic, headings = [] } = Astro.props;
-const pageTitle = title === 'kevin知识库' ? title : `${title} | kevin知识库`;
+const siteConfig = await getSiteConfig();
+const pageTitle = title === siteConfig.siteTitle ? title : `${title} | ${siteConfig.siteTitle}`;
 ---
 
 <!doctype html>

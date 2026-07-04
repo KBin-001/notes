@@ -1,0 +1,199 @@
+---
+import { Settings, Save, RotateCcw } from '@lucide/astro';
+---
+
+<section class="admin-view" data-view="settings">
+  <div class="admin-page-head">
+    <div class="title-block">
+      <h2>站点设置</h2>
+      <p>配置站点标题、描述、首页宣传语和侧边栏标语等全局参数。保存后立即生效（需重新部署）。</p>
+    </div>
+    <div class="admin-page-actions">
+      <button class="admin-btn secondary" type="button" id="settings-reset-btn" title="重置为默认值">
+        <RotateCcw size={15} aria-hidden="true" />
+        重置默认
+      </button>
+      <button class="admin-btn primary" type="button" id="settings-save-btn">
+        <Save size={15} aria-hidden="true" />
+        保存
+      </button>
+    </div>
+  </div>
+
+  <!-- 消息条 -->
+  <div id="settings-message"></div>
+
+  <form id="settings-form" class="settings-form" autocomplete="off">
+    <!-- 站点身份 -->
+    <div class="settings-section">
+      <div class="settings-section-head">
+        <span class="settings-section-icon"><Settings size={16} /></span>
+        <div>
+          <div class="settings-section-title">站点身份</div>
+          <div class="admin-text-xs admin-subtle">显示在页眉和浏览器标题后缀</div>
+        </div>
+      </div>
+      <div class="settings-field">
+        <label for="cfg-siteTitle">站点标题</label>
+        <input id="cfg-siteTitle" name="siteTitle" type="text" class="admin-input" required />
+        <p class="settings-hint">浏览器标题会显示为「页面名 | 站点标题」。</p>
+      </div>
+      <div class="settings-field">
+        <label for="cfg-siteDescription">站点描述</label>
+        <textarea id="cfg-siteDescription" name="siteDescription" rows="3" class="admin-input" required></textarea>
+        <p class="settings-hint">用于 SEO meta description 和首页 hero 段落。</p>
+      </div>
+    </div>
+
+    <!-- 首页 Hero -->
+    <div class="settings-section">
+      <div class="settings-section-head">
+        <span class="settings-section-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z"></path></svg>
+        </span>
+        <div>
+          <div class="settings-section-title">首页宣传区</div>
+          <div class="admin-text-xs admin-subtle">首页 hero 区的主标题、副标题和按钮</div>
+        </div>
+      </div>
+      <div class="settings-field">
+        <label for="cfg-heroTitle">Hero 主标题</label>
+        <input id="cfg-heroTitle" name="heroTitle" type="text" class="admin-input" required />
+      </div>
+      <div class="settings-field">
+        <label for="cfg-heroSubtitle">Hero 副标题</label>
+        <textarea id="cfg-heroSubtitle" name="heroSubtitle" rows="3" class="admin-input" required></textarea>
+      </div>
+      <div class="settings-grid-2">
+        <div class="settings-field">
+          <label for="cfg-heroPrimaryLabel">主按钮文案</label>
+          <input id="cfg-heroPrimaryLabel" name="heroPrimaryLabel" type="text" class="admin-input" required />
+        </div>
+        <div class="settings-field">
+          <label for="cfg-heroPrimaryHref">主按钮链接</label>
+          <input id="cfg-heroPrimaryHref" name="heroPrimaryHref" type="text" class="admin-input" required />
+        </div>
+      </div>
+      <div class="settings-grid-2">
+        <div class="settings-field">
+          <label for="cfg-heroSecondaryLabel">次按钮文案</label>
+          <input id="cfg-heroSecondaryLabel" name="heroSecondaryLabel" type="text" class="admin-input" required />
+        </div>
+        <div class="settings-field">
+          <label for="cfg-heroSecondaryHref">次按钮链接</label>
+          <input id="cfg-heroSecondaryHref" name="heroSecondaryHref" type="text" class="admin-input" required />
+        </div>
+      </div>
+    </div>
+
+    <!-- 侧边栏标语 -->
+    <div class="settings-section">
+      <div class="settings-section-head">
+        <span class="settings-section-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+        </span>
+        <div>
+          <div class="settings-section-title">侧边栏页脚</div>
+          <div class="admin-text-xs admin-subtle">侧边栏底部显示的主副标语</div>
+        </div>
+      </div>
+      <div class="settings-field">
+        <label for="cfg-sidebarTagline">主标语</label>
+        <input id="cfg-sidebarTagline" name="sidebarTagline" type="text" class="admin-input" required />
+      </div>
+      <div class="settings-field">
+        <label for="cfg-sidebarSubtagline">副标语</label>
+        <input id="cfg-sidebarSubtagline" name="sidebarSubtagline" type="text" class="admin-input" required />
+      </div>
+    </div>
+
+    <input type="hidden" id="cfg-sha" name="sha" value="" />
+  </form>
+</section>
+
+<style>
+  .settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 880px;
+  }
+
+  .settings-section {
+    border: 1px solid var(--kb-border);
+    border-radius: var(--admin-radius);
+    background: var(--kb-surface);
+    padding: 18px 20px;
+  }
+
+  .settings-section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--kb-border-subtle);
+  }
+
+  .settings-section-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--kb-accent-soft);
+    color: var(--kb-accent);
+    flex-shrink: 0;
+  }
+
+  .settings-section-title {
+    font-weight: 700;
+    color: var(--kb-heading);
+    font-size: 0.95rem;
+  }
+
+  .settings-field {
+    margin-bottom: 14px;
+  }
+
+  .settings-field:last-child {
+    margin-bottom: 0;
+  }
+
+  .settings-field label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--kb-text);
+    margin-bottom: 6px;
+  }
+
+  .settings-field .admin-input {
+    width: 100%;
+  }
+
+  .settings-field textarea.admin-input {
+    resize: vertical;
+    min-height: 70px;
+    font-family: inherit;
+  }
+
+  .settings-hint {
+    font-size: 0.74rem;
+    color: var(--kb-subtle);
+    margin-top: 4px;
+  }
+
+  .settings-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  @media (max-width: 640px) {
+    .settings-grid-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

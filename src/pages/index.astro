@@ -6,32 +6,33 @@ import ContributionHeatmap from '@/components/ContributionHeatmap.astro';
 import StatusBadge from '@/components/StatusBadge.astro';
 import Layout from '@/layouts/Layout.astro';
 import { categoryMeta, categoryOrder, displayTitle, docUrl, formatDate, getCategoryNotes, getTopicNotes, isIndexDoc, publicDocs, sortDocsByUpdated, topicMeta, topicOrder } from '@/lib/navigation';
+import { getSiteConfig } from '@/lib/site-config';
 
 const docs = publicDocs(await getCollection('docs'));
 const notes = docs.filter((doc) => !isIndexDoc(doc.id));
 const latest = sortDocsByUpdated(notes).slice(0, 6);
+const siteConfig = await getSiteConfig();
 ---
 
-<Layout title="kevin知识库" description="这里用于沉淀技术笔记、问题复盘、项目记录、工具使用和学习资料。" currentId="index">
+<Layout title={siteConfig.siteTitle} description={siteConfig.siteDescription} currentId="index">
   <section class="mx-auto max-w-6xl">
     <div class="kb-hero mb-9 flex flex-col gap-6 rounded-xl border border-kb-border bg-kb-surface p-6 sm:p-8 lg:flex-row lg:items-center lg:gap-10">
       <!-- 左侧：标题、描述、按钮 -->
       <div class="flex-1 min-w-0">
         <h1 class="max-w-2xl text-2xl font-semibold leading-tight text-kb-heading sm:text-3xl">
-          把零散问题、学习记录和项目经验，整理成可复用的知识路径。
+          {siteConfig.heroTitle}
         </h1>
         <p class="mt-4 max-w-xl text-base leading-8 text-kb-muted">
-          这里用于沉淀技术笔记、问题复盘、项目记录、工具使用和学习资料。
-          内容按主题、场景和处理过程归档，方便之后快速查找、复盘和复用。
+          {siteConfig.heroSubtitle}
         </p>
         <div class="mt-6 flex flex-wrap gap-3">
-          <a href="#all-notes" class="kb-button-primary inline-flex h-10 items-center gap-2 rounded-lg bg-kb-accent px-5 text-sm font-semibold text-white transition hover:bg-kb-accent-hover">
+          <a href={siteConfig.heroPrimaryHref} class="kb-button-primary inline-flex h-10 items-center gap-2 rounded-lg bg-kb-accent px-5 text-sm font-semibold text-white transition hover:bg-kb-accent-hover">
             <BookMarked size={16} aria-hidden="true" />
-            浏览全部笔记
+            {siteConfig.heroPrimaryLabel}
           </a>
-          <a href="/tools/templates/" class="kb-button-secondary inline-flex h-10 items-center gap-2 rounded-lg border border-kb-border px-5 text-sm font-semibold text-kb-muted transition hover:border-kb-border-strong hover:text-kb-heading">
+          <a href={siteConfig.heroSecondaryHref} class="kb-button-secondary inline-flex h-10 items-center gap-2 rounded-lg border border-kb-border px-5 text-sm font-semibold text-kb-muted transition hover:border-kb-border-strong hover:text-kb-heading">
             <Layers size={16} aria-hidden="true" />
-            查看整理模板
+            {siteConfig.heroSecondaryLabel}
           </a>
         </div>
       </div>

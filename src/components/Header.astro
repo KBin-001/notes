@@ -1,6 +1,9 @@
 ---
 import { BookOpen, Menu, Search } from '@lucide/astro';
 import ThemeToggle from '@/components/ThemeToggle.astro';
+import { getSiteConfig } from '@/lib/site-config';
+
+const config = await getSiteConfig();
 ---
 
 <header class="site-header sticky top-0 z-40" data-pagefind-ignore>
@@ -19,7 +22,7 @@ import ThemeToggle from '@/components/ThemeToggle.astro';
       <span class="flex h-8 w-8 items-center justify-center rounded-md bg-kb-accent-soft text-kb-muted">
         <BookOpen size={18} aria-hidden="true" />
       </span>
-      <span class="truncate text-sm font-semibold text-kb-heading sm:text-base">kevin知识库</span>
+      <span class="truncate text-sm font-semibold text-kb-heading sm:text-base">{config.siteTitle}</span>
     </a>
 
     <div class="flex-1"></div>
