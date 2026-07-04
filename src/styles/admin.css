@@ -666,10 +666,15 @@
 
 .admin-table tbody tr {
   transition: background 0.12s;
+  cursor: pointer;
 }
 
 .admin-table tbody tr:hover {
   background: var(--kb-surface-hover);
+}
+
+.admin-table tbody tr:hover .col-title {
+  color: var(--kb-accent);
 }
 
 .admin-table .col-title {
@@ -679,13 +684,21 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color 0.12s;
 }
 
+/* 操作列保持默认指针，避免误以为整列可点 */
 .admin-table .col-actions {
+  cursor: default;
   display: flex;
   gap: 4px;
   justify-content: flex-end;
   white-space: nowrap;
+}
+
+.admin-table .col-actions button,
+.admin-table .col-actions a {
+  cursor: pointer;
 }
 
 .admin-table-meta {

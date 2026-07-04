@@ -117,8 +117,19 @@ function applyFilters() {
   // 绑定行操作
   $$('#admin-notes-tbody tr[data-path]').forEach((row) => {
     const path = row.getAttribute('data-path') || '';
+
+    // 点击标题或行空白区域进入编辑
+    row.addEventListener('click', (e) => {
+      // 操作列内的点击交给按钮处理
+      const target = e.target as HTMLElement;
+      if (target.closest('.col-actions')) return;
+      navigate('edit', { path });
+    });
+
+    // 操作按钮
     $$('[data-action]', row).forEach((btn) => {
       btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
         const target = e.currentTarget as HTMLElement;
         const action = target.getAttribute('data-action');
         if (action === 'edit') {
