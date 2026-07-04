@@ -470,14 +470,32 @@ html[data-theme="claude"] .doc-prose pre {
   box-shadow: var(--kb-shadow-sm);
 }
 
+/* Code blocks — brand Light Gray surface */
 html[data-theme="claude"] .doc-prose pre {
-  background: #ebe7dc !important;
+  background: #e8e6dc !important;
   color: var(--kb-text) !important;
 }
 
 html[data-theme="claude"] .doc-prose pre code,
 html[data-theme="claude"] .doc-prose pre span {
   color: var(--kb-text) !important;
+}
+
+/* Inline code — brand Orange tint for accent */
+html[data-theme="claude"] .doc-prose :not(pre) > code {
+  background: rgba(217, 119, 87, 0.1);
+  border-color: rgba(217, 119, 87, 0.22);
+  color: #b65f3f;
+}
+
+/* Blockquote — brand Orange left border */
+html[data-theme="claude"] .doc-prose blockquote {
+  border-left-color: rgba(217, 119, 87, 0.45);
+}
+
+/* Links — brand Orange underline */
+html[data-theme="claude"] .doc-prose a {
+  text-decoration-color: var(--kb-accent);
 }
 
 html[data-theme="claude"] .doc-prose img {

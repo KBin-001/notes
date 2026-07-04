@@ -6,6 +6,7 @@
    ══════════════════════════════════════════════════ */
 @theme {
   --font-sans: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --font-heading: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 
   --color-kb-bg: var(--kb-bg);
@@ -610,47 +611,86 @@ aside[data-pagefind-ignore] > div::-webkit-scrollbar-thumb,
 } /* end @layer components */
 
 /* ══════════════════════════════════════════════════
-   CLAUDE LIGHT THEME — preserved, only variable overrides
+   CLAUDE LIGHT THEME — Anthropic brand identity
+   Colors: brand Dark #141413, Light #faf9f5, Mid Gray
+   #b0aea5, Light Gray #e8e6dc, Orange #d97757 (primary),
+   Blue #6a9bcc (secondary), Green #788c5d (tertiary).
+   Typography: Poppins (headings), Lora (body).
    Wrapped in @layer base so utility classes still win.
    ══════════════════════════════════════════════════ */
 html[data-theme="claude"] {
   color-scheme: light;
 
-  --kb-bg:             #f5f2e9;
-  --kb-surface:        #fffdf7;
-  --kb-elevated:       #f1eee4;
-  --kb-overlay:        rgba(35, 31, 24, 0.24);
-  --kb-surface-glass:  rgba(255, 253, 247, 0.86);
-  --kb-surface-hover:  rgba(87, 73, 52, 0.07);
-  --kb-surface-active: rgba(87, 73, 52, 0.11);
-  --kb-heading:        #141413;
-  --kb-text:           #34312c;
-  --kb-muted:          #69645c;
-  --kb-subtle:         #817b71;
-  --kb-disabled:       #aaa397;
-  --kb-accent:         #c96442;
-  --kb-accent-hover:   #b65335;
-  --kb-accent-soft:    rgba(201, 100, 66, 0.12);
-  --kb-accent-ring:    rgba(201, 100, 66, 0.26);
-  --kb-accent-2:       #b98218;
-  --kb-border:         rgba(202, 194, 178, 0.78);
-  --kb-border-subtle:  rgba(216, 210, 195, 0.72);
-  --kb-border-strong:  #beb5a4;
-  --kb-link:           #b65335;
-  --kb-code-bg:        #f0ede4;
-  --kb-inline-code-bg: rgba(232, 226, 213, 0.82);
-  --kb-focus-ring:     rgba(201, 100, 66, 0.55);
+  /* Background layers — brand Light + Light Gray */
+  --kb-bg:             #faf9f5;   /* brand Light */
+  --kb-surface:        #fffefb;   /* near-white, lifted above bg */
+  --kb-elevated:       #e8e6dc;   /* brand Light Gray */
+  --kb-overlay:        rgba(20, 20, 19, 0.24);
+
+  /* Surface variants — brand Orange tints for hover/active */
+  --kb-surface-glass:  rgba(250, 249, 245, 0.88);
+  --kb-surface-hover:  rgba(217, 119, 87, 0.07);
+  --kb-surface-active: rgba(217, 119, 87, 0.11);
+
+  /* Text hierarchy — brand Dark as primary text */
+  --kb-heading:   #141413;   /* brand Dark */
+  --kb-text:      #2d2b27;
+  --kb-muted:     #6b675e;
+  --kb-subtle:    #8a8678;
+  --kb-disabled:  #b0aea5;   /* brand Mid Gray */
+
+  /* Accent — brand Orange (primary) + brand Blue (secondary) */
+  --kb-accent:       #d97757;   /* brand Orange */
+  --kb-accent-hover: #c4663f;   /* deeper brand Orange */
+  --kb-accent-soft:  rgba(217, 119, 87, 0.12);
+  --kb-accent-ring:  rgba(217, 119, 87, 0.26);
+  --kb-accent-2:     #6a9bcc;   /* brand Blue */
+
+  /* Borders — based on brand Mid Gray / Light Gray */
+  --kb-border:        rgba(176, 174, 165, 0.42);  /* brand Mid Gray */
+  --kb-border-subtle: rgba(232, 230, 220, 0.85);  /* brand Light Gray */
+  --kb-border-strong: #b0aea5;   /* brand Mid Gray */
+
+  /* Functional */
+  --kb-link:           #d97757;   /* brand Orange */
+  --kb-code-bg:        #e8e6dc;   /* brand Light Gray */
+  --kb-inline-code-bg: rgba(232, 230, 220, 0.6);
+  --kb-focus-ring:     rgba(217, 119, 87, 0.55);
   --kb-warning:  #9a6700;
   --kb-danger:   #ad3a45;
-  --kb-success:  #4d8355;
-  --kb-shadow-sm: 0 1px 0 rgba(57, 47, 33, 0.04), 0 8px 20px rgba(57, 47, 33, 0.05);
-  --kb-shadow-md: 0 12px 32px rgba(57, 47, 33, 0.08);
-  --kb-shadow-lg: 0 20px 56px rgba(57, 47, 33, 0.10);
+  --kb-success:  #788c5d;   /* brand Green */
+
+  /* Shadows — warm, soft */
+  --kb-shadow-sm: 0 1px 0 rgba(20, 20, 19, 0.04), 0 8px 20px rgba(20, 20, 19, 0.05);
+  --kb-shadow-md: 0 12px 32px rgba(20, 20, 19, 0.08);
+  --kb-shadow-lg: 0 20px 56px rgba(20, 20, 19, 0.10);
+
+  /* Anthropic brand typography — Lora body, Poppins headings.
+     Latin glyphs use the brand font; Chinese glyphs fall through
+     to Noto Sans SC / Microsoft YaHei for readability. */
+  --font-sans: "Lora", "Noto Sans SC", "Microsoft YaHei", "PingFang SC", Georgia, serif;
+  --font-heading: "Poppins", "Noto Sans SC", "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
 }
 
 html[data-theme="claude"],
 html[data-theme="claude"] body {
   background: var(--kb-bg);
+}
+
+/* Apply Poppins to all headings + brand text in Claude theme */
+html[data-theme="claude"] h1,
+html[data-theme="claude"] h2,
+html[data-theme="claude"] h3,
+html[data-theme="claude"] h4,
+html[data-theme="claude"] h5,
+html[data-theme="claude"] h6,
+html[data-theme="claude"] .site-brand,
+html[data-theme="claude"] .doc-prose h1,
+html[data-theme="claude"] .doc-prose h2,
+html[data-theme="claude"] .doc-prose h3,
+html[data-theme="claude"] .doc-prose h4 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.01em;
 }
 
 html[data-theme="claude"] .site-header {
@@ -672,85 +712,89 @@ html[data-theme="claude"] .kb-list-card:hover,
 html[data-theme="claude"] .kb-update-link:hover,
 html[data-theme="claude"] .kb-quick-link:hover,
 html[data-theme="claude"] .search-result:hover {
-  background: #faf7ef;
+  background: rgba(217, 119, 87, 0.06);
 }
 
 html[data-theme="claude"] .kb-stats-card {
-  background: #f8f5ec;
-  border-color: rgba(202, 194, 178, 0.5);
+  background: #e8e6dc;
+  border-color: rgba(176, 174, 165, 0.5);
 }
 
+/* Category accents — brand Orange / Blue / Green cycle */
 html[data-theme="claude"] .kb-accent-cyan {
-  background: rgba(45, 112, 122, 0.11);
-  color: #2d707a;
+  background: rgba(106, 155, 204, 0.14);
+  color: #4a7ba8;
 }
 
 html[data-theme="claude"] .kb-accent-amber {
-  background: rgba(171, 116, 24, 0.13);
-  color: #926113;
+  background: rgba(217, 119, 87, 0.14);
+  color: #b65f3f;
 }
 
 html[data-theme="claude"] .kb-accent-slate {
-  background: rgba(78, 76, 70, 0.10);
-  color: #5b574f;
+  background: rgba(120, 140, 93, 0.14);
+  color: #5d6f48;
 }
 
 html[data-theme="claude"] .kb-contribution {
-  background: #fffdf7;
+  background: #fffefb;
 }
 
 html[data-theme="claude"] .contribution-year-tabs {
-  background: #fffaf0;
+  background: #f3f0e6;
 }
 
 html[data-theme="claude"] .contribution-cell {
-  border-color: #eee6d8;
+  border-color: rgba(176, 174, 165, 0.3);
 }
 
+/* Contribution heatmap — brand Green #788c5d ramp */
 html[data-theme="claude"] .contribution-level-0 {
-  background: #f5efe4;
+  background: #e8e6dc;
 }
 
 html[data-theme="claude"] .contribution-level-1 {
-  background: #e9e5c7;
+  background: #c5cdb0;
 }
 
 html[data-theme="claude"] .contribution-level-2 {
-  background: #cdd99b;
+  background: #9fb288;
 }
 
 html[data-theme="claude"] .contribution-level-3 {
-  background: #a9c46c;
+  background: #788c5d;
 }
 
 html[data-theme="claude"] .contribution-level-4 {
-  background: #75a64f;
+  background: #5f7048;
 }
 
 html[data-theme="claude"] .contribution-level-5 {
-  background: #3f7f32;
+  background: #465537;
 }
 
 html[data-theme="claude"] .contribution-year-tab.is-active {
-  background: #f3e3ca;
+  background: rgba(217, 119, 87, 0.16);
+  color: #b65f3f;
 }
 
+/* Status badges — aligned with brand palette */
 html[data-theme="claude"] .kb-status-active {
-  border-color: #e2cda4;
-  background-color: #fbf1dc;
-  color: #76551b;
+  border-color: rgba(106, 155, 204, 0.4);
+  background-color: rgba(106, 155, 204, 0.12);
+  color: #4a7ba8;
 }
 
 html[data-theme="claude"] .kb-status-verified {
-  border-color: #bdd3b8;
-  background-color: #edf6e9;
-  color: #356c3f;
+  border-color: rgba(120, 140, 93, 0.4);
+  background-color: rgba(120, 140, 93, 0.12);
+  color: #5d6f48;
 }
 
 html[data-theme="claude"] .kb-status-pending {
-  border-color: #dfc08a;
-  background-color: #fbefd5;
-  color: #805a10;
+  border-color: rgba(217, 119, 87, 0.4);
+  background-color: rgba(217, 119, 87, 0.12);
+  color: #b65f3f;
 }
 
 html[data-theme="claude"] .kb-status-incomplete {
@@ -760,9 +804,9 @@ html[data-theme="claude"] .kb-status-incomplete {
 }
 
 html[data-theme="claude"] .kb-status-deprecated {
-  border-color: #d8d1c3;
-  background-color: #f4efe6;
-  color: #6f685d;
+  border-color: rgba(176, 174, 165, 0.5);
+  background-color: rgba(232, 230, 220, 0.5);
+  color: #6b675e;
 }
 
 html[data-theme="claude"] #mobile-nav-overlay,
@@ -775,15 +819,20 @@ html[data-theme="claude"] .search-panel {
 }
 
 html[data-theme="claude"] ::-webkit-scrollbar-thumb {
-  background: #c9c5b8;
+  background: rgba(176, 174, 165, 0.6);
+}
+
+html[data-theme="claude"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--kb-border-strong);
 }
 
 html[data-theme="claude"] ::selection {
-  background: rgba(217, 119, 87, 0.25);
+  background: rgba(217, 119, 87, 0.22);
+  color: #141413;
 }
 
 html[data-theme="claude"] input::placeholder {
-  color: #8c877d;
+  color: #8a8678;
 }
 
 html[data-theme="claude"] a:hover {
@@ -792,4 +841,9 @@ html[data-theme="claude"] a:hover {
 
 html[data-theme="claude"] .kb-button-primary {
   box-shadow: none;
+  background: var(--kb-accent);
+}
+
+html[data-theme="claude"] .kb-button-primary:hover {
+  background: var(--kb-accent-hover);
 }
