@@ -98,6 +98,19 @@ export async function putBinaryFile(env: Env, token: string, path: string, base6
   });
 }
 
+export async function deleteFile(env: Env, token: string, path: string, sha: string, message: string) {
+  const { owner, repo, branch } = repoConfig(env);
+  return githubFetch(`/repos/${owner}/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}`, token, {
+    method: 'DELETE',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      message,
+      sha,
+      branch,
+    }),
+  });
+}
+
 export function decodeBase64Content(content: string) {
   const cleaned = content.replace(/\s/g, '');
   const binary = atob(cleaned);

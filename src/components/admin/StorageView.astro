@@ -1,0 +1,156 @@
+---
+import { HardDrive, RefreshCw, Trash2 } from '@lucide/astro';
+---
+
+<section class="admin-view" data-view="storage">
+  <div class="admin-page-head">
+    <div class="title-block">
+      <h2>存储管理</h2>
+      <p>查看图片占用、引用情况，清理无引用资源以减少仓库体积。</p>
+    </div>
+    <div class="admin-page-actions">
+      <button class="admin-btn secondary" type="button" id="storage-refresh-btn">
+        <RefreshCw size={15} aria-hidden="true" />
+        刷新
+      </button>
+    </div>
+  </div>
+
+  <!-- 消息条 -->
+  <div id="storage-message"></div>
+
+  <!-- 统计卡片 -->
+  <div class="storage-stats-grid" id="storage-stats">
+    <div class="storage-stat-card">
+      <div class="storage-stat-icon">
+        <HardDrive size={18} />
+      </div>
+      <div class="storage-stat-body">
+        <div class="storage-stat-label">图片总数</div>
+        <div class="storage-stat-value" data-stat="total">—</div>
+      </div>
+    </div>
+    <div class="storage-stat-card">
+      <div class="storage-stat-icon">
+        <HardDrive size={18} />
+      </div>
+      <div class="storage-stat-body">
+        <div class="storage-stat-label">占用体积</div>
+        <div class="storage-stat-value" data-stat="totalSize">—</div>
+      </div>
+    </div>
+    <div class="storage-stat-card storage-stat-warn">
+      <div class="storage-stat-icon">
+        <Trash2 size={18} />
+      </div>
+      <div class="storage-stat-body">
+        <div class="storage-stat-label">无引用图片</div>
+        <div class="storage-stat-value" data-stat="unreferenced">—</div>
+        <div class="storage-stat-sub" data-stat="unreferencedSize">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 工具栏 -->
+  <div class="admin-toolbar">
+    <div class="admin-search">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+      <input id="storage-search" class="admin-input" type="search" placeholder="搜索路径或名称..." />
+    </div>
+    <div class="admin-filter-group">
+      <button type="button" class="admin-chip is-active" data-storage-filter="all">全部</button>
+      <button type="button" class="admin-chip" data-storage-filter="referenced">有引用</button>
+      <button type="button" class="admin-chip" data-storage-filter="unreferenced">无引用</button>
+    </div>
+    <span id="storage-count" class="admin-text-xs admin-subtle admin-mono" style="margin-left:auto">—</span>
+  </div>
+
+  <!-- 表格 -->
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>路径</th>
+          <th>分类</th>
+          <th>引用次数</th>
+          <th>体积</th>
+          <th style="text-align:right">操作</th>
+        </tr>
+      </thead>
+      <tbody id="storage-tbody">
+        <tr>
+          <td colspan="5">
+            <div class="admin-loading" id="storage-loading">正在加载存储清单...</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<style>
+  .storage-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .storage-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--kb-border);
+    border-radius: var(--admin-radius);
+    background: var(--kb-surface);
+  }
+
+  .storage-stat-warn {
+    border-color: color-mix(in oklab, var(--kb-warning) 40%, var(--kb-border));
+    background: color-mix(in oklab, var(--kb-warning) 6%, var(--kb-surface));
+  }
+
+  .storage-stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--kb-accent-soft);
+    color: var(--kb-accent);
+    flex-shrink: 0;
+  }
+
+  .storage-stat-warn .storage-stat-icon {
+    background: color-mix(in oklab, var(--kb-warning) 18%, transparent);
+    color: var(--kb-warning);
+  }
+
+  .storage-stat-body {
+    min-width: 0;
+  }
+
+  .storage-stat-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--kb-subtle);
+    text-transform: uppercase;
+  }
+
+  .storage-stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--kb-heading);
+    line-height: 1.2;
+    margin-top: 2px;
+  }
+
+  .storage-stat-sub {
+    font-size: 0.78rem;
+    color: var(--kb-muted);
+    margin-top: 1px;
+  }
+</style>

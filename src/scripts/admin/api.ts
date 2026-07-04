@@ -130,3 +130,44 @@ export async function uploadImage(file: File, category: string, slug: string): P
   form.set('slug', slug);
   return api('/api/notes/upload-image', { method: 'POST', body: form });
 }
+
+/* ---------------- 存储管理 ---------------- */
+
+export interface StorageImage {
+  path: string;
+  sha: string;
+  size: number;
+  category: string;
+  name: string;
+  references: number;
+  referencedBy: string[];
+}
+
+export interface StorageStats {
+  total: number;
+  totalSize: number;
+  referenced: number;
+  unreferenced: number;
+  unreferencedSize: number;
+  byCategory: Record<string, { count: number; size: number }>;
+}
+
+export interface StorageListResponse {
+  ok: boolean;
+  images: StorageImage[];
+  stats: StorageStats;
+}
+
+/** 拉取所有图片及引用统计 */
+export async function fetchStorageList(): Promise<StorageListResponse> {
+  return api<StorageListResponse>('/api/storage/list');
+}
+
+/** 删除一张图片（需要 sha） */
+export async function deleteStorageImage(path: string, sha: string): Promise<{ ok: boolean; commit?: any }> {
+  return api('/api/storage/delete', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ path, sha }),
+  });
+}

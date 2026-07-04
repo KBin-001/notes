@@ -11,6 +11,7 @@ import CategoriesView from '@/components/admin/CategoriesView.astro';
 import TagsView from '@/components/admin/TagsView.astro';
 import TopicsView from '@/components/admin/TopicsView.astro';
 import TopicDetailView from '@/components/admin/TopicDetailView.astro';
+import StorageView from '@/components/admin/StorageView.astro';
 import PlaceholderView from '@/components/admin/PlaceholderView.astro';
 
 const allDocs = publicDocs(await getCollection('docs'));
@@ -35,7 +36,7 @@ const noteCount = allDocs.filter((d) => !isIndexDoc(d.id)).length;
       <TagsView />
       <TopicsView />
       <TopicDetailView />
-      <PlaceholderView route="storage" />
+      <StorageView />
       <PlaceholderView route="settings" />
       <PlaceholderView route="logs" />
     </AdminShell>

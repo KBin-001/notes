@@ -827,6 +827,30 @@
   color: var(--kb-muted);
 }
 
+/* 引用次数徽章（存储管理） */
+.storage-ref-zero {
+  background: color-mix(in oklab, var(--kb-danger) 16%, transparent);
+  color: var(--kb-danger);
+  font-weight: 700;
+}
+
+.storage-ref-ok {
+  background: color-mix(in oklab, var(--kb-success) 16%, transparent);
+  color: var(--kb-success);
+}
+
+.storage-row-name {
+  display: block;
+  color: var(--kb-text);
+  font-weight: 500;
+}
+
+.storage-row-path {
+  display: block;
+  margin-top: 2px;
+  word-break: break-all;
+}
+
 /* ---------------- 空状态 / 加载 / 消息 ---------------- */
 .admin-empty,
 .admin-loading {
