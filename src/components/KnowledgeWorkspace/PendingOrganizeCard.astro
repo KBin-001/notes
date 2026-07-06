@@ -1,0 +1,131 @@
+---
+import { ArrowRight, Inbox } from '@lucide/astro';
+import { pendingStats } from '@/data/knowledgeMock';
+
+const accentBgMap: Record<string, string> = {
+  orange: 'kw-pending-orange',
+  amber: 'kw-pending-amber',
+  green: 'kw-pending-green',
+  slate: 'kw-pending-slate',
+};
+---
+
+<div class="kw-card kw-pending-card">
+  <div class="kw-card-head">
+    <span class="kw-card-icon"><Inbox size={15} /></span>
+    <h3 class="kw-card-title">待整理</h3>
+  </div>
+
+  <div class="kw-pending-grid">
+    {pendingStats.map((stat) => (
+      <div class:list={['kw-pending-cell', accentBgMap[stat.accent] || 'kw-pending-slate']}>
+        <span class="kw-pending-num">{stat.value}</span>
+        <span class="kw-pending-label">{stat.label}</span>
+      </div>
+    ))}
+  </div>
+
+  <a class="kw-pending-cta" href="/admin#/notes">
+    进入整理台
+    <ArrowRight size={13} aria-hidden="true" />
+  </a>
+</div>
+
+<style>
+  .kw-pending-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .kw-pending-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .kw-pending-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--kb-border-subtle);
+    background: var(--kb-elevated);
+    transition: background 0.12s, border-color 0.12s;
+  }
+
+  .kw-pending-cell:hover {
+    border-color: var(--kb-border-strong);
+  }
+
+  .kw-pending-num {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--kb-heading);
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .kw-pending-label {
+    font-size: 0.68rem;
+    color: var(--kb-subtle);
+  }
+
+  .kw-pending-orange .kw-pending-num {
+    color: var(--kb-accent);
+  }
+  .kw-pending-amber .kw-pending-num {
+    color: var(--kb-warning);
+  }
+  .kw-pending-green .kw-pending-num {
+    color: var(--kb-success);
+  }
+  .kw-pending-slate .kw-pending-num {
+    color: var(--kb-muted);
+  }
+
+  .kw-pending-orange {
+    background: color-mix(in oklab, var(--kb-accent) 7%, transparent);
+    border-color: color-mix(in oklab, var(--kb-accent) 22%, transparent);
+  }
+  .kw-pending-amber {
+    background: color-mix(in oklab, var(--kb-warning) 8%, transparent);
+    border-color: color-mix(in oklab, var(--kb-warning) 22%, transparent);
+  }
+  .kw-pending-green {
+    background: color-mix(in oklab, var(--kb-success) 8%, transparent);
+    border-color: color-mix(in oklab, var(--kb-success) 22%, transparent);
+  }
+  .kw-pending-slate {
+    background: var(--kb-surface-hover);
+  }
+
+  .kw-pending-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    margin-top: 14px;
+    padding: 9px 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--kb-accent);
+    color: var(--kb-bg);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.12s, transform 0.12s;
+  }
+
+  .kw-pending-cta:hover {
+    background: var(--kb-accent-hover);
+  }
+
+  .kw-pending-cta:active {
+    transform: scale(0.98);
+  }
+</style>

@@ -1,0 +1,95 @@
+---
+import TodayCalendarCard from './TodayCalendarCard.astro';
+import RecentUpdatesCard from './RecentUpdatesCard.astro';
+import PendingOrganizeCard from './PendingOrganizeCard.astro';
+import RandomReviewCard from './RandomReviewCard.astro';
+---
+
+<aside class="kw-workspace" data-pagefind-ignore aria-label="知识工作台">
+  <div class="kw-workspace-inner">
+    <TodayCalendarCard />
+    <RecentUpdatesCard />
+    <PendingOrganizeCard />
+    <RandomReviewCard />
+  </div>
+</aside>
+
+<style>
+  .kw-workspace {
+    width: 320px;
+    max-width: 320px;
+    flex-shrink: 0;
+  }
+
+  .kw-workspace-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-right: 4px;
+    padding-bottom: 8px;
+  }
+
+  /* 卡片基础样式（所有子卡片共享） */
+  .kw-workspace :global(.kw-card) {
+    background: var(--kb-surface);
+    border: 1px solid var(--kb-border);
+    border-radius: 16px;
+    box-shadow: var(--kb-shadow-sm);
+    padding: 18px 20px;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+
+  .kw-workspace :global(.kw-card:hover) {
+    border-color: var(--kb-border-strong);
+    box-shadow: var(--kb-shadow-md);
+  }
+
+  .kw-workspace :global(.kw-card-head) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .kw-workspace :global(.kw-card-icon) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: var(--kb-accent-soft);
+    color: var(--kb-accent);
+    flex-shrink: 0;
+  }
+
+  .kw-workspace :global(.kw-card-title) {
+    flex: 1;
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--kb-heading);
+    letter-spacing: -0.005em;
+  }
+
+  .kw-workspace :global(.kw-card-more) {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.68rem;
+    color: var(--kb-subtle);
+    transition: color 0.12s;
+  }
+
+  .kw-workspace :global(.kw-card-more:hover) {
+    color: var(--kb-accent);
+  }
+
+  /* 响应式：< 1280px 隐藏 */
+  @media (max-width: 1279px) {
+    .kw-workspace {
+      display: none;
+    }
+  }
+
+</style>

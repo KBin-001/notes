@@ -1,0 +1,127 @@
+---
+import { Calendar, Flame } from '@lucide/astro';
+import MiniCalendar from './MiniCalendar.astro';
+import { todayCalendarStats } from '@/data/knowledgeMock';
+
+const today = new Date();
+const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+const weekdayZh = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+const weekday = weekdayZh[today.getDay()];
+---
+
+<div class="kw-card kw-today-card">
+  <div class="kw-card-head">
+    <span class="kw-card-icon"><Calendar size={15} /></span>
+    <h3 class="kw-card-title">今日知识日历</h3>
+  </div>
+
+  <div class="kw-today-date">
+    <div class="kw-date-main">
+      <span class="kw-date-day">{dateStr}</span>
+      <span class="kw-date-week">{weekday}</span>
+    </div>
+    <div class="kw-streak">
+      <Flame size={13} aria-hidden="true" />
+      <span>连续 {todayCalendarStats.streakDays} 天</span>
+    </div>
+  </div>
+
+  <div class="kw-today-stats">
+    <div class="kw-stat-item">
+      <span class="kw-stat-num">{todayCalendarStats.todayNotes}</span>
+      <span class="kw-stat-label">今日笔记</span>
+    </div>
+    <div class="kw-stat-divider"></div>
+    <div class="kw-stat-item">
+      <span class="kw-stat-num">{todayCalendarStats.weekNotes}</span>
+      <span class="kw-stat-label">本周整理</span>
+    </div>
+    <div class="kw-stat-divider"></div>
+    <div class="kw-stat-item">
+      <span class="kw-stat-num">{todayCalendarStats.streakDays}</span>
+      <span class="kw-stat-label">连续天数</span>
+    </div>
+  </div>
+
+  <MiniCalendar />
+</div>
+
+<style>
+  .kw-today-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .kw-today-date {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--kb-border-subtle);
+  }
+
+  .kw-date-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .kw-date-day {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--kb-heading);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .kw-date-week {
+    font-size: 0.7rem;
+    color: var(--kb-subtle);
+  }
+
+  .kw-streak {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--kb-accent) 12%, transparent);
+    color: var(--kb-accent);
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .kw-today-stats {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+    padding-bottom: 4px;
+  }
+
+  .kw-stat-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .kw-stat-num {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--kb-heading);
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .kw-stat-label {
+    font-size: 0.66rem;
+    color: var(--kb-subtle);
+  }
+
+  .kw-stat-divider {
+    width: 1px;
+    height: 22px;
+    background: var(--kb-border-subtle);
+  }
+</style>

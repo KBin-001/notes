@@ -1,0 +1,169 @@
+---
+import { Shuffle, Sparkles } from '@lucide/astro';
+import { randomReviewPool } from '@/data/knowledgeMock';
+
+// 将候选池序列化为前端可用数据
+const pool = randomReviewPool.map((n) => ({
+  id: n.id,
+  title: n.title,
+  href: n.href,
+  category: n.category,
+  time: n.time,
+}));
+---
+
+<div class="kw-card kw-review-card">
+  <div class="kw-card-head">
+    <span class="kw-card-icon"><Sparkles size={15} /></span>
+    <h3 class="kw-card-title">随机复习</h3>
+  </div>
+
+  <p class="kw-review-desc">每天随机回顾一篇过往笔记，温故知新。</p>
+
+  <div class="kw-review-preview" data-review-preview>
+    <span class="kw-review-hint">点击下方按钮，随机抽取一篇笔记</span>
+  </div>
+
+  <button class="kw-review-btn" type="button" data-action="random-review">
+    <Shuffle size={13} aria-hidden="true" />
+    开始复习
+  </button>
+</div>
+
+<!-- 隐藏数据节点：供前端脚本读取候选池 -->
+<script type="application/json" id="kw-review-pool" set:html={JSON.stringify(pool)} />
+
+<script>
+  const btn = document.querySelector('[data-action="random-review"]');
+  const preview = document.querySelector('[data-review-preview]');
+  const poolNode = document.getElementById('kw-review-pool');
+
+  if (btn && poolNode) {
+    let pool: Array<{ id: string; title: string; href: string; category: string; time: string }> = [];
+    try {
+      pool = JSON.parse(poolNode.textContent || '[]');
+    } catch {
+      pool = [];
+    }
+
+    btn.addEventListener('click', () => {
+      if (pool.length === 0) {
+        console.log('[随机复习] 候选池为空');
+        return;
+      }
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      console.log('[随机复习] 抽中：', pick);
+
+      if (preview) {
+        preview.innerHTML = `
+          <div class="kw-review-item">
+            <a class="kw-review-link" href="${pick.href}">
+              <span class="kw-review-tag">${pick.category}</span>
+              <span class="kw-review-title">${pick.title}</span>
+              <span class="kw-review-time">${pick.time}</span>
+            </a>
+          </div>
+        `;
+      }
+    });
+  }
+</script>
+
+<style>
+  .kw-review-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .kw-review-desc {
+    margin: 6px 0 12px;
+    font-size: 0.74rem;
+    color: var(--kb-subtle);
+    line-height: 1.6;
+  }
+
+  .kw-review-preview {
+    flex: 1;
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border: 1px dashed var(--kb-border);
+    background: var(--kb-elevated);
+  }
+
+  .kw-review-hint {
+    font-size: 0.72rem;
+    color: var(--kb-subtle);
+    text-align: center;
+  }
+
+  .kw-review-item {
+    width: 100%;
+  }
+
+  .kw-review-link {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 4px;
+    border-radius: 6px;
+    transition: background 0.12s;
+  }
+
+  .kw-review-link:hover {
+    background: color-mix(in oklab, var(--kb-accent) 6%, transparent);
+  }
+
+  .kw-review-tag {
+    display: inline-flex;
+    width: fit-content;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 0.64rem;
+    background: color-mix(in oklab, var(--kb-accent) 14%, transparent);
+    color: var(--kb-accent);
+    font-weight: 500;
+  }
+
+  .kw-review-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--kb-heading);
+    line-height: 1.4;
+  }
+
+  .kw-review-time {
+    font-size: 0.66rem;
+    color: var(--kb-subtle);
+  }
+
+  .kw-review-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 9px 14px;
+    border: 1px solid var(--kb-accent);
+    border-radius: 10px;
+    background: color-mix(in oklab, var(--kb-accent) 8%, transparent);
+    color: var(--kb-accent);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+  }
+
+  .kw-review-btn:hover {
+    background: color-mix(in oklab, var(--kb-accent) 16%, transparent);
+    border-color: var(--kb-accent-hover);
+  }
+
+  .kw-review-btn:active {
+    transform: scale(0.98);
+  }
+</style>

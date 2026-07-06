@@ -59,12 +59,12 @@ const pageTitle = title === siteConfig.siteTitle ? title : `${title} | ${siteCon
     <MobileNav currentId={currentId} currentTopic={currentTopic} />
     <SearchDialog />
 
-    <div class="mx-auto flex max-w-[92rem]">
+    <div class="flex">
       <Sidebar currentId={currentId} currentTopic={currentTopic} />
       <main class="min-w-0 flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <slot />
       </main>
-      <TableOfContents headings={headings} />
+      {currentId !== 'index' && <TableOfContents headings={headings} />}
     </div>
 
     <script>

@@ -1,0 +1,193 @@
+---
+import { calendarActivity } from '@/data/knowledgeMock';
+
+const today = new Date();
+const year = today.getFullYear();
+const month = today.getMonth(); // 0-11
+const todayDate = today.getDate();
+
+const weekdayLabels = ['一', '二', '三', '四', '五', '六', '日'];
+
+// 本月第一天是星期几（调整为周一为 0）
+const firstDay = new Date(year, month, 1);
+let firstWeekday = firstDay.getDay() - 1; // 周日返回 -1
+if (firstWeekday < 0) firstWeekday = 6; // 周日 -> 6
+
+// 本月天数
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+// 构建活动日期集合（同月）
+const activitySet = new Map<number, number>();
+calendarActivity.forEach((item) => {
+  const [y, m, d] = item.date.split('-').map(Number);
+  if (y === year && m === month + 1) {
+    activitySet.set(d, item.count);
+  }
+});
+
+// 渲染格子：前导空格 + 本月天数
+const cells: Array<{ day: number | null; count: number; isToday: boolean }> = [];
+for (let i = 0; i < firstWeekday; i++) {
+  cells.push({ day: null, count: 0, isToday: false });
+}
+for (let d = 1; d <= daysInMonth; d++) {
+  cells.push({
+    day: d,
+    count: activitySet.get(d) ?? 0,
+    isToday: d === todayDate,
+  });
+}
+---
+
+<div class="mini-calendar" data-mini-calendar>
+  <div class="mini-cal-head">
+    <span class="mini-cal-month">{month + 1}月 {year}</span>
+    <span class="mini-cal-week-label">本周第 {Math.ceil((todayDate + firstWeekday) / 7)} 周</span>
+  </div>
+
+  <div class="mini-cal-grid">
+    {weekdayLabels.map((w) => (
+      <span class="mini-cal-weekday">{w}</span>
+    ))}
+    {cells.map((cell) => (
+      <span
+        class:list={[
+          'mini-cal-cell',
+          cell.day === null ? 'is-empty' : '',
+          cell.isToday ? 'is-today' : '',
+          cell.count > 0 && !cell.isToday ? 'is-active' : '',
+        ]}
+        data-day={cell.day ?? ''}
+        data-count={cell.count}
+        title={cell.day ? `${year}-${String(month + 1).padStart(2, '0')}-${String(cell.day).padStart(2, '0')}${cell.count > 0 ? ` · ${cell.count} 篇` : ''}` : ''}
+      >
+        {cell.day}
+      </span>
+    ))}
+  </div>
+
+  <div class="mini-cal-legend">
+    <span class="mini-cal-dot is-today-dot"></span>
+    <span class="mini-cal-legend-text">今天</span>
+    <span class="mini-cal-dot is-active-dot"></span>
+    <span class="mini-cal-legend-text">有笔记</span>
+  </div>
+</div>
+
+<style>
+  .mini-calendar {
+    margin-top: 12px;
+  }
+
+  .mini-cal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .mini-cal-month {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--kb-heading);
+  }
+
+  .mini-cal-week-label {
+    font-size: 0.68rem;
+    color: var(--kb-subtle);
+  }
+
+  .mini-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  .mini-cal-weekday {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--kb-subtle);
+    padding: 4px 0;
+    font-weight: 500;
+  }
+
+  .mini-cal-cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    font-size: 0.72rem;
+    color: var(--kb-muted);
+    border-radius: 50%;
+    cursor: default;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .mini-cal-cell.is-empty {
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .mini-cal-cell:not(.is-empty):hover {
+    background: var(--kb-surface-hover);
+    color: var(--kb-heading);
+  }
+
+  .mini-cal-cell.is-active {
+    color: var(--kb-heading);
+    font-weight: 600;
+  }
+
+  /* 有笔记的日期：底部橙色小圆点指示器 */
+  .mini-cal-cell.is-active::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--kb-accent);
+  }
+
+  .mini-cal-cell.is-today {
+    background: var(--kb-accent);
+    color: var(--kb-bg);
+    font-weight: 700;
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--kb-accent) 35%, transparent);
+  }
+
+  .mini-cal-cell.is-today:hover {
+    background: var(--kb-accent-hover);
+  }
+
+  .mini-cal-legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 0.68rem;
+    color: var(--kb-subtle);
+  }
+
+  .mini-cal-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .mini-cal-dot.is-today-dot {
+    background: var(--kb-accent);
+  }
+
+  .mini-cal-dot.is-active-dot {
+    background: var(--kb-accent);
+  }
+
+  .mini-cal-legend-text {
+    margin-right: 4px;
+  }
+</style>
