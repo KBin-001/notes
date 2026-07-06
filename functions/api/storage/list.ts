@@ -1,7 +1,7 @@
 import { allowedImageExtensions, docsRoot } from '../../_lib/constants';
 import { requireAdmin } from '../../_lib/auth';
 import { type Env } from '../../_lib/env';
-import { decodeBase64Content, getFile, getTree } from '../../_lib/github';
+import { getFilesBatch, getTree } from '../../_lib/github';
 import { json, serverError } from '../../_lib/http';
 
 type TreeItem = {
@@ -40,29 +40,32 @@ async function collectReferences(
 ): Promise<Map<string, { count: number; files: string[] }>> {
   const refMap = new Map<string, { count: number; files: string[] }>();
 
-  await Promise.all(
-    mdFiles.map(async (file) => {
-      try {
-        const ghFile = await getFile(env, token, file.path);
-        const text = decodeBase64Content(ghFile.content);
-        // 匹配 ![alt](./images/...) 或 ![alt](images/...) 或裸路径 ./images/xxx/yyy.png
-        const re = /!\[[^\]]*\]\(([^)]+)\)|\((\.\/)?images\/[^)]+\)/g;
-        const matches = text.matchAll(re);
-        for (const m of matches) {
-          const raw = m[1] || m[0].replace(/^\(|\)$/g, '');
-          // 归一化为相对于 docsRoot 的路径
-          const normalized = normalizeImageRef(raw, file.path);
-          if (!normalized) continue;
-          const entry = refMap.get(normalized) || { count: 0, files: [] };
-          entry.count += 1;
-          if (!entry.files.includes(file.path)) entry.files.push(file.path);
-          refMap.set(normalized, entry);
-        }
-      } catch {
-        /* ignore single-file failures */
+  // 批量获取所有文件内容，避免 N+1 API 调用
+  const contents = await getFilesBatch(env, token, mdFiles.map((f) => f.path));
+
+  for (const file of mdFiles) {
+    const text = contents.get(file.path);
+    if (!text) continue;
+
+    try {
+      // 匹配 ![alt](./images/...) 或 ![alt](images/...) 或裸路径 ./images/xxx/yyy.png
+      const re = /!\[[^\]]*\]\(([^)]+)\)|\((\.\/)?images\/[^)]+\)/g;
+      const matches = text.matchAll(re);
+      for (const m of matches) {
+        const raw = m[1] || m[0].replace(/^\(|\)$/g, '');
+        // 归一化为相对于 docsRoot 的路径
+        const normalized = normalizeImageRef(raw, file.path);
+        if (!normalized) continue;
+        const entry = refMap.get(normalized) || { count: 0, files: [] };
+        entry.count += 1;
+        if (!entry.files.includes(file.path)) entry.files.push(file.path);
+        refMap.set(normalized, entry);
       }
-    }),
-  );
+    } catch {
+      /* ignore single-file failures */
+    }
+  }
+
   return refMap;
 }
 

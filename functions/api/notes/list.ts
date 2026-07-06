@@ -1,7 +1,7 @@
 import { docsRoot } from '../../_lib/constants';
 import { requireAdmin } from '../../_lib/auth';
 import { type Env } from '../../_lib/env';
-import { decodeBase64Content, getFile, getTree } from '../../_lib/github';
+import { getFilesBatch, getTree } from '../../_lib/github';
 import { json, serverError } from '../../_lib/http';
 import { parseNote } from '../../_lib/notes';
 
@@ -27,11 +27,13 @@ export async function onRequestGet(context: { request: Request; env: Env }) {
       })
       .sort((a, b) => a.path.localeCompare(b.path));
 
-    const filesWithTitle = await Promise.all(
-      files.map(async (file) => {
+    // 批量获取所有文件内容，避免 N+1 API 调用
+    const contents = await getFilesBatch(context.env, auth.session!.token, files.map((f) => f.path));
+
+    const filesWithTitle = files.map((file) => {
+      const text = contents.get(file.path);
+      if (text) {
         try {
-          const githubFile = await getFile(context.env, auth.session!.token, file.path);
-          const text = decodeBase64Content(githubFile.content);
           const note = parseNote(text, file.path.split('/').pop() ?? '');
           const title = note.title || file.slug;
           return {
@@ -50,8 +52,15 @@ export async function onRequestGet(context: { request: Request; env: Env }) {
             label: `${file.slug} · ${file.category}/${file.slug}`,
           };
         }
-      })
-    );
+      }
+      return {
+        ...file,
+        title: file.slug,
+        status: '',
+        visibility: '',
+        label: `${file.slug} · ${file.category}/${file.slug}`,
+      };
+    });
 
     filesWithTitle.sort((a, b) => `${a.category}/${a.title}`.localeCompare(`${b.category}/${b.title}`, 'zh-CN'));
 

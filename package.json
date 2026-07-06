@@ -12,19 +12,19 @@
     "normalize:notes": "tsx scripts/normalize-notes.ts"
   },
   "dependencies": {
-    "@astrojs/mdx": "latest",
-    "@lucide/astro": "latest",
-    "@tailwindcss/postcss": "latest",
-    "astro": "latest",
+    "@astrojs/mdx": "6.0.2",
+    "@lucide/astro": "1.17.0",
+    "@tailwindcss/postcss": "4.3.0",
+    "astro": "6.4.4",
     "gray-matter": "^4.0.3",
-    "tailwindcss": "latest"
+    "tailwindcss": "4.3.0"
   },
   "devDependencies": {
     "@types/node": "^25.9.2",
     "pagefind": "^1.5.2",
     "playwright": "^1.60.0",
-    "tsx": "latest",
-    "typescript": "latest",
+    "tsx": "4.22.4",
+    "typescript": "6.0.3",
     "wrangler": "^4.99.0"
   }
 }

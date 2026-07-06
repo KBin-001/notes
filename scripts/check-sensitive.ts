@@ -6,7 +6,7 @@ const docsRoot = join(process.cwd(), 'src', 'content', 'docs');
 function walk(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
-    return statSync(path).isDirectory() ? walk(path) : path.endsWith('.mdx') ? [path] : [];
+    return statSync(path).isDirectory() ? walk(path) : /\.(md|mdx)$/.test(path) ? [path] : [];
   });
 }
 

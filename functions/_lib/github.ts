@@ -72,6 +72,69 @@ export async function getFile(env: Env, token: string, path: string) {
   );
 }
 
+/**
+ * 使用 GraphQL API 批量获取多个文件内容，避免 N+1 REST API 调用。
+ * 每批最多 50 个文件（GraphQL 别名限制），超出自动分批。
+ * 返回 Map<path, text>，text 为 UTF-8 文本（非 base64）。
+ *
+ * 注意：单个文件超过 1MB 时 GraphQL text 字段返回 null，调用方需处理缺失情况。
+ */
+const GRAPHQL_BATCH_SIZE = 50;
+
+export async function getFilesBatch(
+  env: Env,
+  token: string,
+  paths: string[],
+): Promise<Map<string, string>> {
+  const { owner, repo, branch } = repoConfig(env);
+  const result = new Map<string, string>();
+  if (paths.length === 0) return result;
+
+  for (let i = 0; i < paths.length; i += GRAPHQL_BATCH_SIZE) {
+    const batch = paths.slice(i, i + GRAPHQL_BATCH_SIZE);
+    const fields = batch.map((path, idx) => {
+      // expression 格式：branch:path，需转义双引号和反斜杠
+      const expr = `${branch}:${path}`.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      return `f${idx}: object(expression: "${expr}") { ... on Blob { text } }`;
+    });
+
+    const query = `query {\n  repository(owner: "${owner}", name: "${repo}") {\n    ${fields.join('\n    ')}\n  }\n}`;
+
+    try {
+      const response = await fetch('https://api.github.com/graphql', {
+        method: 'POST',
+        headers: {
+          ...headers(token),
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ query }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const message = data?.errors?.[0]?.message || data?.message || `GitHub GraphQL error ${response.status}`;
+        throw new Error(message);
+      }
+
+      const repoData = data?.data?.repository;
+      if (!repoData) continue;
+
+      for (let j = 0; j < batch.length; j++) {
+        const blob = repoData[`f${j}`];
+        const text = blob?.text;
+        if (typeof text === 'string') {
+          result.set(batch[j], text);
+        }
+      }
+    } catch {
+      // GraphQL 批量请求失败时，静默跳过该批次（调用方会回退到默认值）
+    }
+  }
+
+  return result;
+}
+
 export async function putFile(env: Env, token: string, path: string, content: string, message: string, sha?: string) {
   const { owner, repo, branch } = repoConfig(env);
   return githubFetch(`/repos/${owner}/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}`, token, {
