@@ -1,13 +1,21 @@
 /**
  * 存储管理：拉取图片清单、引用统计、过滤、删除无引用图片。
  */
-import { fetchStorageList, deleteStorageImage, type StorageImage } from './api';
+import { fetchStorageList, deleteStorageImage, fetchCurrentUser, type StorageImage, type RepoConfig } from './api';
 import { $, $$, escapeHtml } from './shared';
 
 let allImages: StorageImage[] = [];
 let loaded = false;
 let currentFilter: 'all' | 'referenced' | 'unreferenced' = 'all';
 let currentKeyword = '';
+let repoInfo: RepoConfig | null = null;
+
+/** 拼接图片在 GitHub raw 的可访问 URL */
+function buildRawUrl(path: string): string {
+  if (!repoInfo) return '#';
+  const { owner, repo, branch } = repoInfo;
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/src/content/docs/${path}`;
+}
 
 function formatBytes(bytes: number): string {
   if (!bytes || bytes < 0) return '0 B';
@@ -69,7 +77,7 @@ function rowHtml(img: StorageImage): string {
     <td class="admin-table-meta">${size}</td>
     <td>
       <div class="col-actions">
-        <a class="admin-icon-btn" href="/src/content/docs/${path}" target="_blank" rel="noopener" title="预览">
+        <a class="admin-icon-btn" href="${escapeHtml(buildRawUrl(img.path))}" target="_blank" rel="noopener" title="预览">
           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
         </a>
         <button class="admin-icon-btn danger" data-action="delete" ${canDelete ? '' : 'disabled style="opacity:0.4;cursor:not-allowed"'} title="${canDelete ? '删除（无引用）' : '已被引用，不能删除'}">
@@ -163,7 +171,9 @@ export async function mountStorage(force = false): Promise<void> {
   showMessage('', 'info');
 
   try {
-    const data = await fetchStorageList();
+    // 并行加载图片清单和 repo 信息（用于生成预览 URL）
+    const [data, auth] = await Promise.all([fetchStorageList(), fetchCurrentUser()]);
+    repoInfo = auth.repo;
     allImages = data.images;
     loaded = true;
     renderStats(data.stats);

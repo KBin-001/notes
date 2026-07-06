@@ -72,11 +72,11 @@ const topicData = topicOrder.map((topic) => {
 </section>
 
 <!-- 预渲染数据：每个专题对应一个 script 节点 -->
-<template id="topic-notes-data">
+<div id="topic-notes-data" hidden>
   {topicData.map((row) => (
     <script type="application/json" data-topic={row.topic} set:html={JSON.stringify(row)} />
   ))}
-</template>
+</div>
 
 <style>
   .topic-back-link {
