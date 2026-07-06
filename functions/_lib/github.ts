@@ -28,7 +28,9 @@ async function githubFetch(path: string, token: string, init: RequestInit = {}) 
   const data = text ? JSON.parse(text) : null;
   if (!response.ok) {
     const message = data?.message || `GitHub API error ${response.status}`;
-    throw new Error(message);
+    const error = new Error(message) as Error & { status?: number };
+    error.status = response.status;
+    throw error;
   }
   return data;
 }

@@ -25,20 +25,35 @@ function escapeHtml(text: string): string {
   });
 }
 
+/**
+ * URL 协议白名单校验，阻止 javascript:、data: 等危险协议。
+ * 注意：传入的 url 已经过 escapeHtml 处理，但危险协议名不含 HTML 特殊字符，
+ * 因此 escapeHtml 无法防御此类攻击。
+ */
+function sanitizeUrl(url: string): string {
+  const trimmed = url.trim();
+  if (/^(https?:|mailto:|tel:|\/|\.\/|\.\.\/#)/i.test(trimmed)) {
+    return trimmed;
+  }
+  return '#';
+}
+
 /** 行内格式：粗体/斜体/删除线/行内代码/链接/图片 */
 function renderInline(text: string): string {
   let out = escapeHtml(text);
 
   // 图片 ![alt](url)
   out = out.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, (_, alt, url, title) => {
+    const safeUrl = sanitizeUrl(url);
     const t = title ? ` title="${title}"` : '';
-    return `<img src="${url}" alt="${alt}"${t} />`;
+    return `<img src="${safeUrl}" alt="${alt}"${t} />`;
   });
 
   // 链接 [text](url)
   out = out.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, (_, label, url, title) => {
+    const safeUrl = sanitizeUrl(url);
     const t = title ? ` title="${title}"` : '';
-    return `<a href="${url}"${t} target="_blank" rel="noopener noreferrer">${label}</a>`;
+    return `<a href="${safeUrl}"${t} target="_blank" rel="noopener noreferrer">${label}</a>`;
   });
 
   // 行内代码 `code`
