@@ -55,15 +55,29 @@ const pool = randomReviewPool.map((n) => ({
       console.log('[随机复习] 抽中：', pick);
 
       if (preview) {
-        preview.innerHTML = `
-          <div class="kw-review-item">
-            <a class="kw-review-link" href="${pick.href}">
-              <span class="kw-review-tag">${pick.category}</span>
-              <span class="kw-review-title">${pick.title}</span>
-              <span class="kw-review-time">${pick.time}</span>
-            </a>
-          </div>
-        `;
+        // 使用 DOM API 构建节点，避免 innerHTML 导致的 XSS 风险
+        const item = document.createElement('div');
+        item.className = 'kw-review-item';
+
+        const link = document.createElement('a');
+        link.className = 'kw-review-link';
+        link.href = pick.href;
+
+        const tag = document.createElement('span');
+        tag.className = 'kw-review-tag';
+        tag.textContent = pick.category;
+
+        const title = document.createElement('span');
+        title.className = 'kw-review-title';
+        title.textContent = pick.title;
+
+        const time = document.createElement('span');
+        time.className = 'kw-review-time';
+        time.textContent = pick.time;
+
+        link.append(tag, title, time);
+        item.append(link);
+        preview.replaceChildren(item);
       }
     });
   }
