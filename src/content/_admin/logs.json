@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {
+      "id": "mr8lv1rh-v3x7wd",
+      "ts": "2026-07-06T02:33:03.149Z",
+      "action": "note.update",
+      "actor": "KBin-001",
+      "target": "src/content/docs/gms/multichannel-mixdown-test-fail.mdx",
+      "title": "[GMS] 解决 Multichannel Mixdown Test fail",
+      "commit": "08d36c2bdbae801c49f6c29433c3d91a28378609"
+    }
+  ]
+}
