@@ -5,6 +5,10 @@
  * 后台通过 /api/settings/* 接口编辑该 JSON 文件，重新部署后前台生效。
  */
 
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+
 export interface SiteConfig {
   siteTitle: string;
   siteDescription: string;
@@ -42,9 +46,10 @@ export async function getSiteConfig(): Promise<SiteConfig> {
   // dev 模式下不缓存，确保修改 site-config.json 后刷新即可生效
   if (cachedConfig && !import.meta.env.DEV) return cachedConfig;
   try {
-    // 构建时动态导入 JSON
-    const mod = await import('../content/_admin/site-config.json');
-    const data = (mod as any).default as Partial<SiteConfig>;
+    // 使用 fs.readFileSync 读取，避免 Vite 构建时静态解析不存在的文件路径
+    const configPath = resolve(dirname(fileURLToPath(import.meta.url)), '../content/_admin/site-config.json');
+    const raw = readFileSync(configPath, 'utf8');
+    const data = JSON.parse(raw) as Partial<SiteConfig>;
     cachedConfig = { ...DEFAULT_SITE_CONFIG, ...data };
     return cachedConfig;
   } catch {
