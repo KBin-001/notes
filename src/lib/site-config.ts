@@ -39,7 +39,8 @@ let cachedConfig: SiteConfig | null = null;
  * 文件不存在或解析失败时回退到默认值。
  */
 export async function getSiteConfig(): Promise<SiteConfig> {
-  if (cachedConfig) return cachedConfig;
+  // dev 模式下不缓存，确保修改 site-config.json 后刷新即可生效
+  if (cachedConfig && !import.meta.env.DEV) return cachedConfig;
   try {
     // 构建时动态导入 JSON
     const mod = await import('../content/_admin/site-config.json');

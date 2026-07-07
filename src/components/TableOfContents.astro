@@ -12,7 +12,7 @@ interface Props {
 const { headings = [] } = Astro.props;
 const tocHeadings = headings.filter((heading) => {
   const text = heading.text.trim();
-  return heading.depth >= 2 && heading.depth <= 3 && text !== '笔记内容' && text !== '绗旇鍐呭';
+  return heading.depth >= 2 && heading.depth <= 3 && text !== '笔记内容';
 });
 ---
 

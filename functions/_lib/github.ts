@@ -196,8 +196,9 @@ function encodeBase64(text: string) {
 export function encodeBinaryBase64(buffer: ArrayBuffer) {
   const bytes = new Uint8Array(buffer);
   let binary = '';
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.slice(i, i + chunkSize));
   }
   return btoa(binary);
 }
