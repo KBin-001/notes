@@ -255,6 +255,10 @@
   background: var(--kb-heading);
 }
 
+html[data-theme="claude"] #reading-progress {
+  background: var(--kb-accent);
+}
+
 /* ── Site Header ──
    fumadocs: backdrop-blur-sm, bg-fd-background/80, border-b, no heavy shadow */
 .site-header {
