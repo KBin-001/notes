@@ -1,6 +1,12 @@
 ---
 import { ArrowRight, Inbox } from '@lucide/astro';
-import { pendingStats } from '@/data/knowledgeMock';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  notes: CollectionEntry<'docs'>[];
+}
+
+const { notes } = Astro.props;
 
 const accentBgMap: Record<string, string> = {
   orange: 'kw-pending-orange',
@@ -8,6 +14,14 @@ const accentBgMap: Record<string, string> = {
   green: 'kw-pending-green',
   slate: 'kw-pending-slate',
 };
+
+// 从真实笔记数据按状态统计
+const pendingStats = [
+  { label: '整理中', value: notes.filter((n) => n.data.status === '整理中').length, accent: 'orange' as const },
+  { label: '待验证', value: notes.filter((n) => n.data.status === '待验证').length, accent: 'amber' as const },
+  { label: '未完成', value: notes.filter((n) => n.data.status === '未完成').length, accent: 'green' as const },
+  { label: '草稿', value: notes.filter((n) => n.data.visibility === 'draft').length, accent: 'slate' as const },
+];
 ---
 
 <div class="kw-card kw-pending-card">

@@ -1,5 +1,11 @@
 ---
-import { calendarActivity } from '@/data/knowledgeMock';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  notes: CollectionEntry<'docs'>[];
+}
+
+const { notes } = Astro.props;
 
 const today = new Date();
 const year = today.getFullYear();
@@ -16,12 +22,13 @@ if (firstWeekday < 0) firstWeekday = 6; // 周日 -> 6
 // 本月天数
 const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-// 构建活动日期集合（同月）
+// 从真实笔记数据构建活动日期集合（按 updated 日期统计本月每天更新篇数）
 const activitySet = new Map<number, number>();
-calendarActivity.forEach((item) => {
-  const [y, m, d] = item.date.split('-').map(Number);
-  if (y === year && m === month + 1) {
-    activitySet.set(d, item.count);
+notes.forEach((note) => {
+  const d = note.data.updated;
+  if (d.getFullYear() === year && d.getMonth() === month) {
+    const day = d.getDate();
+    activitySet.set(day, (activitySet.get(day) ?? 0) + 1);
   }
 });
 

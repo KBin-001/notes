@@ -851,3 +851,25 @@ html.dark .kb-button-primary:hover {
   background-color: rgb(255, 255, 255);
   color: rgb(22, 4, 4);
 }
+
+/* ── Shiki dual-theme switching ──
+   Astro generates --shiki-light / --shiki-dark CSS variables when
+   `themes` config is used. We toggle which set is applied based on
+   the active data-theme attribute. */
+html[data-theme="claude"] .astro-code,
+html[data-theme="claude"] .astro-code span {
+  color: var(--shiki-light) !important;
+  background-color: var(--shiki-light-bg) !important;
+  font-style: var(--shiki-light-font-style) !important;
+  font-weight: var(--shiki-light-font-weight) !important;
+  text-decoration: var(--shiki-light-text-decoration) !important;
+}
+
+html:not([data-theme="claude"]) .astro-code,
+html:not([data-theme="claude"]) .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}

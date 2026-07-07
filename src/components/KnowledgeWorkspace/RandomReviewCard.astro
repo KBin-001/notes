@@ -1,14 +1,21 @@
 ---
 import { Shuffle, Sparkles } from '@lucide/astro';
-import { randomReviewPool } from '@/data/knowledgeMock';
+import type { CollectionEntry } from 'astro:content';
+import { categoryMeta, displayTitle, docUrl } from '@/lib/navigation';
 
-// 将候选池序列化为前端可用数据
-const pool = randomReviewPool.map((n) => ({
-  id: n.id,
-  title: n.title,
-  href: n.href,
-  category: n.category,
-  time: n.time,
+interface Props {
+  notes: CollectionEntry<'docs'>[];
+}
+
+const { notes } = Astro.props;
+
+// 从真实笔记数据构建复习池（最多 20 篇）
+const pool = notes.slice(0, 20).map((doc) => ({
+  id: doc.id,
+  title: displayTitle(doc.data.title),
+  href: docUrl(doc.id),
+  category: categoryMeta[doc.data.category]?.title ?? doc.data.category,
+  time: `${doc.data.updated.getFullYear()}-${String(doc.data.updated.getMonth() + 1).padStart(2, '0')}-${String(doc.data.updated.getDate()).padStart(2, '0')}`,
 }));
 ---
 

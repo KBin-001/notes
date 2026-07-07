@@ -1,6 +1,13 @@
 ---
 import { ChevronRight, Clock } from '@lucide/astro';
-import { recentNotes } from '@/data/knowledgeMock';
+import type { CollectionEntry } from 'astro:content';
+import { categoryMeta, displayTitle, docUrl, sortDocsByUpdated } from '@/lib/navigation';
+
+interface Props {
+  notes: CollectionEntry<'docs'>[];
+}
+
+const { notes } = Astro.props;
 
 const accentColorMap: Record<string, string> = {
   orange: 'kw-tag-orange',
@@ -8,6 +15,38 @@ const accentColorMap: Record<string, string> = {
   blue: 'kw-tag-blue',
   amber: 'kw-tag-amber',
 };
+
+const categoryAccentMap: Record<string, string> = {
+  mtk: 'blue',
+  gms: 'blue',
+  camera: 'amber',
+  audio: 'green',
+  display: 'orange',
+  tools: 'orange',
+};
+
+const recent = sortDocsByUpdated(notes).slice(0, 4).map((doc) => {
+  const d = doc.data.updated;
+  const now = new Date();
+  const diffMs = now.getTime() - d.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  let time: string;
+  if (diffDays === 0) {
+    time = `今天 ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  } else if (diffDays === 1) {
+    time = `昨天 ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  } else {
+    time = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+  return {
+    id: doc.id,
+    title: displayTitle(doc.data.title),
+    time,
+    category: categoryMeta[doc.data.category]?.title ?? doc.data.category,
+    categoryColor: (categoryAccentMap[doc.data.category] || 'slate') as 'orange' | 'green' | 'blue' | 'amber',
+    href: docUrl(doc.id),
+  };
+});
 ---
 
 <div class="kw-card kw-recent-card">
@@ -21,7 +60,7 @@ const accentColorMap: Record<string, string> = {
   </div>
 
   <ul class="kw-recent-list">
-    {recentNotes.map((note) => (
+    {recent.map((note) => (
       <li>
         <a class="kw-recent-item" href={note.href} data-note-id={note.id}>
           <div class="kw-recent-body">

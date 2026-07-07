@@ -36,8 +36,28 @@ import { Search, X } from '@lucide/astro';
     if (status) status.textContent = message;
   }
 
+  /** 白名单过滤 HTML：仅允许 <mark> 标签，其余全部转义 */
+  function sanitizeHtml(html: string): string {
+    // 先按 <mark> 和 </mark> 分割，保留高亮标签，其余部分转义
+    const parts = html.split(/(<\/?mark>)/gi);
+    return parts
+      .map((part) => {
+        if (/^<\/?mark>$/i.test(part)) return part;
+        return part.replace(/[&<>"']/g, (ch) => {
+          switch (ch) {
+            case '&': return '&amp;';
+            case '<': return '&lt;';
+            case '>': return '&gt;';
+            case '"': return '&quot;';
+            default: return '&#039;';
+          }
+        });
+      })
+      .join('');
+  }
+
   function clearResults() {
-    if (results) results.innerHTML = '';
+    if (results) results.replaceChildren();
   }
 
   async function loadPagefind() {
@@ -78,13 +98,13 @@ import { Search, X } from '@lucide/astro';
 
     const title = document.createElement('div');
     title.className = 'font-medium text-kb-heading';
-    title.innerHTML = titleHtml;
+    title.innerHTML = sanitizeHtml(titleHtml);
     item.append(title);
 
     if (excerptHtml) {
       const excerpt = document.createElement('p');
       excerpt.className = 'mt-1 text-xs leading-6 text-kb-subtle';
-      excerpt.innerHTML = excerptHtml;
+      excerpt.innerHTML = sanitizeHtml(excerptHtml);
       item.append(excerpt);
     }
 

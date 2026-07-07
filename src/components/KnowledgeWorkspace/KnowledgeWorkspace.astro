@@ -1,16 +1,23 @@
 ---
+import type { CollectionEntry } from 'astro:content';
 import TodayCalendarCard from './TodayCalendarCard.astro';
 import RecentUpdatesCard from './RecentUpdatesCard.astro';
 import PendingOrganizeCard from './PendingOrganizeCard.astro';
 import RandomReviewCard from './RandomReviewCard.astro';
+
+interface Props {
+  notes: CollectionEntry<'docs'>[];
+}
+
+const { notes } = Astro.props;
 ---
 
 <aside class="kw-workspace" data-pagefind-ignore aria-label="知识工作台">
   <div class="kw-workspace-inner">
-    <TodayCalendarCard />
-    <RecentUpdatesCard />
-    <PendingOrganizeCard />
-    <RandomReviewCard />
+    <TodayCalendarCard notes={notes} />
+    <RecentUpdatesCard notes={notes} />
+    <PendingOrganizeCard notes={notes} />
+    <RandomReviewCard notes={notes} />
   </div>
 </aside>
 
