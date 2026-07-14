@@ -1,1260 +1,608 @@
 ---
-title: "[MTK] SIPO 串口键盘驱动接入"
-description: "无法进行串口键盘的连接"
-category: "mtk"
-tags: ["mtk", "uart"]
-topics: []
-visibility: "public"
+title: '[MTK] SIPO 串口键盘驱动接入'
+description: 无法进行串口键盘的连接
+category: mtk
+tags:
+  - mtk
+  - uart
+topics:
+  - sensor
+visibility: public
 sensitive: true
-status: "整理中"
-date: "2026-06-06"
-updated: "2026-06-06"
+status: 整理中
+date: '2026-06-06'
+updated: '2026-07-14'
+---
+# [MTK] SIPO 串口键盘驱动接入说明
+
 ---
 
-# [MTK] SIPO 串口键盘驱动接入
+# 1. 初步现象
 
-## 初步现象
-无法进行串口键盘的连接
+## 1.1 问题描述
 
-以为是sipo_seri_kb.ko 没有加载
+设备无法连接 SIPO 串口键盘。
 
-但日志有，证明不是没有加载。
+初步怀疑：
 
-```c
+```text
+sipo_seri_kb.ko 未加载
+```
+
+但是查看 Kernel Log：
+
+```log
 modprobe: calling ... [sipo_seri_kb]
 modprobe: initcall ... [sipo_seri_kb] returned 0
 ```
-```text
-说明ko加载了，但是驱动没有加载，log没有发现驱动probe了！
-```
-## 为什么驱动加载了却不 probe
-Linux platform driver 要 probe，必须同时满足两个条件：
-```text
 
+说明：
+
+```text
+sipo_seri_kb.ko 已经成功加载。
 ```
+
+但是：
+
+```text
+没有发现驱动 probe 日志。
+```
+
+因此问题不是：
+
+```text
+ko 未加载
+```
+
+而是：
+
+```text
+platform device 没有匹配成功，导致 driver probe 没有执行。
+```
+
+---
+
+# 2. 为什么驱动加载了但是没有 probe？
+
+Linux Platform Driver 需要同时满足两个条件：
+
+```text
+1. Driver 已经注册
+2. Device Tree 中存在 compatible 匹配的 platform device
+```
+
+---
+
+## 2.1 Driver compatible
+
+驱动代码：
+
 ```c
-
-```
-## 驱动已经注册
-## device tree 里有 compatible 匹配的 platform device
-```text
-
-```
-```text
-
-```
-```text
-驱动里是：
-```
-```text
-
-```
-```dts
 .compatible = "sipo,sipo_seri_kb"
 ```
-```text
 
-```
-```text
-所以设备树里必须有：
-```
-```text
+因此 Device Tree 必须存在：
 
-```
 ```dts
 compatible = "sipo,sipo_seri_kb";
 ```
-```text
 
-```
-```text
-失败时板子上查：
-```
-```text
+---
 
-```
-```c
+## 2.2 失败状态检查
+
+设备端执行：
+
+```bash
 find /proc/device-tree -name "*sipo*"
+
 find /proc/device-tree -name "sipo_keyboard"
+
 ls /sys/bus/platform/devices | grep -i sipo
 ```
+
+结果：
+
 ```text
-
+无输出
 ```
-```log
-都没有输出。
 
-这说明：
+说明：
 
-`运行时 device tree 里没有 sipo_keyboard`
-
-所以驱动不会 probe。
-```
-## 当时容易误判的地方
-我们看到：
-
-`strings /dev/block/by-name/dtbo_a | grep -i sipo`
-
-有输出：
 ```text
-
+当前运行时 Device Tree 中不存在 sipo_keyboard 节点。
 ```
+
+因此：
+
 ```text
-
+driver 无法触发 probe。
 ```
-```text
 
+---
+
+# 3. 容易误判的位置
+
+检查：
+
+```bash
+strings /dev/block/by-name/dtbo_a | grep -i sipo
 ```
+
+发现：
+
 ```text
 sipo_kb_pins_default
 sipo_kb_pins_sleep
 sipo_keyboard
-sipo,sipo_seri_kb`
-
-这说明：
-
-`dtbo_a 里面确实有 sipo 字符串`
-
-但这不等于运行时 device tree 生效。
-
-因为 DTBO 是 overlay，它要“套”到主 DTB 上。如果 overlay 的目标节点不存在，最终 /proc/device-tree 里还是不会有。
+sipo,sipo_seri_kb
 ```
-## 失败的根因
-当时 tb8781p1_64_wifi.dts 里用了：
+
+说明：
+
 ```text
-
+DTBO 镜像中确实存在 SIPO 节点信息。
 ```
+
+但是：
+
 ```text
-
+不代表运行时 Device Tree 已经生效。
 ```
+
+原因：
+
 ```text
-
+DTBO 属于 Device Tree Overlay。
+需要 overlay 成功挂载到主 DTB。
 ```
+
+如果：
+
 ```text
-
+Overlay target 节点不存在
 ```
+
+那么：
+
+```text
+/proc/device-tree 中不会出现对应节点。
+```
+
+---
+
+# 4. 失败根因分析
+
+当时：
+
+```text
+tb8781p1_64_wifi.dts
+```
+
+使用：
+
 ```dts
 &sipo_keyboard {
     ...
 };
 ```
+
+含义：
+
 ```text
-
+修改一个已经存在的 sipo_keyboard 节点。
 ```
-```text
 
+但是检查：
+
+```bash
+strings /dev/block/by-name/lk_a | grep -i sipo
 ```
-```text
 
-```
-```log
-这表示：
+无输出。
 
-`我要修改一个已经存在的 sipo_keyboard 节点`
+说明：
 
-但是我们查：
+主 DTB 中不存在：
 
-`strings /dev/block/by-name/lk_a | grep -i sipo`
-
-没有输出。
-
-说明主 DTB 里没有：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```c
+```dts
 sipo_keyboard: sipo_keyboard {
-    ...
 };
 ```
-```text
 
-```
-```text
+因此：
 
-```
-```text
-
-```
-```text
-所以 DTBO 里的：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
+```dts
 &sipo_keyboard
 ```
-```text
 
-```
-```text
+无法找到目标节点。
 
-```
-```text
+最终结果：
 
-```
 ```text
-
-找不到目标节点，overlay 没真正生效。
+DTBO overlay 没有真正生效。
 ```
-## 正确做法
-在：
-```text
 
-```
-```text
+---
 
-```
-```text
+# 5. 正确 Device Tree 配置方式
 
-```
-```text
+## 5.1 主 DTS 添加基础节点
 
-```
-```text
+文件：
 
-```
-```text
-
-```
-```text
-
-```
 ```text
 kernel-5.10/arch/arm64/boot/dts/mediatek/mt6789.dts
 ```
-```text
 
-```
-```text
+添加：
 
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-加基础节点：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
 ```dts
 sipo_keyboard: sipo_keyboard {
     compatible = "sipo,sipo_seri_kb";
 };
 ```
-```text
 
-```
-```text
+作用：
 
-```
 ```text
+创建 platform device 节点。
+```
 
-```
-```text
+---
 
-```
-```text
+## 5.2 产品 DTS 添加资源配置
 
-```
-```text
+文件：
 
-```
-```text
-
-```
-```text
-然后在：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
 ```text
 kernel-5.10/arch/arm64/boot/dts/mediatek/tb8781p1_64_wifi.dts
 ```
-```text
 
-```
-```text
+增加：
 
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-补资源：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
 ```dts
 &sipo_keyboard {
+
     pinctrl-names = "default", "sleep";
+
     pinctrl-0 = <&sipo_kb_pins_default>;
+
     pinctrl-1 = <&sipo_kb_pins_sleep>;
 
+
     detect-gpios = <&pio 107 0>;
+
     docking_5v_en-gpios = <&pio 106 0>;
+
     rxirq-gpios = <&pio 89 0>;
 
+
     wakeup-source;
+
     status = "okay";
 };
 ```
-```text
 
-```
-```text
+---
 
-```
-```text
+# 6. GPIO 功能说明
 
-```
-```text
+SIPO 键盘主要使用以下 GPIO：
 
-```
-```text
+| GPIO | 功能 | 说明 |
+|---|---|---|
+| GPIO107 | detect | 键盘插拔检测 |
+| GPIO106 | docking_5v_en | 控制键盘供电 |
+| GPIO89 | rxirq | RX唤醒中断 |
+| GPIO100 | LDO 3.3V enable | 电源控制 |
+| GPIO88 | UART2 TX | 串口发送 |
+| GPIO89 | UART2 RX | 串口接收 |
 
-```
-```text
+---
 
-```
-```text
+## 6.1 GPIO89 工作模式
 
-```
-```text
-```
-## 这几个 GPIO 是什么
-这次设备树里主要有：
-```
-```text
+正常工作：
 
-```
 ```text
-
+GPIO89 = UART RX
 ```
-```text
 
-```
-```text
+Pinmux：
 
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-GPIO107：detect，插拔检测
-GPIO106：docking_5v_en，驱动控制键盘供电
-GPIO89：rxirq，休眠时做 RX 唤醒
-GPIO100：LDO 3.3V enable，通过 pinctrl output-high
-GPIO88：UART2 TX
-GPIO89：UART2 RX`
-
-正常工作时：
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
+```dts
 PINMUX_GPIO89__FUNC_URXD2
-PINMUX_GPIO88__FUNC_UTXD2`
-
-休眠唤醒时：
 ```
-```text
 
-```
-```text
+---
 
-```
-```text
+休眠状态：
 
-```
 ```text
+GPIO89 = GPIO interrupt
+```
 
-```
-```text
+Pinmux：
 
-```
-```text
-
-```
-```text
-
-```
-```text
+```dts
 PINMUX_GPIO89__FUNC_GPIO89
 ```
+
+---
+
+工作流程：
+
 ```text
+正常状态：
+GPIO89 作为 UART RX
 
+↓
+
+进入休眠：
+GPIO89 切换为 GPIO EINT
+
+↓
+
+检测 RX 唤醒事件
+
+↓
+
+唤醒后恢复 UART RX
 ```
+
+---
+
+# 7. Kernel Driver 编译配置
+
+## 7.1 Driver路径
+
 ```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-这就是：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-正常时 GPIO89 是 UART RX
-休眠时 GPIO89 切成 GPIO 中断
-唤醒后再切回 UART RX`
-
-## 编译加载也要完整
-驱动目录是：
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```c
 kernel-5.10/drivers/misc/mediatek/sipo_seri_kb/
 ```
-```text
 
-```
-```text
+---
 
-```
-```text
+## 7.2 子目录 Makefile
 
-```
-```text
+文件：
 
-```
 ```text
+drivers/misc/mediatek/sipo_seri_kb/Makefile
+```
 
-```
-```text
+配置：
 
-```
-```text
-
-```
-```text
-子目录 Makefile：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
 ```makefile
 obj-$(CONFIG_SIPO_SERI_KB) += sipo_seri_kb.o
 ```
-```text
 
-```
-```text
+---
 
-```
-```text
+## 7.3 父级 Makefile
 
-```
-```text
+文件：
 
-```
 ```text
+drivers/misc/mediatek/Makefile
+```
 
-```
-```text
+配置：
 
-```
-```text
-
-```
-```text
-父级 Makefile：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
 ```makefile
 obj-$(CONFIG_SIPO_SERI_KB) += sipo_seri_kb/
 ```
-```text
 
-```
-```text
+---
 
-```
-```text
+## 7.4 Kconfig
 
-```
-```text
+文件：
 
-```
 ```text
+drivers/misc/mediatek/Kconfig
+```
 
-```
-```text
+配置：
 
-```
-```text
-
-```
-```text
-父级 Kconfig：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
 ```c
 config SIPO_SERI_KB
     tristate "SIPO serial keyboard helper driver"
 ```
-```text
 
-```
-```text
+---
 
-```
-```text
+## 7.5 Defconfig
 
-```
-```text
+文件：
 
-```
 ```text
+arch/arm64/configs/xxx_defconfig
+```
 
-```
-```text
+配置：
 
-```
-```text
-
-```
-```text
-defconfig：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
 ```makefile
 CONFIG_SIPO_SERI_KB=m
 ```
-```text
 
-```
-```text
+说明：
 
-```
 ```text
+m = 编译为 Kernel Module
+```
 
-```
-```text
+生成：
 
-```
 ```text
+sipo_seri_kb.ko
+```
 
-```
-```text
+---
 
-```
-```text
+# 8. KO 加载验证
 
-```
-```text
-如果是模块，还要确保 ko 被打包加载。成功时日志有：
-```
-```text
+如果配置：
 
+```makefile
+CONFIG_SIPO_SERI_KB=m
 ```
-```text
 
-```
-```text
+需要确认：
 
-```
 ```text
-
+sipo_seri_kb.ko
 ```
+
+已经加入：
+
 ```text
-
+vendor/lib/modules/
 ```
-```text
 
-```
-```text
+并且启动时加载。
 
-```
-```c
+成功日志：
+
+```log
 modprobe: calling ... [sipo_seri_kb]
+
 modprobe: initcall ... [sipo_seri_kb] returned 0
 ```
-```text
 
-```
-```text
+---
 
-```
-```text
+# 9. 分层验证方法
 
-```
-```text
+## 9.1 验证 KO 是否加载
 
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-## 怎么验证每一层
-验证 ko 是否加载：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
 ```bash
 lsmod | grep sipo
+
 dmesg | grep -i sipo
 ```
-```text
 
-```
-```text
+---
 
-```
-```text
+## 9.2 验证 Driver 是否注册
 
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-验证驱动是否注册：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```c
+```bash
 ls /sys/bus/platform/drivers/sipo_drv
 ```
-```text
 
-```
-```text
+---
 
-```
-```text
+## 9.3 验证 Device Tree 是否存在
 
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-验证 device tree 是否存在：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
 ```bash
 find /proc/device-tree -name "sipo_keyboard"
+
 cat /proc/device-tree/sipo_keyboard/compatible
 ```
-```text
 
-```
-```text
+预期：
 
-```
 ```text
+sipo,sipo_seri_kb
+```
 
-```
-```text
+---
 
-```
-```text
+## 9.4 验证 Platform Device
 
-```
-```text
-
-```
-```text
-
-```
-```text
-验证 platform device 是否创建：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```c
+```bash
 ls /sys/bus/platform/devices | grep -i sipo
 ```
-```text
 
-```
-```text
+预期：
 
-```
 ```text
+sipo_keyboard
+```
 
-```
-```text
+---
 
-```
-```text
+## 9.5 验证 DTBO 是否包含 SIPO
 
-```
-```text
-
-```
-```text
-
-```
-```text
-验证 dtbo 分区有没有 sipo：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```log
+```bash
 strings /dev/block/by-name/dtbo_a | grep -i sipo
 ```
-```text
 
-```
-```text
+---
 
-```
-```text
+## 9.6 验证主 DTB 是否包含 SIPO
 
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-验证主 DTB 有没有 sipo：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```log
+```bash
 strings /dev/block/by-name/lk_a | grep -i sipo
 ```
-```text
 
+---
+
+## 9.7 当前启动 Slot
+
+```bash
+getprop ro.boot.slot_suffix
 ```
+
+确认当前使用：
+
 ```text
-
+dtbo_a
 ```
+
+还是：
+
 ```text
-
+dtbo_b
 ```
-```text
 
-```
-```text
+---
 
-```
-```text
+# 10. 成功 Probe 日志
 
-```
-```text
+正常启动应该看到：
 
-```
-```text
-当前槽位：
-
-`getprop ro.boot.slot_suffix`
-
-## 成功时日志长什么样
-成功日志是：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
 ```log
-sipo_drv sipo_keyboard: probe SIPO Driver 3.3.0-20260428
-sipo_drv[DBG]: sipo_probe:455: Pinctrl dynamically initialized to 'default' (UART) state.
-sipo_drv[DBG]: sipo_set_rx_irq_state:134: RX IRQ Disabled (depth 0 -> +1)
-input: sipo_kb as /devices/platform/sipo_keyboard/input/input5
+sipo_drv sipo_keyboard:
+probe SIPO Driver 3.3.0-20260428
+
+
+sipo_drv[DBG]:
+sipo_probe:455:
+Pinctrl dynamically initialized to 'default' (UART) state.
+
+
+sipo_drv[DBG]:
+sipo_set_rx_irq_state:
+RX IRQ Disabled (depth 0 -> +1)
+
+
+input:
+sipo_kb as /devices/platform/sipo_keyboard/input/input5
+
+
 probe of sipo_keyboard returned 1 after 5675 usecs
 ```
-```text
 
-```
-```text
+---
 
-```
-```text
+# 11. 成功判定
 
-```
-```text
+出现以上日志说明：
 
-```
-```text
+| 项目 | 状态 |
+|---|---|
+| ko加载 | OK |
+| Driver注册 | OK |
+| compatible匹配 | OK |
+| Platform device创建 | OK |
+| probe执行 | OK |
+| pinctrl default生效 | OK |
+| input设备注册 | OK |
 
-```
-```text
+最终：
 
-```
 ```text
-
-```
-```text
-这些说明：
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```c
-ko 加载成功
-compatible 匹配成功
-platform device 创建成功
-probe 执行成功
-pinctrl default 生效
-input 设备 sipo_kb 注册成功
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
-```text
-
-```
+SIPO串口键盘驱动接入完成。
 ```
