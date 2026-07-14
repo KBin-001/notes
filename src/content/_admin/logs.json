@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": "mrkg2por-k8uqhw",
+      "ts": "2026-07-14T09:24:17.163Z",
+      "action": "note.delete",
+      "actor": "KBin-001",
+      "target": "src/content/docs/mtk/embedded-web-stackaaa.mdx",
+      "title": "测试",
+      "commit": "bea9dcb92173d32d0f036a342952ae7cf4cc6228"
+    },
+    {
       "id": "mr8yiu3o-z7ttvw",
       "ts": "2026-07-06T08:27:28.356Z",
       "action": "note.update",
