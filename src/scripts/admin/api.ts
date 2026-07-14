@@ -118,6 +118,19 @@ export async function saveNote(note: NotePayload): Promise<SaveResult> {
   });
 }
 
+/** 删除笔记（需要 path + sha） */
+export async function deleteNote(
+  path: string,
+  sha: string,
+  title?: string,
+): Promise<{ ok: boolean; commit?: { sha?: string } }> {
+  return api('/api/notes/delete', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ path, sha, title }),
+  });
+}
+
 /** 上传图片，返回 { path, relativePath, markdown } */
 export async function uploadImage(file: File, category: string, slug: string): Promise<{
   path: string;

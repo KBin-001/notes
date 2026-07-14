@@ -1,7 +1,7 @@
 /**
  * 笔记管理列表：拉取 /api/notes/list、搜索、筛选、操作。
  */
-import { fetchNoteList, type NoteListItem } from './api';
+import { deleteNote, fetchNoteList, type NoteListItem } from './api';
 import {
   $,
   $$,
@@ -78,7 +78,7 @@ function rowHtml(note: NoteListItem): string {
   const path = escapeHtml(note.path);
   const updated = note.label?.split('·')[0]?.trim() || '';
 
-  return `<tr data-path="${path}">
+  return `<tr data-path="${path}" data-sha="${escapeHtml(note.sha || '')}" data-title="${escapeHtml(note.title || note.slug)}">
     <td class="col-title" title="${escapeHtml(note.title || '')}">${title}</td>
     <td><span class="admin-tag">${category}</span></td>
     <td><span class="status-badge kb-status-active ${statusBadgeClass(note.status || '整理中')}">${status}</span></td>
@@ -158,7 +158,22 @@ function applyFilters() {
           const ok = await copyText(path);
           showMessage(ok ? `已复制路径：${path}` : '复制失败', ok ? 'success' : 'error');
         } else if (action === 'delete') {
-          showMessage('当前版本暂未提供删除接口，请在 GitHub 仓库手动删除该文件。', 'info');
+          const tr = target.closest('tr');
+          const sha = tr?.getAttribute('data-sha') || '';
+          const noteTitle = tr?.getAttribute('data-title') || '';
+          if (!sha) {
+            showMessage('缺少文件 sha，无法删除，请刷新列表后重试。', 'error');
+            return;
+          }
+          if (!confirm(`确定删除笔记「${noteTitle}」吗？\n该操作不可恢复，将直接从 GitHub 仓库移除文件。`)) return;
+          showMessage('正在删除…', 'info');
+          try {
+            await deleteNote(path, sha, noteTitle);
+            showMessage(`已删除：${noteTitle}`, 'success');
+            await mountNotesManage(true);
+          } catch (err) {
+            showMessage(err instanceof Error ? err.message : '删除失败', 'error');
+          }
         }
       });
     });
