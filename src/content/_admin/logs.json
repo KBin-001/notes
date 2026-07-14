@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": "mrkgi3wo-e28qht",
+      "ts": "2026-07-14T09:36:15.432Z",
+      "action": "note.update",
+      "actor": "KBin-001",
+      "target": "src/content/docs/mtk/sipo-serial-keyboard-driver.mdx",
+      "title": "[MTK] SIPO 串口键盘驱动接入",
+      "commit": "44de0ab446f9e6d68f4adb0bb005369244453423"
+    },
+    {
       "id": "mrkg7m5i-14ah6d",
       "ts": "2026-07-14T09:28:05.862Z",
       "action": "note.update",
