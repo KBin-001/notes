@@ -1,166 +1,340 @@
 ---
-title: "[MTK] 霍尔驱动（hall）"
-description: "kernel"
-category: "mtk"
-tags: ["mtk", "hall"]
-topics: ["sensor"]
-visibility: "public"
+title: '[MTK] 霍尔驱动（hall）'
+description: kernel
+category: mtk
+tags:
+  - mtk
+  - hall
+topics:
+  - sensor
+visibility: public
 sensitive: true
-status: "整理中"
-date: "2026-06-06"
-updated: "2026-06-06"
+status: 整理中
+date: '2026-06-06'
+updated: '2026-06-06'
+---
+# [MTK] 霍尔驱动（Hall Driver）移植说明
+
+## 1. Kernel Config
+
 ---
 
-# [MTK] 霍尔驱动（hall）
+## 1.1 DTS 配置
 
-## Kernel Config
+### 文件路径
 
-kernel
+```text
+kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/aiot8391p3_64_bsp.dts
+```
 
-路径：kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/aiot8391p3_64_bsp.dts
+### 修改内容
+
+#### 1. 增加 Hall GPIO 配置
 
 ```diff
-kpd_gpio: kpd-gpio {
-                pins-cols {
--                       pinmux = <PINMUX_GPIO44__FUNC_KPCOL0>;
-+                       pinmux = <PINMUX_GPIO44__FUNC_KPCOL0>, // 保持原有列0
-+                                <PINMUX_GPIO45__FUNC_KPCOL1>; // 新增列1
-                        input-enable;
-                        bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
-                };
-@@ -623,10 +624,6 @@ bootargs_ext = "";
-                                <PINMUX_GPIO72__FUNC_SPIM0_MI>;
-                                drive-strength = <MTK_DRIVE_6mA>;
-                };
--               pin-can-standby {
--                       pinmux = <PINMUX_GPIO45__FUNC_GPIO45>;
--                       output-low;
--               };
+ kpd_gpio: kpd-gpio {
+        pins-cols {
+-               pinmux = <PINMUX_GPIO44__FUNC_KPCOL0>;
++               pinmux = <PINMUX_GPIO44__FUNC_KPCOL0>,   // 保留原KPCOL0
++                        <PINMUX_GPIO45__FUNC_KPCOL1>;   // 新增KPCOL1
+                input-enable;
+                bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
         };
- };
+```
 
-@@ -1152,6 +1149,11 @@ status = "okay";
-        status = "disabled";
- };
+#### 2. 删除 GPIO45 CAN Standby 配置
 
+```diff
+-       pin-can-standby {
+-               pinmux = <PINMUX_GPIO45__FUNC_GPIO45>;
+-               output-low;
+-       };
+```
+
+#### 3. 增加 Hall EINT 配置
+
+```diff
 +&hall {
-+  hall_eint = <&pio 12 0>;         // GPIO12作为外部中断引脚
++       hall_eint = <&pio 12 0>;      // GPIO12作为Hall外部中断
 +};
 ```
+
+---
+
+## 1.2 添加 Hall Device Node
+
+### 文件路径
+
 ```text
-路径：kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/mt8189.dts
+kernel_device_modules-6.1/arch/arm64/boot/dts/mediatek/mt8189.dts
 ```
+
+### 修改内容
+
 ```diff
-+  hall: hall {
-+    compatible = "mediatek,hall";
-+  };
++hall: hall {
++       compatible = "mediatek,hall";
++};
 +
-        touch_panel0: touch-panel0 {
-                compatible = "mediatek,touch-panel";
-        };
+ touch_panel0: touch-panel0 {
+        compatible = "mediatek,touch-panel";
+};
 ```
+
+---
+
+## 1.3 Kernel Config 开启 Hall Driver
+
+### 文件路径
+
 ```text
-路径： kernel_device_modules-6.1/arch/arm64/configs/mgk_64_k61_defconfig
+kernel_device_modules-6.1/arch/arm64/configs/mgk_64_k61_defconfig
 ```
+
+### 修改内容
+
 ```diff
-+CONFIG_MTK_HALL=m           // 将霍尔驱动编译为模块(.ko)
++CONFIG_MTK_HALL=m
 ```
+
+说明：
+
+- `m`：编译为 Kernel Module
+- 输出文件：
+
 ```text
-路径：kernel_device_modules-6.1/drivers/misc/mediatek/Kconfig
+hall.ko
 ```
+
+---
+
+## 1.4 Kconfig 添加驱动配置
+
+### 文件路径
+
+```text
+kernel_device_modules-6.1/drivers/misc/mediatek/Kconfig
+```
+
+### 修改内容
+
 ```diff
 +config MTK_HALL
-+  tristate "MTK HALL driver"              // 三态选择：y/n/m
++       tristate "MTK HALL driver"
 +       help
 +               driver for mtk hall project gpio control driver
 ```
+
+---
+
+## 1.5 Makefile 添加 Hall 驱动目录
+
+### 文件路径
+
 ```text
-路径： kernel_device_modules-6.1/drivers/misc/mediatek/Makefile
+kernel_device_modules-6.1/drivers/misc/mediatek/Makefile
 ```
+
+### 修改内容
+
 ```diff
 +obj-$(CONFIG_MTK_HALL) += hall/
 ```
+
+---
+
+## 1.6 Hall Driver Makefile
+
+### 文件路径
+
 ```text
-路径：  kernel_device_modules-6.1/drivers/misc/mediatek/hall/Makefile
+kernel_device_modules-6.1/drivers/misc/mediatek/hall/Makefile
 ```
+
+### 修改内容
+
 ```diff
-+ccflags-$(CONFIG_DRM_MEDIATEK_V2)      += -I$(DEVICE_MODULES_PATH)/drivers/gpu/drm/mediatek/mediatek_v2/
++ccflags-$(CONFIG_DRM_MEDIATEK_V2) += \
++       -I$(DEVICE_MODULES_PATH)/drivers/gpu/drm/mediatek/mediatek_v2/
 +
 +$(warning "--->hall makefile")
 +
 +obj-m = hall.o
 ```
-```text
-路径：kernel_device_modules-6.1/drivers/misc/mediatek/hall/hall.c
 
-附件：hall.c
-路径： kernel_device_modules-6.1/kernel/kleaf/mgk_64_k61.bzl
+---
+
+## 1.7 Hall Driver Source
+
+### 文件路径
+
+```text
+kernel_device_modules-6.1/drivers/misc/mediatek/hall/hall.c
 ```
+
+附件：
+
+```text
+hall.c
+```
+
+---
+
+## 1.8 添加 Kernel Module
+
+### 文件路径
+
+```text
+kernel_device_modules-6.1/kernel/kleaf/mgk_64_k61.bzl
+```
+
+### 修改内容
+
 ```diff
-+    "drivers/misc/mediatek/hall/hall.ko",      // 将hall.ko加入模块列表
++    "drivers/misc/mediatek/hall/hall.ko",
 ```
-## Vendor DCT
 
-MTK软件生成
+说明：
 
-路径：mediatek/proprietary/tools/dct/dws/mt8189/aiot8391p3_64_bsp.dws
+将生成的 `hall.ko` 加入 Kernel Module 列表。
+
+---
+
+# 2. Vendor DCT Configuration
+
+---
+
+## 2.1 DCT DWS 配置
+
+### 文件路径
+
 ```text
-
+mediatek/proprietary/tools/dct/dws/mt8189/aiot8391p3_64_bsp.dws
 ```
+
+### 修改内容
+
+将 Hall GPIO 修改为 EINT 输入模式。
+
 ```diff
--                <eint_mode>false</eint_mode>
-+                <eint_mode>true</eint_mode>
-                 <def_mode>0</def_mode>
-                 <inpull_en>true</inpull_en>
--                <inpull_selhigh>false</inpull_selhigh>
--                <def_dir>OUT</def_dir>
--                <out_high>true</out_high>
-+                <inpull_selhigh>true</inpull_selhigh>
-+                <def_dir>IN</def_dir>
-+                <out_high>false</out_high>
-```
-```text
+-<eint_mode>false</eint_mode>
++<eint_mode>true</eint_mode>
 
-```
-```log
-路径：mediatek/proprietary/bootable/bootloader/preloader/custom/aiot8391p3_64_bsp/dct/dct/codegen.dws
-```
-```text
+ <def_mode>0</def_mode>
 
+ <inpull_en>true</inpull_en>
+
+-<inpull_selhigh>false</inpull_selhigh>
+-<def_dir>OUT</def_dir>
+-<out_high>true</out_high>
+
++<inpull_selhigh>true</inpull_selhigh>
++<def_dir>IN</def_dir>
++<out_high>false</out_high>
 ```
+
+---
+
+## 2.2 Preloader Codegen DCT 同步
+
+### 文件路径
+
+```text
+mediatek/proprietary/bootable/bootloader/preloader/custom/aiot8391p3_64_bsp/dct/dct/codegen.dws
+```
+
+### 修改内容
+
 ```diff
--                <eint_mode>false</eint_mode>
-+                <eint_mode>true</eint_mode>
-                 <def_mode>0</def_mode>
-                 <inpull_en>true</inpull_en>
--                <inpull_selhigh>false</inpull_selhigh>
-+                <inpull_selhigh>true</inpull_selhigh>
-```
-```text
+-<eint_mode>false</eint_mode>
++<eint_mode>true</eint_mode>
 
-```
-```text
-客制化文件同步
-```
-```text
+ <def_mode>0</def_mode>
 
+ <inpull_en>true</inpull_en>
+
+-<inpull_selhigh>false</inpull_selhigh>
++<inpull_selhigh>true</inpull_selhigh>
 ```
-```log
+
+---
+
+## 2.3 客制化文件同步
+
+同步以下文件：
+
+```text
 mediatek/proprietary/bootable/bootloader/preloader/custom/Kamvas_Pad_12_EEA/dct/dct/codegen.dws
+
 mediatek/proprietary/bootable/bootloader/preloader/custom/Kamvas_Pad_12_ROW/dct/dct/codegen.dws
 ```
+
+---
+
+# 3. Device Package
+
+---
+
+## 3.1 Kernel Module Package
+
+### 文件路径
+
 ```text
-
+mediateksample/aiot8391p3_64_bsp/ko_order_table.csv
 ```
-## Device Package
 
-路径：mediateksample/aiot8391p3_64_bsp/ko_order_table.csv
-```text
+### 修改内容
 
-```
+添加 Hall Kernel Module：
+
 ```diff
 +hall.ko,/../kernel_device_modules-6.1/drivers/misc/mediatek/hall/hall.ko,vendor,Y,N,user/userdebug/eng
 ```
-```text
 
+---
+
+
+# 4. 编译输出
+
+编译完成后生成：
+
+```text
+drivers/misc/mediatek/hall/hall.ko
 ```
+
+加载路径：
+
+```text
+vendor/lib/modules/
+```
+
+加载：
+
+```bash
+insmod hall.ko
+```
+
+---
+
+# 5. 驱动验证
+
+查看模块：
+
+```bash
+lsmod | grep hall
+```
+
+查看 Kernel Log：
+
+```bash
+dmesg | grep hall
+```
+
+Hall 触发测试：
+
+1. 磁铁靠近 Hall Sensor
+2. 磁铁远离 Hall Sensor
+3. 查看 EINT 是否触发
+4. 确认 Android Input Event 是否正常上报
+
+---
