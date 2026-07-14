@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": "mrkg7m5i-14ah6d",
+      "ts": "2026-07-14T09:28:05.862Z",
+      "action": "note.update",
+      "actor": "KBin-001",
+      "target": "src/content/docs/mtk/hall-driver.mdx",
+      "title": "[MTK] 霍尔驱动（hall）",
+      "commit": "d294cb2bdc65ae84a70ddc153f0a779683498641"
+    },
+    {
       "id": "mrkg795n-mrbuj0",
       "ts": "2026-07-14T09:27:49.019Z",
       "action": "note.update",
