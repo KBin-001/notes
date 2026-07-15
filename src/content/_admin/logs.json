@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": "mrlsw97p-t56rhn",
+      "ts": "2026-07-15T08:10:57.061Z",
+      "action": "note.create",
+      "actor": "KBin-001",
+      "target": "src/content/docs/mtk/mt8391-heif.mdx",
+      "title": "MT8391 相机 HEIF 照片分辨率降级问题",
+      "commit": "1405311dc80ef827ab8b18a4a4daa75c4def0c9a"
+    },
+    {
       "id": "mrkgi3wo-e28qht",
       "ts": "2026-07-14T09:36:15.432Z",
       "action": "note.update",
