@@ -41,6 +41,9 @@ export async function onRequestGet(context: { request: Request; env: Env }) {
             title,
             status: note.status,
             visibility: note.visibility,
+            tags: note.tags,
+            updated: note.updated,
+            sensitive: note.sensitive,
             label: `${title} · ${file.category}/${file.slug}`,
           };
         } catch {
@@ -49,6 +52,9 @@ export async function onRequestGet(context: { request: Request; env: Env }) {
             title: file.slug,
             status: '',
             visibility: '',
+            tags: [] as string[],
+            updated: '',
+            sensitive: true,
             label: `${file.slug} · ${file.category}/${file.slug}`,
           };
         }
@@ -58,6 +64,9 @@ export async function onRequestGet(context: { request: Request; env: Env }) {
         title: file.slug,
         status: '',
         visibility: '',
+        tags: [] as string[],
+        updated: '',
+        sensitive: true,
         label: `${file.slug} · ${file.category}/${file.slug}`,
       };
     });

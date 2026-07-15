@@ -103,7 +103,19 @@ export function bindSettingsEvents(): void {
       if (shaEl) shaEl.value = result.sha || sha;
       showMessage('保存成功，重新部署后生效。', 'success');
     } catch (err) {
-      showMessage(err instanceof Error ? err.message : '保存失败', 'error');
+      const msg = err instanceof Error ? err.message : '保存失败';
+      // 冲突（远端已变更）：自动重新拉取最新配置，提示用户基于最新值重试
+      if (/409|conflict/i.test(msg)) {
+        showMessage('配置已被远端修改，已自动重新加载最新版本，请基于最新值再次保存。', 'error');
+        try {
+          const data = await fetchSiteConfig();
+          fillForm(data.config, data.sha);
+        } catch {
+          /* 加载失败时保留原错误提示 */
+        }
+      } else {
+        showMessage(msg, 'error');
+      }
     } finally {
       setSaving(false);
     }
@@ -114,5 +126,21 @@ export function bindSettingsEvents(): void {
     if (!confirm('确认将表单重置为默认值？（不会立即保存，需点击保存按钮提交）')) return;
     fillForm(DEFAULTS, '');
     showMessage('已重置为默认值，请点击保存按钮提交。', 'info');
+  });
+
+  const refreshBtn = $('#settings-refresh-btn');
+  refreshBtn?.addEventListener('click', async () => {
+    if (refreshBtn) {
+      const original = refreshBtn.innerHTML;
+      refreshBtn.setAttribute('disabled', '');
+      refreshBtn.innerHTML = '刷新中...';
+      try {
+        await mountSettings(true);
+        showMessage('已重新拉取最新配置。', 'success');
+      } finally {
+        refreshBtn.removeAttribute('disabled');
+        refreshBtn.innerHTML = original;
+      }
+    }
   });
 }

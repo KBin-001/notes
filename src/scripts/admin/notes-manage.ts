@@ -76,15 +76,18 @@ function rowHtml(note: NoteListItem): string {
   const status = escapeHtml(note.status || '整理中');
   const visibility = escapeHtml(note.visibility || 'public');
   const path = escapeHtml(note.path);
-  const updated = note.label?.split('·')[0]?.trim() || '';
+  const tags = Array.isArray(note.tags) && note.tags.length > 0
+    ? note.tags.map((t) => `<span class="admin-tag">${escapeHtml(t)}</span>`).join(' ')
+    : '—';
+  const updated = note.updated ? escapeHtml(formatDateZh(note.updated)) : '—';
 
   return `<tr data-path="${path}" data-sha="${escapeHtml(note.sha || '')}" data-title="${escapeHtml(note.title || note.slug)}">
     <td class="col-title" title="${escapeHtml(note.title || '')}">${title}</td>
     <td><span class="admin-tag">${category}</span></td>
     <td><span class="status-badge kb-status-active ${statusBadgeClass(note.status || '整理中')}">${status}</span></td>
     <td><span class="admin-vis-badge ${visBadgeClass(note.visibility || 'public')}">${visLabel(note.visibility || 'public')}</span></td>
-    <td class="admin-table-meta">—</td>
-    <td class="admin-table-meta">—</td>
+    <td class="admin-table-meta">${tags}</td>
+    <td class="admin-table-meta">${updated}</td>
     <td>
       <div class="col-actions">
         <button class="admin-icon-btn" data-action="edit" title="编辑">
@@ -114,7 +117,8 @@ function applyFilters() {
     if (f.category && note.category !== f.category) return false;
     if (f.status && (note.status || '整理中') !== f.status) return false;
     if (f.visibility && (note.visibility || 'public') !== f.visibility) return false;
-    // sensitive 过滤需要 frontmatter，list 接口未返回，仅作占位
+    if (f.sensitive === 'yes' && note.sensitive !== true) return false;
+    if (f.sensitive === 'no' && note.sensitive === true) return false;
     return true;
   });
 
@@ -203,6 +207,7 @@ export async function mountNotesManage(forceRefresh = false): Promise<void> {
     if (tbody) {
       tbody.innerHTML = `<tr><td colspan="7"><div class="admin-empty" style="color:var(--kb-danger)">加载失败：${escapeHtml((err as Error).message)}</div></td></tr>`;
     }
+    throw err;
   }
 }
 

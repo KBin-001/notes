@@ -8,6 +8,7 @@ let allEntries: LogEntry[] = [];
 let loaded = false;
 let currentAction = 'all';
 let currentKeyword = '';
+let currentActor = '';
 
 interface ActionMeta {
   label: string;
@@ -46,8 +47,31 @@ function renderStats(stats: Record<string, number>, total: number): void {
   set('total', String(total));
   set('note.create', String(stats['note.create'] || 0));
   set('note.update', String(stats['note.update'] || 0));
+  set('note.delete', String(stats['note.delete'] || 0));
   const imageTotal = (stats['image.upload'] || 0) + (stats['image.delete'] || 0);
   set('image', String(imageTotal));
+}
+
+/** 用后端返回的 actors 统计填充操作者下拉 */
+function populateActorFilter(actors: Record<string, number>): void {
+  const select = $('#logs-actor-filter') as HTMLSelectElement | null;
+  if (!select) return;
+  // 保留当前选中值（若有）
+  const prev = select.value;
+  // 保留「全部操作者」占位项
+  select.innerHTML = `<option value="">全部操作者</option>`;
+  Object.entries(actors)
+    .sort((a, b) => b[1] - a[1])
+    .forEach(([actor, count]) => {
+      const opt = document.createElement('option');
+      opt.value = actor;
+      opt.textContent = `@${actor} (${count})`;
+      select.appendChild(opt);
+    });
+  // 恢复选中
+  if (prev && Array.from(select.options).some((o) => o.value === prev)) {
+    select.value = prev;
+  }
 }
 
 function itemHtml(entry: LogEntry): string {
@@ -75,6 +99,7 @@ function itemHtml(entry: LogEntry): string {
 function applyFilters(): void {
   const filtered = allEntries.filter((e) => {
     if (currentAction !== 'all' && e.action !== currentAction) return false;
+    if (currentActor && e.actor !== currentActor) return false;
     if (currentKeyword) {
       const hay = `${e.target} ${e.title || ''} ${e.action} ${e.actor}`.toLowerCase();
       if (!hay.includes(currentKeyword)) return false;
@@ -112,6 +137,7 @@ export async function mountLogs(force = false): Promise<void> {
     allEntries = data.entries;
     loaded = true;
     renderStats(data.stats, data.total);
+    populateActorFilter(data.actors || {});
     applyFilters();
   } catch (err) {
     if (container) {
@@ -132,6 +158,14 @@ export function bindLogsEvents(): void {
   if (search) {
     search.addEventListener('input', () => {
       currentKeyword = search.value.trim().toLowerCase();
+      applyFilters();
+    });
+  }
+
+  const actorSelect = $('#logs-actor-filter') as HTMLSelectElement | null;
+  if (actorSelect) {
+    actorSelect.addEventListener('change', () => {
+      currentActor = actorSelect.value.trim();
       applyFilters();
     });
   }

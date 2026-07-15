@@ -4,7 +4,7 @@
 import { fetchCurrentUser, logout } from './api';
 import { $, $$, parseHash, ROUTES } from './shared';
 import { mountNotesManage, bindNotesManageEvents } from './notes-manage';
-import { mountEditor, loadNoteByHash } from './note-editor';
+import { mountEditor, loadNoteByHash, resetEditor } from './note-editor';
 import { mountTopicDetail } from './topic-detail';
 import { mountStorage, bindStorageEvents } from './storage';
 import { mountLogs, bindLogsEvents } from './logs';
@@ -151,10 +151,10 @@ async function handleRoute() {
       mountEditor();
       editorMounted = true;
     } else {
-      // 切回新建视图时清空（除非带 path 进入 edit）
+      // 切回新建视图时清空表单（除非带 path 进入 edit）
       const { query } = parseHash();
       if (route === 'new' && !query.path) {
-        // 不强制清空，保留用户输入；只在首次进入 new 时清空
+        resetEditor();
       }
     }
     if (route === 'edit') {
@@ -204,13 +204,15 @@ async function bootstrap() {
   });
 
   // 路由
-  window.addEventListener('hashchange', handleRoute);
+  window.addEventListener('hashchange', () => {
+    handleRoute().catch(() => { /* 错误已在视图内显示 */ });
+  });
 
   // 默认路由
   if (!location.hash) {
     location.hash = '#/dashboard';
   } else {
-    await handleRoute();
+    await handleRoute().catch(() => { /* 错误已在视图内显示 */ });
   }
 }
 

@@ -29,6 +29,9 @@ export interface NoteListItem {
   title: string;
   status?: string;
   visibility?: string;
+  tags?: string[];
+  updated?: string;
+  sensitive?: boolean;
   label?: string;
 }
 

@@ -47,9 +47,9 @@ const approxBytes = notes.reduce((sum, doc) => sum + (doc.body?.length || 0), 0)
 const storageMb = (approxBytes / 1024 / 1024).toFixed(2);
 
 function editHref(doc: any) {
-  const filePath = typeof doc.filePath === 'string' ? doc.filePath.replace(/\\/g, '/') : '';
-  const slug = doc.id.split('/').pop()?.replace(/\.(md|mdx)$/i, '') || '';
-  const path = filePath || `src/content/docs/${doc.data.category}/${slug}.mdx`;
+  // 直接构造相对路径（与 notes/list.ts 一致），避免 Windows 上 doc.filePath 带盘符导致后端 safePath 校验失败
+  const slug = doc.id.split('/').pop() ?? '';
+  const path = `src/content/docs/${doc.data.category}/${slug}.mdx`;
   return `#/edit?path=${encodeURIComponent(path)}`;
 }
 

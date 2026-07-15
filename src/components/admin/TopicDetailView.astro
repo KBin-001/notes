@@ -14,12 +14,18 @@ const notes = all.filter((d) => !isIndexDoc(d.id));
 // 预渲染所有专题的笔记数据，前端根据 hash 中的 id 切换显示
 const topicData = topicOrder.map((topic) => {
   const meta = topicMeta[topic];
-  const docs = sortDocsByUpdated(notes.filter((d) => d.data.topics.includes(topic))).map((d) => ({
-    id: d.id,
-    title: d.data.title,
-    status: d.data.status,
-    updated: d.data.updated.toISOString(),
-  }));
+  const docs = sortDocsByUpdated(notes.filter((d) => d.data.topics.includes(topic))).map((d) => {
+    // 直接构造相对路径（与 notes/list.ts 一致），避免 Windows 上 doc.filePath 带盘符导致后端 safePath 校验失败
+    const slug = d.id.split('/').pop() ?? '';
+    const path = `src/content/docs/${d.data.category}/${slug}.mdx`;
+    return {
+      id: d.id,
+      path,
+      title: d.data.title,
+      status: d.data.status,
+      updated: d.data.updated.toISOString(),
+    };
+  });
   const statusCount = docs.reduce<Record<string, number>>((acc, d) => {
     acc[d.status] = (acc[d.status] || 0) + 1;
     return acc;

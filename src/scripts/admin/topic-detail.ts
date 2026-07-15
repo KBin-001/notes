@@ -5,6 +5,7 @@ import { $, $$, escapeHtml, formatDateZh, statusBadgeClass, navigate } from './s
 
 interface TopicDoc {
   id: string;
+  path: string;
   title: string;
   status: string;
   updated: string;
@@ -30,7 +31,7 @@ function rowHtml(doc: TopicDoc): string {
   const title = escapeHtml(doc.title || '(未命名)');
   const status = escapeHtml(doc.status || '整理中');
   const updated = escapeHtml(formatDateZh(doc.updated));
-  const path = escapeHtml(doc.id);
+  const path = escapeHtml(doc.path);
   const previewSlug = doc.id.includes('/') ? doc.id.replace(/\/index$/, '') : doc.id;
   return `<tr data-path="${path}">
     <td class="col-title" title="${escapeHtml(doc.title || '')}">${title}</td>

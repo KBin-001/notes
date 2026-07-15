@@ -1,5 +1,5 @@
 ---
-import { Settings, Save, RotateCcw } from '@lucide/astro';
+import { Settings, Save, RotateCcw, RefreshCw } from '@lucide/astro';
 ---
 
 <section class="admin-view" data-view="settings">
@@ -9,6 +9,10 @@ import { Settings, Save, RotateCcw } from '@lucide/astro';
       <p>配置站点标题、描述、首页宣传语和侧边栏标语等全局参数。保存后立即生效（需重新部署）。</p>
     </div>
     <div class="admin-page-actions">
+      <button class="admin-btn secondary" type="button" id="settings-refresh-btn" title="从仓库重新拉取最新配置">
+        <RefreshCw size={15} aria-hidden="true" />
+        刷新
+      </button>
       <button class="admin-btn secondary" type="button" id="settings-reset-btn" title="重置为默认值">
         <RotateCcw size={15} aria-hidden="true" />
         重置默认

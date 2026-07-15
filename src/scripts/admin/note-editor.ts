@@ -152,6 +152,11 @@ function collectNote() {
   };
 }
 
+export function resetEditor() {
+  if (!Object.keys(fields).length) return;
+  resetForm();
+}
+
 function resetForm() {
   state.sha = '';
   state.path = '';
