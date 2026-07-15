@@ -1,0 +1,474 @@
+---
+title: MT8391 相机 HEIF 照片分辨率降级问题
+description: 记录 MT8391 相机 HEIF 照片分辨率降级问题闭环复盘 的问题现象、排查过程、修改方案和验证方法。
+category: mtk
+tags: []
+topics:
+  - camera
+visibility: public
+sensitive: true
+status: 已验证
+date: '2026-07-15'
+updated: '2026-07-15'
+---
+# MT8391 相机 HEIF 照片分辨率降级问题闭环复盘
+
+> 闭环状态：已解决并验证通过  
+> 闭环日期：2026-07-15  
+> 问题类别：相机 pipeline / HAL 静态 metadata 配置 / App 与编码能力交互  
+> 平台：MT8391（MT8189 camera platform）  
+> Camera Sensor：S5K3M5SX
+
+## 一、问题定义（Problem Definition）
+
+### 1. 问题现象
+
+相机照片格式设置为 JPEG 时，照片大小选项与成片分辨率一致；切换为 HEIF 后，选择相机设置中的 13M 尺寸拍照，最终照片却只有约 0.8M，图库显示为 `720×1080`。
+
+复现日志表明 Camera App 实际保存的设置尺寸为 `4415×2943`（13M、3:2），并非最初口头描述的 `4415×3072`。横向编码尺寸是 `1080×720`，照片旋转后在图库中显示为 `720×1080`。
+
+### 2. 影响范围
+
+| 项目 | 影响 |
+| --- | --- |
+| 功能模块 | MTK Camera App、Camera HAL stream configuration、HEIF Encoder |
+| 受影响格式 | HEIF/HEIC |
+| 受影响尺寸 | S5K3M5SX metadata 中的 13M 3:2：`4415×2943` |
+| 用户可见结果 | 设置为 13M，实际成片降为约 0.8M |
+| 根因层级 | Vendor/平台静态 metadata 配置 |
+| 风险 | App 设置值、HAL Surface 和最终文件尺寸不一致 |
+
+### 3. 问题分层
+
+1. **首要层级：Vendor 静态 metadata。** Sensor 输出尺寸被声明为奇数，违反 YUV420/HEIF 对齐约束。
+2. **后续处理层级：Camera App。** App 正确识别出奇数 HEIC 尺寸不可用，降级到同为 3:2 的 `1080×720`。
+3. **结果执行层级：Camera HAL 与 C2 HEIF Encoder。** 两者按 App 已降级后的尺寸正常工作，不是最先出错的层级。
+
+## 二、关键信号提取（Signal Extraction）
+
+问题日志：
+
+```text
+C:\Users\PC\camear_heif.txt
+```
+
+### 1. 第一现场
+
+Camera App 读取到的用户设置值：
+
+```text
+07-15 03:33:47.320 I CamAp_PhotoDevice2Controller: [updatePreviewSize] :4415x2943
+07-15 03:33:47.324 I CamAp_PhotoDevice2Controller: [updatePictureSize] :4415x2943
+```
+
+App 枚举 HEIC 输出能力后发现该尺寸为奇数：
+
+```text
+07-15 03:33:47.328 I CamAp_PhotoDevice2Controller: [getBestHeicOutputSize] support HEIC size = 4415x2943
+07-15 03:33:47.328 W CamAp_PhotoDevice2Controller: [getBestHeicOutputSize] ignore odd HEIC size = 4415x2943
+```
+
+这是本问题的**第一有效异常**。它证明问题不是拍照完成后被图库压缩，而是在创建 HEIF 输出流之前，目标尺寸就被判定为非法。
+
+随后 App 明确执行尺寸替换：
+
+```text
+07-15 03:33:47.328 W CamAp_PhotoDevice2Controller: [getBestHeicOutputSize] replace unsupported HEIC size 4415x2943 with 1080x720
+```
+
+请求尺寸和实际目标尺寸已经分离：
+
+```text
+07-15 03:33:47.339 I CamAp_PhotoDevice2Controller: [setPictureSize] get current captureType = heif format = 1212500294, requestSize = 4415x2943, targetSize = 1080x720
+```
+
+Camera App 创建的 Surface 为 `1080×720`：
+
+```text
+07-15 03:33:47.328 I CamAp_CaptureSurface: [updatePictureInfo] width = 1080,height = 720,format = 1212500294,maxImage = 5, hasImageReader = false mCaptureType = heif
+```
+
+HAL 收到的 HEIF stream 同样是 `1080×720`：
+
+```text
+07-15 03:33:47.547 I mtkcam_hal_aidl_device: [configureStreams] Stream{width: 1080, height: 720, format: IMPLEMENTATION_DEFINED, usage: VIDEO_ENCODER, dataSpace: HEIF}
+```
+
+C2 HEIF Encoder 最终也按该尺寸配置：
+
+```text
+CCodecConfig: c2::u32 raw.size.height = 720
+CCodecConfig: c2::u32 raw.size.width = 1080
+```
+
+### 2. HEIF 流程确认
+
+设备查询以下属性均为空：
+
+```powershell
+adb shell getprop vendor.mtk.camera.app.heif.flow
+adb shell getprop ro.vendor.mtk_heif_capture_support
+adb shell getprop vendor.mtkcamapp.heif.mode
+```
+
+属性为空表示代码采用默认值，不代表 HEIF 未启用。日志明确确认当前走 AOSP HEIF flow：
+
+```text
+CamAp_FormatCaptureRequestConfig: [setCameraCharacteristics] HEIF_AOSP_FLOW supportedFormats = [jpeg, heif]
+```
+
+因此空属性不是根因。
+
+### 3. 有效信号与噪声
+
+| 类型 | 日志/现象 | 判断 |
+| --- | --- | --- |
+| 有效信号 | `ignore odd HEIC size` | 第一有效异常，直接指向非法尺寸 |
+| 有效信号 | `replace unsupported ... with 1080x720` | 直接解释成片为何降为 0.8M |
+| 有效信号 | `requestSize` 与 `targetSize` 不一致 | 证明降级发生在 Camera App 配置阶段 |
+| 有效信号 | HAL `configureStreams 1080x720` | 证明 HAL 只是执行已降级目标 |
+| 次要噪声 | `VideoCapabilities: Unsupported mime image/vnd.android.heic` | 后续 Encoder 创建成功，不是根因 |
+| 次要噪声 | `Media Quality Service not found` | 不影响尺寸选择和 Encoder 创建 |
+| 无关噪声 | Bluetooth VINTF、LBS service 报错 | 与相机链路无关 |
+
+## 三、原理分析（Root Cause Analysis）
+
+### 1. 完整问题链路
+
+```text
+S5K3M5SX static metadata 声明 13M 3:2 = 4415×2943
+        ↓
+Camera App 读取 requestSize = 4415×2943
+        ↓
+AOSP HEIF 检查发现宽高均为奇数
+        ↓
+App 寻找相同 3:2 比例的合法 HEIC 尺寸
+        ↓
+选择 1080×720
+        ↓
+创建 1080×720 HEIF Surface
+        ↓
+Camera HAL 与 C2 Encoder 正常按 1080×720 工作
+        ↓
+照片旋转后显示 720×1080，约 0.8M
+```
+
+### 2. 根因
+
+根因文件：
+
+```text
+U:\mt8391_v16\mt8391_u\vendor\mediatek\proprietary\custom\mt8189\hal\imgsensor_metadata\s5k3m5sx_mipi_raw\config_static_metadata_project.h
+```
+
+该文件同时在 BLOB 和 `YCbCr_420_888` 中声明：
+
+```text
+4415 × 2943
+```
+
+`4415`、`2943` 都是奇数。YUV420 色度采样要求至少偶数尺寸，平台 C2 HEIF Encoder 还声明了 16×16 对齐。因此该尺寸虽然进入 Camera characteristics 支持列表，却不能作为合法 HEIF 编码目标。
+
+### 3. 为什么回退到 1080×720
+
+App 会在合法 HEIC 尺寸中寻找与原设置相同的 3:2 比例。原本唯一接近 13M 的 3:2 尺寸因奇数被排除，合法候选中剩下 `1080×720`。
+
+支持列表虽然存在 `4096×3072`，但它是 4:3，不满足原设置的 3:2 比例，因此没有被选作替代值。
+
+### 4. 各层责任判断
+
+| 层级 | 状态 | 结论 |
+| --- | --- | --- |
+| Camera 设置 UI | 显示 metadata 声明的尺寸 | 输入能力来自错误 metadata |
+| Camera App HEIF 检查 | 拒绝奇数尺寸并降级 | 保护逻辑正确，不应删除 |
+| Camera HAL | 接收并配置 1080×720 | 正常执行，不是根因 |
+| C2 HEIF Encoder | 成功按 1080×720 编码 | 正常执行，不是根因 |
+| Sensor metadata | 声明奇数 BLOB/YUV 尺寸 | 根因层级 |
+
+## 四、排查路径（Debug Path）
+
+### 步骤 1：逐层比较尺寸
+
+**目的：** 判断尺寸在哪一层第一次发生变化。
+
+```powershell
+adb logcat -c
+# 设置问题尺寸、切换 HEIF 并复现
+adb logcat -d -v threadtime |
+  Select-String "updatePictureSize|setPictureSize|updatePictureInfo|configureStreams|HeifEncoder|CCodec"
+```
+
+**判断：**
+
+- 设置值错误：查 UI、DataStore、默认值。
+- `requestSize` 正确但 `targetSize` 变小：查 App capability/filter/fallback。
+- App 正确但 HAL stream 变小：查 Framework/HAL negotiation。
+- HAL 正确但 Encoder 变小：查 Codec。
+- 全链路尺寸正确但图库显示小：查 HEIF primary image、thumbnail 和 rotation。
+
+本案例属于第二种。
+
+### 步骤 2：找第一有效异常
+
+优先搜索：
+
+```text
+odd|unsupported|replace|HEIC size|requestSize|targetSize
+```
+
+本案例第一现场是：
+
+```text
+ignore odd HEIC size = 4415x2943
+```
+
+后面的 HAL 和 Encoder `1080×720` 都是结果。
+
+### 步骤 3：确认 HEIF flow
+
+```powershell
+adb shell getprop vendor.mtk.camera.app.heif.flow
+adb shell getprop ro.vendor.mtk_heif_capture_support
+adb shell getprop vendor.mtkcamapp.heif.mode
+```
+
+property 为空时必须结合源码默认值和运行日志，不能直接判断功能关闭。
+
+### 步骤 4：用精确尺寸反查 metadata
+
+```powershell
+rg -n "4415|2943" U:\mt8391_v16\mt8391_u\vendor\mediatek\proprietary\custom
+```
+
+检查同一尺寸在以下格式中的声明：
+
+- `HAL_PIXEL_FORMAT_BLOB`
+- `HAL_PIXEL_FORMAT_YCbCr_420_888`
+- 必要时检查 RAW、HEIC 和 duration 表
+
+### 步骤 5：检查编码约束
+
+核对：
+
+- 宽高是否为偶数；
+- 是否满足 2/16/32 对齐；
+- 是否超过 Codec max size；
+- 是否与 Sensor/ISP 输出能力一致。
+
+### 步骤 6：刷机后清除旧设置
+
+```powershell
+adb shell pm clear com.mediatek.camera
+```
+
+重新选择尺寸后，确认 `requestSize`、`targetSize`、`updatePictureInfo`、`configureStreams` 四个阶段一致。
+
+## 五、解决方案（Solution）
+
+### 1. 修改文件
+
+```text
+U:\mt8391_v16\mt8391_u\vendor\mediatek\proprietary\custom\mt8189\hal\imgsensor_metadata\s5k3m5sx_mipi_raw\config_static_metadata_project.h
+```
+
+### 2. 修改点一：BLOB/JPEG 13M 3:2
+
+修改前：
+
+```cpp
+CONFIG_ENTRY_VALUE(HAL_PIXEL_FORMAT_BLOB, MINT64) //13mp 3:2
+CONFIG_ENTRY_VALUE(4415, MINT64)        // width
+CONFIG_ENTRY_VALUE(2943, MINT64)        // height
+```
+
+修改后：
+
+```cpp
+CONFIG_ENTRY_VALUE(HAL_PIXEL_FORMAT_BLOB, MINT64) //13mp 3:2
+CONFIG_ENTRY_VALUE(4416, MINT64)        // width
+CONFIG_ENTRY_VALUE(2944, MINT64)        // height
+```
+
+### 3. 修改点二：YUV/HEIF 13M 3:2
+
+修改前：
+
+```cpp
+CONFIG_ENTRY_VALUE(HAL_PIXEL_FORMAT_YCbCr_420_888, MINT64) //13mp 3:2
+CONFIG_ENTRY_VALUE(4415, MINT64)        // width
+CONFIG_ENTRY_VALUE(2943, MINT64)        // height
+```
+
+修改后：
+
+```cpp
+CONFIG_ENTRY_VALUE(HAL_PIXEL_FORMAT_YCbCr_420_888, MINT64) //13mp 3:2
+CONFIG_ENTRY_VALUE(4416, MINT64)        // width
+CONFIG_ENTRY_VALUE(2944, MINT64)        // height
+```
+
+### 4. 修复正确性
+
+- `4416` 和 `2944` 都能被 16 整除。
+- 保持约 13MP 和接近 3:2 的产品定义。
+- BLOB 与 YUV 同步修改，避免跨格式能力不一致。
+- 保留 App 的奇数尺寸保护。
+- 原设计已经声明 `4415` 的放大输出，本次仅将其调整到合法对齐值。
+- 修改后已完成编译、刷机和实机拍照验证，功能通过。
+
+建议验收日志满足：
+
+```text
+support HEIC size = 4416x2944
+requestSize = 4416x2944, targetSize = 4416x2944
+updatePictureInfo width = 4416,height = 2944
+configureStreams width = 4416,height = 2944
+```
+
+## 六、试错记录（Trial & Error）
+
+### 1. 只看 HEIF property 为空
+
+容易误判为 HEIF 没有配置。实际代码采用默认值，日志也确认 `HEIF_AOSP_FLOW` 正常启用。
+
+**经验：** property 必须结合源码默认值和运行日志判断。
+
+### 2. 只在产品名 custom 目录找配置
+
+最初容易只检查：
+
+```text
+vendor\mediatek\proprietary\custom\Kamvas_Pad_12_ROW
+```
+
+实际分辨率位于平台 Sensor metadata：
+
+```text
+custom\mt8189\hal\imgsensor_metadata\s5k3m5sx_mipi_raw
+```
+
+**经验：** 相机能力通常按 platform + sensor 组织，不一定放在 product-name 目录。
+
+### 3. 怀疑图库读取了缩略图
+
+日志证明 App 在创建输出 Surface 前就已经降为 `1080×720`，HAL 和 Encoder 只是执行结果。
+
+**经验：** 按“设置值 → Surface → HAL stream → Encoder → 文件”逐层比较。
+
+### 4. 删除 Camera App 的奇数尺寸保护
+
+这是错误方向。删除保护可能让非法 YUV/HEIF buffer 进入 HAL/Codec，引发配置失败、stride 错误、花图或编码失败。
+
+**经验：** 保护逻辑暴露上游声明错误时，应修 metadata，不应绕过保护。
+
+### 5. 修改 Codec XML
+
+本问题不是 Codec 最大尺寸不足，而是宽高为奇数。Encoder 已成功创建，Codec XML 不是根因。
+
+### 6. 只修改 BLOB 或只修改 YUV
+
+HEIF 兼容尺寸可能由多种 stream format 共同决定。只改一组会继续造成能力不一致。
+
+**经验：** 修改 stream configuration 时应检查同一尺寸在所有相关 pixel format 下的声明。
+
+## 七、知识沉淀（Knowledge）
+
+### 1. 菜单尺寸不等于最终编码尺寸
+
+用户选择的逻辑值仍要经过：
+
+1. App 输出格式检查；
+2. ImageReader/Encoder Surface 创建；
+3. Camera HAL stream 配置；
+4. ISP 输出；
+5. JPEG/HEIF 编码；
+6. 文件方向与 metadata 写入。
+
+任意阶段都可能拒绝或回退尺寸。
+
+### 2. HEIF 比 JPEG 更依赖对齐
+
+JPEG/BLOB 对部分尺寸可能表现得更宽松，但 HEIF 常通过 YUV420、Surface 和 HEVC/HEIC Encoder 完成。YUV420 要求偶数采样，硬件 Codec 还可能要求 16、32 或更高粒度对齐。
+
+因此“JPEG 能拍”不能证明相同尺寸一定能用于 HEIF。
+
+### 3. 能力声明必须跨层一致
+
+```text
+Sensor/ISP 可输出
+    ∩ HAL metadata 已声明
+    ∩ Camera App 会选择
+    ∩ Buffer format/stride 合法
+    ∩ Codec 支持范围与对齐条件
+```
+
+任何一层不一致，都可能出现菜单可选但实际回退、`configureStreams` 失败或编码异常。
+
+### 4. 优先找第一次改变尺寸的位置
+
+最终看到的是 `720×1080`，但第一现场是：
+
+```text
+ignore odd HEIC size = 4415x2943
+```
+
+调试时应优先找第一次改变尺寸、第一次返回失败或第一次触发 fallback 的位置。
+
+### 5. 修改能力后注意 App 缓存
+
+Camera App 会保存照片大小。metadata 更新后，旧值仍可能被读取，因此刷机后应清除相机数据或实现旧值迁移。
+
+## 八、复用模板（Reusable Pattern）
+
+### 1. 相机成片尺寸不一致检查表
+
+- [ ] 确认问题发生在 JPEG、HEIF、RAW 中的哪种格式。
+- [ ] 记录 UI 选择的比例和精确分辨率，不只记录“M”数。
+- [ ] 搜索 `updatePictureSize`，确认 App 保存值。
+- [ ] 比较 `requestSize` 和 `targetSize`。
+- [ ] 搜索 `updatePictureInfo`，确认 Surface 尺寸。
+- [ ] 搜索 `configureStreams`，确认 HAL 收到的尺寸。
+- [ ] 搜索 `CCodecConfig raw.size`，确认编码尺寸。
+- [ ] 检查最终文件主图、旋转方向和 thumbnail。
+- [ ] 反查对应 Sensor metadata 的 BLOB、YUV、RAW、HEIC 声明。
+- [ ] 检查宽高奇偶、对齐和 Codec 最大尺寸。
+- [ ] 同步修改相关 pixel format。
+- [ ] 刷机后清除 Camera App 旧设置再验证。
+
+### 2. 推荐日志关键词
+
+```text
+PictureSize|updatePictureSize|setPictureSize|requestSize|targetSize
+HEIC size|odd|unsupported|replace|updatePictureInfo
+configureStreams|HeifEncoder|HeifWriter|CCodecConfig|onPictureCallback
+```
+
+### 3. 通用判断分支
+
+| 观察结果 | 优先检查方向 |
+| --- | --- |
+| 设置值本身错误 | Camera UI、DataStore、默认值、restriction |
+| request 正确但 target 改变 | App capability/filter/fallback |
+| App target 正确但 HAL stream 改变 | Framework/HAL stream negotiation |
+| HAL 正确但 Encoder 改变 | MediaCodec/C2/OMX |
+| 编码尺寸正确但图库显示错误 | HEIF container、primary image、thumbnail、rotation |
+| 只在特定 Sensor 发生 | 对应 `imgsensor_metadata/<sensor>` |
+
+## 九、最终文档（Markdown 格式）
+
+### 闭环结论
+
+| 项目 | 结论 |
+| --- | --- |
+| 可见现象 | HEIF 13M 3:2 成片降为 `720×1080` |
+| 第一有效异常 | `ignore odd HEIC size = 4415x2943` |
+| 直接原因 | App 将非法奇数尺寸回退到 `1080×720` |
+| 根本原因 | S5K3M5SX metadata 在 BLOB 和 YUV 中错误声明 `4415×2943` |
+| 修复方案 | 两组尺寸同步修改为满足 16 对齐的 `4416×2944` |
+| 无需修改 | HEIF property、Codec XML、App 奇数尺寸保护 |
+| 验证结果 | 编译刷机并实机验证通过，成片分辨率恢复正常 |
+| 闭环状态 | **已解决** |
+
+### 一句话经验
+
+> 遇到相机设置尺寸与成片尺寸不一致时，应按“App 设置值 → 目标 Surface → HAL stream → Encoder”逐层比对，并优先修复不满足格式对齐条件的上游能力声明。
