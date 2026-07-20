@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": "mrsmj5f4-zsjndo",
+      "ts": "2026-07-20T02:47:11.152Z",
+      "action": "note.create",
+      "actor": "KBin-001",
+      "target": "src/content/docs/mtk/dpixiugai.mdx",
+      "title": "[MTK]DPI 修改",
+      "commit": "a7652e42d33db176ac7ae4244253a0bd502a8971"
+    },
+    {
       "id": "mrlsw97p-t56rhn",
       "ts": "2026-07-15T08:10:57.061Z",
       "action": "note.create",
