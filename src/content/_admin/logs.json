@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": "mtws77re-n1egin",
+      "ts": "2026-09-11T09:56:21.386Z",
+      "action": "note.update",
+      "actor": "KBin-001",
+      "target": "src/content/docs/mtk/physical-resolution.mdx",
+      "title": "[MTK]修改物理分辨率",
+      "commit": "6752586eb25ab66031c618143688e38eba1b2fa1"
+    },
+    {
       "id": "mrsmyusb-nh8nzu",
       "ts": "2026-07-20T02:59:23.867Z",
       "action": "note.create",
