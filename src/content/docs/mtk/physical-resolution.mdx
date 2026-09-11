@@ -1,6 +1,6 @@
 ---
-title: '[MTK]修改物理分辨率'
-description: 在lk和kernel屏幕参数修改以下参数
+title: '[MTK]屏幕帧率精确匹配'
+description: 屏幕帧率精确匹配
 category: mtk
 tags:
   - mtk
@@ -12,44 +12,1221 @@ status: 已验证
 date: '2026-09-11'
 updated: '2026-09-11'
 ---
-# [MTK] 修改物理分辨率
+# [MTK]屏幕帧率精确匹配：不修改 Porch 和 `.clock`，使用 `data_rate_khz` 精调 PLL
 
-修改屏幕物理尺寸时，需要同步调整 **LK（Vendor）** 和 **Kernel** 中的屏幕参数，确保系统获取正确的屏幕物理宽高。
+## 一、问题背景
 
-## Vendor
+当前 LCD 实测刷新率约为：
 
-新增屏幕物理宽高定义，并赋值给 `physical_width` 和 `physical_height`。
-
-```diff
-+#define PHYSICAL_WIDTH_MM                               (172)
-+#define PHYSICAL_HEIGHT_MM                              (258)
-
-+       params->physical_width = PHYSICAL_WIDTH_MM;
-+       params->physical_height = PHYSICAL_HEIGHT_MM;
+```
+60.066 Hz
 ```
 
-参数说明：
+项目要求刷新率达到：
 
-- `PHYSICAL_WIDTH_MM`：屏幕物理宽度，单位为 `mm`
-- `PHYSICAL_HEIGHT_MM`：屏幕物理高度，单位为 `mm`
-
-## Kernel
-
-新增屏幕物理宽高定义，并同步设置到 DRM Connector 的 `display_info` 中。
-
-```diff
-+#define PHYSICAL_WIDTH_MM              172
-+#define PHYSICAL_HEIGHT_MM             258
-+#define PHYSICAL_WIDTH_UM              (PHYSICAL_WIDTH_MM * 1000)
-+#define PHYSICAL_HEIGHT_UM             (PHYSICAL_HEIGHT_MM * 1000)
-
-+       connector->display_info.width_mm = PHYSICAL_WIDTH_MM;
-+       connector->display_info.height_mm = PHYSICAL_HEIGHT_MM;
+```
+60 ± 0.01 Hz
 ```
 
-参数说明：
+也就是允许范围：
 
-- `PHYSICAL_WIDTH_MM`：屏幕物理宽度，单位为 `mm`
-- `PHYSICAL_HEIGHT_MM`：屏幕物理高度，单位为 `mm`
-- `PHYSICAL_WIDTH_UM`：屏幕物理宽度，单位为 `μm`
-- `PHYSICAL_HEIGHT_UM`：屏幕物理高度，单位为 `μm`
+```
+59.99 ~ 60.01 Hz
+```
+
+因此当前 `60.066 Hz` 偏高，需要把 MIPI DSI 的实际输出速率稍微降低。
+
+这次调试有一个重要原则：
+
+> **不修改 H/V Porch，不修改 drm_display_mode 的 `.clock`，只通过 `data_rate_khz` 对 MIPI PLL 做更细粒度的调整。**
+> 
+
+这样做的好处是不会改变面板原本的 H/V Timing，只微调 DSI PHY 的发送速率。
+
+---
+
+## 二、先理解为什么刷新率会变化
+
+对于固定的显示 Timing：
+
+```
+Htotal = HACT + HFP + HSA + HBP
+Vtotal = VACT + VFP + VSA + VBP
+```
+
+理论刷新率大致为：
+
+```
+FPS = Pixel Clock / (Htotal × Vtotal)
+```
+
+正常情况下，可以通过修改：
+
+```
+HFP / HBP / HSA
+VFP / VBP / VSA
+.clock
+```
+
+来改变刷新率。
+
+但是本项目不希望修改这些参数。
+
+因此采用另外一种方式：
+
+```
+调整 MIPI DSI PLL Data Rate
+```
+
+当 H/V Timing 不变时，MIPI 发送速率稍微降低，实际扫描周期也会略微拉长，因此实测刷新率可以相应降低。
+
+---
+
+# 三、原来的 MIPI 参数
+
+Panel 驱动：
+
+```
+kernel_device_modules-6.12/drivers/gpu/drm/panel/
+panel-hjr132037d-wqxga2400-dsi-vdo.c
+```
+
+原来的核心参数：
+
+```c
+static struct mtk_panel_params ext_params = {
+	.pll_clk = 355,
+	.data_rate = 355 * 2,
+};
+```
+
+也就是：
+
+```
+pll_clk = 355 MHz
+
+data_rate
+= 355 × 2
+= 710 MHz
+```
+
+等价于：
+
+```
+710000 kHz
+```
+
+当前在这个速率下实测：
+
+```
+60.066 Hz
+```
+
+---
+
+# 四、为什么直接修改 `data_rate` 不够精确
+
+注意：
+
+```c
+.data_rate = 710,
+```
+
+它的单位实际上是：
+
+```
+MHz
+```
+
+所以它只能比较方便地调整成：
+
+```
+710 MHz
+709 MHz
+708 MHz
+...
+```
+
+比如从：
+
+```
+710 MHz
+```
+
+直接变成：
+
+```
+709 MHz
+```
+
+变化量是：
+
+```
+1 MHz = 1000 kHz
+```
+
+对于刷新率只允许：
+
+```
+±0.01 Hz
+```
+
+这种要求来说，1 MHz 的调整粒度可能太粗。
+
+我们真正希望的是类似：
+
+```
+710000 kHz
+↓
+709220 kHz
+```
+
+只降低：
+
+```
+780 kHz
+```
+
+因此需要使用：
+
+```c
+.data_rate_khz
+```
+
+进行 kHz 级别的精调。
+
+---
+
+# 五、Panel 参数修改
+
+修改：
+
+```c
+static struct mtk_panel_params ext_params = {
+	.pll_clk = 355,
+	.data_rate = 355 * 2,
+	.data_rate_khz = 709220,
+};
+```
+
+此时三个参数可以这样理解：
+
+```
+pll_clk      = 355 MHz
+data_rate    = 710 MHz
+data_rate_khz = 709220 kHz
+```
+
+其中：
+
+```c
+.data_rate = 710
+```
+
+仍然保留，用于兼容原来的 MHz 参数体系。
+
+真正用于此次精调的是：
+
+```c
+.data_rate_khz = 709220
+```
+
+也就是：
+
+```
+709.220 MHz
+```
+
+---
+
+# 六、为什么计算得到 709220 kHz
+
+当前：
+
+```
+MIPI Data Rate = 710000 kHz
+实测 FPS       = 60.066 Hz
+```
+
+目标：
+
+```
+60.000 Hz
+```
+
+因为这里做的是小范围线性微调，可以近似认为：
+
+```
+新 FPS / 旧 FPS
+≈
+新 Data Rate / 旧 Data Rate
+```
+
+所以：
+
+```
+新 Data Rate
+=
+旧 Data Rate × 目标 FPS / 当前 FPS
+```
+
+代入：
+
+```
+= 710000 × 60 / 60.066
+≈ 709220 kHz
+```
+
+也可以反过来预测修改后的 FPS：
+
+```
+60.066 × 709220 / 710000
+≈ 60.00001 Hz
+```
+
+因此理论上：
+
+```
+FPS ≈ 60.00001 Hz
+```
+
+满足：
+
+```
+60 ± 0.01 Hz
+```
+
+要求。
+
+---
+
+# 七、为什么光在 Panel 里面写 `data_rate_khz` 还不够
+
+这是这次修改最关键的地方。
+
+Panel 里面虽然配置了：
+
+```c
+.data_rate_khz = 709220,
+```
+
+但最终真正设置 MIPI PLL 的代码位于 MTK DRM/MIPI PHY 驱动。
+
+相关文件：
+
+```
+kernel_device_modules-6.12/drivers/gpu/drm/mediatek/
+mediatek_v2/platform/mtk_drm_6789.c
+```
+
+以及：
+
+```
+kernel_device_modules-6.12/drivers/gpu/drm/mediatek/
+mediatek_v2/v1/platform/mtk_drm_6789.c
+```
+
+最终都会进入：
+
+```c
+mtk_mipi_tx_pll_prepare_mt6789()
+```
+
+这里才是真正准备 MIPI PLL 参数的位置。
+
+---
+
+# 八、原来的代码逻辑
+
+原代码大致为：
+
+```c
+rate = (mipi_tx->data_rate_adpt) ?
+	mipi_tx->data_rate_adpt :
+	mipi_tx->data_rate / 1000000;
+
+rate_khz = (mipi_tx->data_rate_adpt) ?
+	mipi_tx->data_rate_adpt * 1000 :
+	mipi_tx->data_rate / 1000;
+```
+
+先看：
+
+```c
+rate
+```
+
+它的单位是：
+
+```
+MHz
+```
+
+而：
+
+```c
+rate_khz
+```
+
+单位是：
+
+```
+kHz
+```
+
+原来的 `rate_khz` 只能从两个地方取值：
+
+```
+data_rate_adpt × 1000
+```
+
+或者：
+
+```
+data_rate / 1000
+```
+
+也就是说，原代码并没有优先使用我们新增的：
+
+```
+data_rate_khz_adpt
+```
+
+因此即使 Panel 配置：
+
+```c
+.data_rate_khz = 709220,
+```
+
+PLL 代码如果不支持这个参数，最后仍然可能按照：
+
+```
+710000 kHz
+```
+
+运行。
+
+这样 Panel 里的 `data_rate_khz` 就无法真正实现精调。
+
+---
+
+# 九、修改后的核心逻辑
+
+修改为：
+
+```c
+rate_khz = (mipi_tx->data_rate_khz_adpt) ?
+	mipi_tx->data_rate_khz_adpt :
+	((mipi_tx->data_rate_adpt) ?
+	mipi_tx->data_rate_adpt * 1000 :
+	mipi_tx->data_rate / 1000);
+```
+
+把它拆开看就非常容易理解：
+
+```c
+if (mipi_tx->data_rate_khz_adpt)
+	rate_khz = mipi_tx->data_rate_khz_adpt;
+else if (mipi_tx->data_rate_adpt)
+	rate_khz = mipi_tx->data_rate_adpt * 1000;
+else
+	rate_khz = mipi_tx->data_rate / 1000;
+```
+
+因此新的优先级变成：
+
+```
+data_rate_khz_adpt
+        ↓
+data_rate_adpt
+        ↓
+data_rate
+```
+
+也就是：
+
+```
+kHz 精确值
+优先级最高
+
+↓
+
+MHz 调整值
+
+↓
+
+默认 Data Rate
+```
+
+---
+
+# 十、以本项目实际参数举例
+
+Panel：
+
+```c
+.pll_clk = 355,
+.data_rate = 710,
+.data_rate_khz = 709220,
+```
+
+如果上层已经把 Panel 的：
+
+```
+data_rate_khz
+```
+
+正确传递到：
+
+```
+mipi_tx->data_rate_khz_adpt
+```
+
+那么最终：
+
+```c
+mipi_tx->data_rate_khz_adpt = 709220;
+```
+
+进入：
+
+```c
+mtk_mipi_tx_pll_prepare_mt6789()
+```
+
+以后：
+
+```c
+rate_khz = 709220;
+```
+
+PLL 最终按照：
+
+```
+709220 kHz
+```
+
+计算，而不是原来的：
+
+```
+710000 kHz
+```
+
+这就是此次修改真正生效的关键。
+
+---
+
+# 十一、为什么 `rate` 还是 710 MHz？
+
+这里很容易产生疑惑。
+
+代码中：
+
+```c
+rate = (mipi_tx->data_rate_adpt) ?
+	mipi_tx->data_rate_adpt :
+	mipi_tx->data_rate / 1000000;
+```
+
+可能仍然得到：
+
+```
+rate = 710 MHz
+```
+
+而：
+
+```
+rate_khz = 709220 kHz
+```
+
+看起来好像矛盾：
+
+```
+rate     = 710 MHz
+rate_khz = 709.220 MHz
+```
+
+其实不矛盾。
+
+`rate` 是原来 MHz 级的粗粒度参数，而新增的：
+
+```c
+rate_khz
+```
+
+用于更精细的 PLL 计算。
+
+也就是说：
+
+```
+rate
+```
+
+主要用于原有逻辑、范围判断以及兼容。
+
+而真正希望增加精度的地方使用：
+
+```
+rate_khz
+```
+
+从：
+
+```
+整数 MHz
+```
+
+提升到：
+
+```
+整数 kHz
+```
+
+精度提高了：
+
+```
+1000 倍
+```
+
+---
+
+# 十二、日志也进行了修改
+
+原日志：
+
+```c
+DDPINFO(
+	"prepare: %u MHz, mipi_tx->data_rate_adpt: %d MHz, mipi_tx->data_rate : %d MHz\n",
+	rate,
+	mipi_tx->data_rate_adpt,
+	(mipi_tx->data_rate / 1000000));
+```
+
+修改以后增加：
+
+```c
+rate_khz
+```
+
+打印：
+
+```c
+DDPINFO(
+	"prepare: %u MHz (%u kHz), mipi_tx->data_rate_adpt: %d MHz, mipi_tx->data_rate : %d MHz\n",
+	rate,
+	rate_khz,
+	mipi_tx->data_rate_adpt,
+	(mipi_tx->data_rate / 1000000));
+```
+
+这样抓 Kernel log 时，就可以确认 PLL 实际拿到的精确速率。
+
+理想情况下应该看到类似：
+
+```
+prepare: 710 MHz (709220 kHz) ...
+```
+
+最重要的是确认：
+
+```
+709220 kHz
+```
+
+是否真正传到了底层。
+
+如果日志仍然打印：
+
+```
+710000 kHz
+```
+
+说明：
+
+```
+panel .data_rate_khz
+```
+
+到：
+
+```
+mipi_tx->data_rate_khz_adpt
+```
+
+之间的数据传递链路还有问题。
+
+---
+
+# 十三、完整数据流要这样理解
+
+本次修改的整体数据流可以画成：
+
+```
+Panel Driver
+    │
+    │
+    ├── pll_clk = 355
+    │
+    ├── data_rate = 710 MHz
+    │
+    └── data_rate_khz = 709220 kHz
+                     │
+                     ▼
+             MTK DRM Panel Ext
+                     │
+                     ▼
+          data_rate_khz_adpt
+                     │
+                     ▼
+       mtk_mipi_tx_pll_prepare_mt6789()
+                     │
+                     ▼
+          rate_khz = 709220
+                     │
+                     ▼
+             MIPI PLL 计算
+                     │
+                     ▼
+              DSI PHY 输出
+                     │
+                     ▼
+             LCD 实际刷新率
+                     │
+                     ▼
+               ≈ 60.000 Hz
+```
+
+所以真正要检查的是整条链路，而不能只看：
+
+```c
+.data_rate_khz = 709220
+```
+
+这一行。
+
+---
+
+# 十四、为什么两个 `mtk_drm_6789.c` 都要修改
+
+当前代码树里面存在：
+
+```
+mediatek_v2/platform/mtk_drm_6789.c
+```
+
+和：
+
+```
+mediatek_v2/v1/platform/mtk_drm_6789.c
+```
+
+两个版本。
+
+它们里面都有：
+
+```c
+mtk_mipi_tx_pll_prepare_mt6789()
+```
+
+因此这次两个地方做了相同修改。
+
+目的就是保证实际编译使用哪个版本时：
+
+```
+data_rate_khz_adpt
+```
+
+都能够生效。
+
+否则可能出现：
+
+```
+改了一个文件
+↓
+实际编译的是另一个文件
+↓
+data_rate_khz 完全没有生效
+```
+
+这种情况。
+
+---
+
+# 十五、这次修改本质上改了什么
+
+一句话总结：
+
+> **原来的 MTK MIPI PLL 主要按照 MHz 粒度配置，现在增加 `data_rate_khz_adpt` 优先级，使 PLL 可以按照 kHz 粒度配置，从而对实际刷新率进行更精细的调整。**
+> 
+
+原来：
+
+```
+710 MHz
+709 MHz
+708 MHz
+```
+
+调整步进约：
+
+```
+1 MHz
+```
+
+现在可以：
+
+```
+710000 kHz
+709900 kHz
+709800 kHz
+709220 kHz
+...
+```
+
+调整步进：
+
+```
+1 kHz
+```
+
+因此特别适合：
+
+```
+60.066 Hz
+```
+
+这种只需要微调到：
+
+```
+60.000 Hz
+```
+
+的场景。
+
+---
+
+# 十六、为什么不直接修改 Porch
+
+例如修改：
+
+```
+HFP
+HBP
+VFP
+VBP
+```
+
+也可以改变刷新率。
+
+但是会直接改变 Panel Timing。
+
+可能带来：
+
+```
+Panel 时序偏离规格书
+显示稳定性变化
+TE/DSI Timing 变化
+兼容性问题
+不同阶段 Timing 不一致
+```
+
+而当前：
+
+```
+H/V Timing 本身没有问题
+```
+
+只是：
+
+```
+实测 FPS = 60.066 Hz
+```
+
+稍微偏高。
+
+因此更合理的思路是：
+
+```
+保持 Timing 不变
+        +
+只微调 PLL
+```
+
+也就是这次：
+
+```c
+.data_rate_khz = 709220
+```
+
+的意义。
+
+---
+
+# 十七、为什么不修改 `.clock`
+
+`.clock` 属于显示模式的 Pixel Clock，例如：
+
+```c
+static const struct drm_display_mode default_mode = {
+	.clock = xxx,
+	.hdisplay = 1600,
+	...
+};
+```
+
+修改 `.clock` 同样会影响理论刷新率。
+
+但 MTK DSI 实际 PHY 时钟还受到：
+
+```
+pll_clk
+data_rate
+data_rate_khz
+```
+
+等参数控制。
+
+如果当前 H/V Timing、`.clock` 已经作为正式 Panel Timing 使用，只为了修正：
+
+```
+0.066 Hz
+```
+
+的误差，没有必要把整套显示 Timing 都改掉。
+
+因此此次采用：
+
+```
+.clock             不动
+H/V porch          不动
+pll_clk            基本不动
+data_rate          保留
+data_rate_khz      微调
+```
+
+是影响范围更小的一种方案。
+
+---
+
+# 十八、实际调试方法
+
+第一次可以按照比例公式计算：
+
+```
+新 Data Rate
+=
+旧 Data Rate × 目标 FPS / 实测 FPS
+```
+
+例如：
+
+```
+当前：
+
+FPS = 60.066
+Data Rate = 710000 kHz
+
+目标：
+
+FPS = 60.000
+```
+
+计算：
+
+```
+710000 × 60 / 60.066
+≈ 709220 kHz
+```
+
+配置：
+
+```c
+.data_rate_khz = 709220,
+```
+
+然后：
+
+```
+重新编译
+→ 烧录
+→ 测量刷新率
+```
+
+---
+
+# 十九、如果实测仍有误差怎么继续调
+
+公式仍然一样。
+
+例如修改到：
+
+```
+709220 kHz
+```
+
+以后实测：
+
+```
+60.008 Hz
+```
+
+那么下一次：
+
+```
+新 Data Rate
+=
+709220 × 60 / 60.008
+```
+
+再根据结果继续调整。
+
+可以记住一个简单规律：
+
+```
+实际 FPS 偏高
+→ 降低 data_rate_khz
+
+实际 FPS 偏低
+→ 提高 data_rate_khz
+```
+
+例如：
+
+```
+60.03 Hz
+→ data_rate_khz 往下降
+
+59.97 Hz
+→ data_rate_khz 往上加
+```
+
+---
+
+# 二十、调试时重点检查什么
+
+首先检查 Panel：
+
+```c
+.data_rate_khz = 709220,
+```
+
+然后检查 Kernel log 中：
+
+```
+rate_khz
+```
+
+应该真正变为：
+
+```
+709220
+```
+
+最后再测：
+
+```
+实际 FPS
+```
+
+所以排查顺序应该是：
+
+```
+Panel 参数
+    ↓
+data_rate_khz 是否传递
+    ↓
+data_rate_khz_adpt 是否有值
+    ↓
+rate_khz 是否为 709220
+    ↓
+PLL 是否使用 rate_khz
+    ↓
+实测 FPS
+```
+
+不要一开始看到 FPS 没变化就继续乱改：
+
+```
+Porch
+clock
+pll_clk
+```
+
+先确认：
+
+```
+709220
+```
+
+到底有没有真正进入 PLL。
+
+---
+
+# 二十一、需要特别注意的 Git Diff
+
+此次 diff 中还出现了：
+
+```
+old mode 100644
+new mode 100755
+```
+
+这不是代码逻辑修改。
+
+它表示文件权限从：
+
+```
+100644
+普通文件
+```
+
+变成了：
+
+```
+100755
+可执行文件
+```
+
+对于：
+
+```
+mtk_drm_6789.c
+```
+
+这种 C 源文件来说，一般不需要可执行权限。
+
+因此如果不是刻意修改，建议恢复：
+
+```bash
+chmod 644 kernel_device_modules-6.12/drivers/gpu/drm/mediatek/mediatek_v2/platform/mtk_drm_6789.c
+```
+
+以及：
+
+```bash
+chmod 644 kernel_device_modules-6.12/drivers/gpu/drm/mediatek/mediatek_v2/v1/platform/mtk_drm_6789.c
+```
+
+避免提交中出现无意义的：
+
+```
+100644 → 100755
+```
+
+权限变化。
+
+---
+
+# 二十二、最终修改总结
+
+### Panel
+
+```c
+static struct mtk_panel_params ext_params = {
+	.pll_clk = 355,
+	.data_rate = 355 * 2,
+	.data_rate_khz = 709220,
+};
+```
+
+### MIPI PLL
+
+原来：
+
+```c
+rate_khz = (mipi_tx->data_rate_adpt) ?
+	mipi_tx->data_rate_adpt * 1000 :
+	mipi_tx->data_rate / 1000;
+```
+
+修改为：
+
+```c
+rate_khz = (mipi_tx->data_rate_khz_adpt) ?
+	mipi_tx->data_rate_khz_adpt :
+	((mipi_tx->data_rate_adpt) ?
+	mipi_tx->data_rate_adpt * 1000 :
+	mipi_tx->data_rate / 1000);
+```
+
+新的优先级：
+
+```
+data_rate_khz_adpt
+        >
+data_rate_adpt
+        >
+data_rate
+```
+
+目的：
+
+```
+MIPI PLL 从 MHz 级调节
+        ↓
+支持 kHz 级精调
+```
+
+---
+
+# 二十三、这次经验最值得记住的地方
+
+遇到：
+
+```
+LCD 目标 60 Hz
+实测 60.066 Hz
+要求 ±0.01 Hz
+```
+
+不要看到刷新率不准就立即修改：
+
+```
+HFP/HBP
+VFP/VBP
+.clock
+```
+
+如果 Panel Timing 已经正确，可以优先考虑：
+
+```
+保持 H/V Timing
+保持 .clock
+        ↓
+使用 data_rate_khz
+        ↓
+微调 MIPI PLL
+```
+
+计算方法：
+
+```
+新 Data Rate
+=
+旧 Data Rate × 目标 FPS / 当前 FPS
+```
+
+本案例：
+
+```
+710000 × 60 / 60.066
+≈ 709220 kHz
+```
+
+预测：
+
+```
+60.066 × 709220 / 710000
+≈ 60.00001 Hz
+```
+
+最终目标：
+
+```
+60 ± 0.01 Hz
+```
+
+## 一句话复盘
+
+**`data_rate` 适合 MHz 级粗调，`data_rate_khz` 适合 kHz 级精调；本次通过让 MTK MIPI PLL 优先使用 `data_rate_khz_adpt`，在不修改 H/V Porch 和 `.clock` 的情况下，将 710000 kHz 微调到 709220 kHz，从而把实测约 60.066 Hz 修正到约 60.000 Hz。**
