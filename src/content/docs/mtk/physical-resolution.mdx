@@ -1,21 +1,25 @@
 ---
-title: "[MTK]修改物理分辨率"
-description: "在lk和kernel屏幕参数修改以下参数"
-category: "mtk"
-tags: ["mtk"]
-topics: ["display_tp"]
-visibility: "public"
+title: '[MTK]修改物理分辨率'
+description: 在lk和kernel屏幕参数修改以下参数
+category: mtk
+tags:
+  - mtk
+topics:
+  - display_tp
+visibility: public
 sensitive: true
-status: "整理中"
-date: "2026-06-06"
-updated: "2026-06-06"
+status: 已验证
+date: '2026-09-11'
+updated: '2026-09-11'
 ---
+# [MTK] 修改物理分辨率
 
-# [MTK]修改物理分辨率
+修改屏幕物理尺寸时，需要同步调整 **LK（Vendor）** 和 **Kernel** 中的屏幕参数，确保系统获取正确的屏幕物理宽高。
 
-**在lk和kernel屏幕参数修改以下参数**
+## Vendor
 
-## vendor
+新增屏幕物理宽高定义，并赋值给 `physical_width` 和 `physical_height`。
+
 ```diff
 +#define PHYSICAL_WIDTH_MM                               (172)
 +#define PHYSICAL_HEIGHT_MM                              (258)
@@ -23,13 +27,16 @@ updated: "2026-06-06"
 +       params->physical_width = PHYSICAL_WIDTH_MM;
 +       params->physical_height = PHYSICAL_HEIGHT_MM;
 ```
-```text
 
-```
-## kernel
-```text
+参数说明：
 
-```
+- `PHYSICAL_WIDTH_MM`：屏幕物理宽度，单位为 `mm`
+- `PHYSICAL_HEIGHT_MM`：屏幕物理高度，单位为 `mm`
+
+## Kernel
+
+新增屏幕物理宽高定义，并同步设置到 DRM Connector 的 `display_info` 中。
+
 ```diff
 +#define PHYSICAL_WIDTH_MM              172
 +#define PHYSICAL_HEIGHT_MM             258
@@ -39,6 +46,10 @@ updated: "2026-06-06"
 +       connector->display_info.width_mm = PHYSICAL_WIDTH_MM;
 +       connector->display_info.height_mm = PHYSICAL_HEIGHT_MM;
 ```
-```text
 
-```
+参数说明：
+
+- `PHYSICAL_WIDTH_MM`：屏幕物理宽度，单位为 `mm`
+- `PHYSICAL_HEIGHT_MM`：屏幕物理高度，单位为 `mm`
+- `PHYSICAL_WIDTH_UM`：屏幕物理宽度，单位为 `μm`
+- `PHYSICAL_HEIGHT_UM`：屏幕物理高度，单位为 `μm`
