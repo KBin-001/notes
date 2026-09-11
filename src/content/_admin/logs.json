@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": "mtwsd5pl-exxl4e",
+      "ts": "2026-09-11T10:00:58.665Z",
+      "action": "note.update",
+      "actor": "KBin-001",
+      "target": "src/content/docs/mtk/physical-resolution.mdx",
+      "title": "[MTK]屏幕帧率精确匹配",
+      "commit": "f831adf262440e73cc2d76aa65a9c479409b91ce"
+    },
+    {
       "id": "mtws77re-n1egin",
       "ts": "2026-09-11T09:56:21.386Z",
       "action": "note.update",
