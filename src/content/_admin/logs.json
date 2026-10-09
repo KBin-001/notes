@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": "mv0p3vit-535w89",
+      "ts": "2026-10-09T08:20:33.749Z",
+      "action": "note.create",
+      "actor": "KBin-001",
+      "target": "src/content/docs/mtk/xiugaiwenkong.mdx",
+      "title": "[MTK]修改温控",
+      "commit": "264d3931270d175eacb07c1b110a934cc2a00832"
+    },
+    {
       "id": "mtwsd5pl-exxl4e",
       "ts": "2026-09-11T10:00:58.665Z",
       "action": "note.update",
