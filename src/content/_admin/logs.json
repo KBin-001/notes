@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": "mv0sozkw-262nx2",
+      "ts": "2026-10-09T10:00:57.632Z",
+      "action": "note.create",
+      "actor": "KBin-001",
+      "target": "src/content/docs/mtk/panelic.mdx",
+      "title": "[MTK] Panel IC 色彩、色温及饱和度参数移植",
+      "commit": "268b8649559faf74dc73c3ea1ec5e6f38842ab9d"
+    },
+    {
       "id": "mv0p3vit-535w89",
       "ts": "2026-10-09T08:20:33.749Z",
       "action": "note.create",
