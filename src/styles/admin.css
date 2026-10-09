@@ -885,6 +885,405 @@
   word-break: break-all;
 }
 
+/* ============================================================
+   操作日志（紧凑表格）
+   注意：日志行由 logs.ts 动态注入，无法使用 Astro 组件作用域样式，
+   因此这里全部写成全局类，与笔记管理/存储管理的做法保持一致。
+   ============================================================ */
+
+/* 统计条 */
+.logs-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.logs-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--kb-border);
+  border-radius: var(--admin-radius-sm);
+  background: var(--kb-surface);
+}
+
+.logs-stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--kb-accent-soft);
+  color: var(--kb-accent);
+  flex-shrink: 0;
+}
+
+.logs-stat-icon.logs-stat-create {
+  background: color-mix(in srgb, var(--kb-success) 14%, transparent);
+  color: var(--kb-success);
+}
+
+.logs-stat-icon.logs-stat-update {
+  background: color-mix(in srgb, var(--kb-accent-2) 16%, transparent);
+  color: var(--kb-accent-2);
+}
+
+.logs-stat-icon.logs-stat-image {
+  background: color-mix(in srgb, var(--kb-accent) 14%, transparent);
+  color: var(--kb-accent);
+}
+
+.logs-stat-icon.logs-stat-delete {
+  background: color-mix(in srgb, var(--kb-danger) 14%, transparent);
+  color: var(--kb-danger);
+}
+
+.logs-stat-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.logs-stat-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--kb-subtle);
+}
+
+.logs-stat-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--kb-heading);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 工具栏 */
+.logs-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.logs-actor-select {
+  max-width: 180px;
+}
+
+.logs-toolbar #logs-count {
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--kb-surface-hover);
+  color: var(--kb-muted);
+  white-space: nowrap;
+}
+
+/* 表格容器 */
+.logs-table-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.logs-table {
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.logs-table thead th {
+  padding: 9px 14px;
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--kb-elevated);
+}
+
+.logs-col-object { width: auto; }
+.logs-col-type { width: 116px; }
+.logs-col-actor { width: 130px; }
+.logs-col-time { width: 148px; }
+.logs-col-detail { width: 88px; text-align: right; }
+
+.logs-table tbody td {
+  padding: 10px 14px;
+  vertical-align: middle;
+}
+
+/* 行：默认不可点（避免误触/影响选中文本），只有「详情」按钮可点 */
+.logs-table tbody tr.logs-row,
+.logs-table tbody tr.logs-detail-row {
+  cursor: default;
+}
+
+.logs-table tbody tr.logs-row.is-open {
+  background: var(--kb-surface-hover);
+}
+
+.logs-table tbody tr.logs-row.is-open td {
+  border-bottom-color: transparent;
+}
+
+/* 操作对象：标题为主，路径为灰色次级信息 */
+.logs-cell-object {
+  min-width: 0;
+}
+
+.logs-object-title {
+  display: block;
+  font-weight: 600;
+  color: var(--kb-heading);
+  font-size: 0.88rem;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logs-table tbody tr.logs-row:hover .logs-object-title {
+  color: var(--kb-accent);
+}
+
+.logs-object-path {
+  display: flex;
+  min-width: 0;
+  margin-top: 1px;
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  color: var(--kb-subtle);
+}
+
+/* 目录可省略，文件名始终完整显示（不使用 direction:rtl，避免 bidi 打乱数字与斜杠） */
+.logs-path-dir {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logs-path-file {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 操作类型徽章 */
+.logs-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.73rem;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.logs-badge-create { background: color-mix(in srgb, var(--kb-success) 14%, transparent); color: var(--kb-success); }
+.logs-badge-update { background: color-mix(in srgb, var(--kb-accent-2) 16%, transparent); color: var(--kb-accent-2); }
+.logs-badge-image { background: color-mix(in srgb, var(--kb-accent) 14%, transparent); color: var(--kb-accent); }
+.logs-badge-delete { background: color-mix(in srgb, var(--kb-danger) 13%, transparent); color: var(--kb-danger); }
+.logs-badge-default { background: var(--kb-surface-hover); color: var(--kb-muted); }
+
+/* 操作人 / 时间 */
+.logs-actor {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--kb-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logs-time {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--kb-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: help;
+}
+
+/* 详情按钮 */
+.logs-cell-detail {
+  text-align: right;
+}
+
+.logs-detail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 26px;
+  padding: 0 9px;
+  border: 1px solid var(--kb-border);
+  border-radius: 999px;
+  background: var(--kb-surface);
+  color: var(--kb-muted);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.logs-detail-btn:hover {
+  border-color: var(--kb-border-strong);
+  background: var(--kb-surface-hover);
+  color: var(--kb-heading);
+}
+
+.logs-detail-btn svg {
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+
+.logs-detail-btn[aria-expanded='true'] {
+  border-color: color-mix(in srgb, var(--kb-accent) 40%, var(--kb-border));
+  color: var(--kb-accent);
+}
+
+.logs-detail-btn[aria-expanded='true'] svg {
+  transform: rotate(90deg);
+}
+
+/* 展开的详情行 */
+.logs-table tbody tr.logs-detail-row td {
+  padding: 0 14px 12px;
+  background: var(--kb-surface-hover);
+  border-bottom: 1px solid var(--kb-border-subtle);
+}
+
+.logs-detail {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px dashed var(--kb-border);
+  border-radius: var(--admin-radius-sm);
+  background: var(--kb-surface);
+}
+
+.logs-detail-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.logs-detail-label {
+  flex: 0 0 82px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--kb-subtle);
+}
+
+.logs-detail-value {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--kb-text);
+  word-break: break-all;
+}
+
+.logs-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--kb-border);
+  border-radius: 6px;
+  background: var(--kb-surface);
+  color: var(--kb-muted);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.logs-copy-btn:hover {
+  border-color: var(--kb-border-strong);
+  background: var(--kb-surface-hover);
+  color: var(--kb-accent);
+}
+
+.logs-copy-btn.is-copied {
+  border-color: color-mix(in srgb, var(--kb-success) 45%, var(--kb-border));
+  background: color-mix(in srgb, var(--kb-success) 12%, transparent);
+  color: var(--kb-success);
+}
+
+/* 分页 */
+.logs-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-top: 1px solid var(--kb-border);
+  background: var(--kb-surface);
+}
+
+.logs-page-info {
+  font-size: 0.76rem;
+  color: var(--kb-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.logs-page-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.logs-page-btn {
+  min-width: 30px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--kb-border);
+  border-radius: 7px;
+  background: var(--kb-surface);
+  color: var(--kb-muted);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.logs-page-btn:hover:not(:disabled) {
+  border-color: var(--kb-border-strong);
+  background: var(--kb-surface-hover);
+  color: var(--kb-heading);
+}
+
+.logs-page-btn.is-active {
+  background: var(--kb-accent);
+  border-color: var(--kb-accent);
+  color: #fff;
+}
+
+.logs-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.logs-page-gap {
+  padding: 0 2px;
+  color: var(--kb-subtle);
+  font-size: 0.78rem;
+}
+
 /* ---------------- 空状态 / 加载 / 消息 ---------------- */
 .admin-empty,
 .admin-loading {
@@ -1291,6 +1690,124 @@
   .editor-split .editor-textarea {
     border-right: none;
     border-bottom: 1px solid var(--kb-border-subtle);
+  }
+
+  /* 操作日志：表格改为堆叠行，避免窄屏横向溢出 */
+  .logs-table,
+  .logs-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .logs-table thead {
+    display: none;
+  }
+
+  .logs-table tbody tr.logs-row {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    grid-template-areas:
+      'type actor detail'
+      'object object object'
+      'time time time';
+    align-items: center;
+    gap: 4px 8px;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--kb-border-subtle);
+  }
+
+  .logs-table tbody tr.logs-row td {
+    display: block;
+    padding: 0;
+    border: none;
+  }
+
+  .logs-cell-type { grid-area: type; }
+  .logs-cell-actor { grid-area: actor; }
+  .logs-cell-detail { grid-area: detail; }
+  .logs-cell-object { grid-area: object; }
+  .logs-cell-time { grid-area: time; }
+
+  .logs-object-title {
+    white-space: normal;
+    word-break: break-all;
+  }
+
+  /* 统计条：3 列更紧凑 */
+  .logs-stats {
+    grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+    gap: 8px;
+  }
+
+  .logs-stat {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .logs-stat-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+  }
+
+  .logs-stat-icon svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .logs-stat-label {
+    font-size: 0.66rem;
+  }
+
+  .logs-stat-value {
+    font-size: 1.05rem;
+  }
+
+  /* 工具栏：搜索独占一行，操作者与计数同行，类型 chip 单行横向滚动 */
+  .logs-toolbar {
+    gap: 8px;
+  }
+
+  .logs-toolbar .admin-search {
+    flex: 1 1 100%;
+    max-width: none;
+    order: 1;
+  }
+
+  .logs-actor-select {
+    flex: 0 1 auto;
+    width: auto;
+    min-width: 118px;
+    max-width: 60%;
+    order: 2;
+  }
+
+  .logs-toolbar #logs-count {
+    order: 3;
+    margin-left: auto;
+  }
+
+  .logs-toolbar .admin-filter-group {
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: thin;
+    order: 4;
+  }
+
+  .logs-table tbody tr.logs-detail-row {
+    display: block;
+    border-bottom: 1px solid var(--kb-border-subtle);
+  }
+
+  .logs-table tbody tr.logs-detail-row td {
+    display: block;
+    padding: 0 14px 12px;
+  }
+
+  .logs-detail-label {
+    flex-basis: 100%;
   }
 }
 
