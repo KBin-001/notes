@@ -24,17 +24,38 @@ const topics = [
 ---
 
 <section class="admin-view" data-view="editor">
-  <div class="admin-page-head">
+  <!-- 顶部固定操作区：标题 + 保存草稿 / 发布笔记（长文章滚动时始终可见） -->
+  <div class="admin-page-head admin-page-head--sticky">
     <div class="title-block">
       <h2 id="editor-page-title">新建笔记</h2>
       <p id="editor-page-sub">填写笔记内容与元信息，支持编辑 / 预览 / 分屏切换。</p>
     </div>
     <div class="admin-page-actions">
-      <a class="admin-btn secondary sm" href="#/notes">
+      <a class="admin-btn secondary sm" href="#/notes" id="editor-back-link">
         <ArrowLeft size={14} aria-hidden="true" />
         返回列表
       </a>
+      <button id="reset-button" class="admin-btn ghost sm" type="button">
+        <ListChecks size={14} aria-hidden="true" />
+        清空表单
+      </button>
+      <button id="save-draft-button" class="admin-btn secondary" type="button">
+        <Save size={14} aria-hidden="true" />
+        保存草稿
+      </button>
+      <button
+        id="publish-button"
+        class="admin-btn primary"
+        type="submit"
+        form="note-form"
+      >
+        <Send size={14} aria-hidden="true" />
+        <span id="publish-button-text">发布笔记</span>
+      </button>
     </div>
+    <!-- 反馈信息（成功 / 失败 / 警告）跟随操作区，避免长文章下要滚到底部才看到 -->
+    <div id="warnings" class="admin-warnings admin-hidden"></div>
+    <div id="message" class="admin-message admin-hidden"></div>
   </div>
 
   <form id="note-form" class="editor-layout">
@@ -49,12 +70,12 @@ const topics = [
             <input id="file-input" type="file" accept=".md,.mdx,text/markdown,text/x-markdown" hidden />
           </label>
           <span class="admin-text-xs admin-subtle" id="file-source-name">未选择文件</span>
-          <span class="admin-flex admin-items-center admin-gap-1" style="margin-left:auto">
+          <span class="admin-flex admin-items-center admin-gap-1 admin-flex-wrap note-source-actions">
             <button class="admin-btn ghost sm" type="button" id="load-list-button">
               <RefreshCw size={13} aria-hidden="true" />
               读取 GitHub 笔记列表
             </button>
-            <select id="note-list" class="admin-select" style="width:280px">
+            <select id="note-list" class="admin-select note-source-select">
               <option value="">先读取列表，再选择文章</option>
             </select>
           </span>
@@ -112,30 +133,6 @@ const topics = [
           <div id="editor-preview" class="editor-preview admin-hidden"></div>
         </div>
         <input id="image-input" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" multiple class="admin-hidden" />
-      </div>
-
-      <!-- 消息 / 警告 -->
-      <div id="warnings" class="admin-warnings admin-hidden admin-mt-3"></div>
-      <div id="message" class="admin-message admin-hidden admin-mt-3"></div>
-
-      <!-- 底部固定操作栏 -->
-      <div class="admin-action-bar admin-card">
-        <div class="left">
-          <button id="reset-button" class="admin-btn ghost" type="button">
-            <ListChecks size={14} aria-hidden="true" />
-            清空表单
-          </button>
-        </div>
-        <div class="right">
-          <button id="save-draft-button" class="admin-btn secondary" type="button">
-            <Save size={14} aria-hidden="true" />
-            保存草稿
-          </button>
-          <button id="publish-button" class="admin-btn primary" type="submit" data-publish="true">
-            <Send size={14} aria-hidden="true" />
-            <span id="publish-button-text">发布笔记</span>
-          </button>
-        </div>
       </div>
     </div>
 

@@ -9,7 +9,21 @@ export const $ = <T extends Element = HTMLElement>(selector: string, root: Paren
 export const $$ = <T extends Element = HTMLElement>(selector: string, root: ParentNode = document): T[] =>
   Array.from(root.querySelectorAll<T>(selector));
 
-export const today = () => new Date().toISOString().slice(0, 10);
+/**
+ * 今天的日期（YYYY-MM-DD），使用**本地时区**。
+ * 不能用 toISOString()：它按 UTC 计算，东八区凌晨 0:00–8:00 会得到昨天，导致日期提前一天。
+ */
+export const today = () => toDateString(new Date());
+
+/** 格式化日期为 YYYY-MM-DD（按本地时区，兼容 Date 或字符串） */
+export function toDateString(value: Date | string | number): string {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
 
 export function escapeHtml(value: unknown): string {
   return String(value ?? '').replace(/[&<>"']/g, (char) => {
@@ -26,13 +40,6 @@ export function escapeHtml(value: unknown): string {
         return '&#039;';
     }
   });
-}
-
-/** 格式化日期为 YYYY-MM-DD（兼容 Date 或字符串） */
-export function toDateString(value: Date | string | number): string {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  return date.toISOString().slice(0, 10);
 }
 
 /** 中文短日期，例：2024/03/01 */
@@ -98,9 +105,29 @@ export function buildHash(route: string, query: Record<string, string> = {}): st
   return `#/${route}${qs ? `?${qs}` : ''}`;
 }
 
-/** 跳转 hash 路由 */
+/**
+ * 导航守卫：注册后，navigate() 在真正跳转前会先询问它。
+ * 返回 false 表示取消本次跳转（例如表单有未保存修改、用户点了「取消」）。
+ */
+export type NavGuard = () => boolean;
+
+let navGuard: NavGuard | null = null;
+
+export function setNavGuard(guard: NavGuard | null): void {
+  navGuard = guard;
+}
+
+/** 跳转 hash 路由（经过导航守卫） */
 export function navigate(route: string, query: Record<string, string> = {}): void {
-  location.hash = buildHash(route, query);
+  const next = buildHash(route, query);
+  if (navGuard && navGuard() === false) return;
+  if (location.hash === next) {
+    // hash 没变化时浏览器不会触发 hashchange，但「点击当前所在的菜单」仍需重新初始化视图
+    // （例：停在 #/new 时用下拉载入了某篇旧笔记，再点「新建笔记」必须回到干净表单）
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    return;
+  }
+  location.hash = next;
 }
 
 /** 复制文本到剪贴板，兼容降级 */

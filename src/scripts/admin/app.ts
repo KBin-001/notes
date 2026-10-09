@@ -2,9 +2,9 @@
  * 后台应用入口：鉴权 + hash 路由 + 视图切换 + Sidebar 联动。
  */
 import { fetchCurrentUser, logout } from './api';
-import { $, $$, parseHash, ROUTES } from './shared';
+import { $, $$, navigate, parseHash, ROUTES } from './shared';
 import { mountNotesManage, bindNotesManageEvents } from './notes-manage';
-import { mountEditor, loadNoteByHash, resetEditor } from './note-editor';
+import { mountEditor, loadNoteByHash, enterNewMode } from './note-editor';
 import { mountTopicDetail } from './topic-detail';
 import { mountStorage, bindStorageEvents } from './storage';
 import { mountLogs, bindLogsEvents } from './logs';
@@ -147,19 +147,17 @@ async function handleRoute() {
     }
     await mountSettings();
   } else if (route === 'new' || route === 'edit') {
+    const { query } = parseHash();
     if (!editorMounted) {
+      // mountEditor() 内部已经完成表单重置 + 「批量导入」暂存内容的载入，这里不能再重置一次
       mountEditor();
       editorMounted = true;
-    } else {
-      // 切回新建视图时清空表单（除非带 path 进入 edit）
-      const { query } = parseHash();
-      if (route === 'new' && !query.path) {
-        resetEditor();
-      }
+    } else if (route === 'new' && !query.path) {
+      // 再次进入新建（含停在 #/new 时重复点击菜单）：必须回到全新表单
+      enterNewMode();
     }
-    if (route === 'edit') {
-      await loadNoteByHash();
-    }
+    // 带 path = 载入该笔记进入编辑
+    if (query.path) await loadNoteByHash();
   }
 
   // 移动端关闭抽屉
@@ -181,11 +179,11 @@ async function bootstrap() {
   const ok = await checkAuth();
   if (!ok) return;
 
-  // 绑定导航点击
+  // 绑定导航点击（走 navigate()，经导航守卫可拦截未保存修改）
   $$('.admin-nav-item[data-nav-route]').forEach((item) => {
     item.addEventListener('click', () => {
       const route = item.getAttribute('data-nav-route') || 'dashboard';
-      location.hash = `#/${route}`;
+      navigate(route);
     });
   });
 

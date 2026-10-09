@@ -77,7 +77,9 @@
   grid-area: main;
   padding: 28px 32px 96px;
   min-width: 0;
-  overflow-x: hidden;
+  /* overflow-x: clip（而非 hidden）：hidden 会让 .admin-main 成为滚动容器，
+     导致内部 position: sticky（顶部操作区 / 右侧元信息）相对它而非视口定位而失效。 */
+  overflow-x: clip;
 }
 
 /* ---------------- Header ---------------- */
@@ -496,6 +498,38 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+/* 编辑器顶部固定操作区：长文章滚动时保存/发布始终可见 */
+.admin-page-head--sticky {
+  position: sticky;
+  top: var(--admin-header-h);
+  z-index: 20;
+  margin: -28px -32px 20px;
+  padding: 16px 32px 14px;
+  background: var(--kb-surface-glass);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--kb-border);
+}
+
+/* 反馈条独占一行，未显示时 display:none 不占位 */
+.admin-page-head--sticky > .admin-message,
+.admin-page-head--sticky > .admin-warnings {
+  flex: 1 1 100%;
+}
+
+.admin-page-head--sticky .title-block {
+  min-width: 0;
+}
+
+/* 编辑器：GitHub 来源选择条（窄屏可换行、下拉可收缩，避免撑破卡片） */
+.note-source-actions {
+  margin-left: auto;
+}
+
+.note-source-select {
+  width: 280px;
+  max-width: 100%;
 }
 
 /* ---------------- 工具栏（搜索/筛选） ---------------- */
@@ -962,11 +996,13 @@
 
 .editor-side {
   position: sticky;
-  top: calc(var(--admin-header-h) + 28px);
+  /* 顶部操作区是 sticky 的：面板停靠在「顶栏 + 顶部操作区」下方。
+     --editor-head-h 由 note-editor.ts 实时测量写入（操作区出现提示信息时会变高）。 */
+  top: calc(var(--admin-header-h) + var(--editor-head-h, 104px) + 12px);
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-height: calc(100vh - var(--admin-header-h) - 56px);
+  max-height: calc(100vh - var(--admin-header-h) - var(--editor-head-h, 104px) - 40px);
   overflow-y: auto;
   padding-right: 2px;
 }
@@ -1099,32 +1135,6 @@
 .editor-preview img { max-width: 100%; border-radius: 8px; margin: 0.5em 0; }
 .editor-preview hr { border: none; border-top: 1px solid var(--kb-border-subtle); margin: 1.4em 0; }
 
-/* ---------------- 底部固定操作栏 ---------------- */
-.admin-action-bar {
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 24px;
-  padding: 14px 20px;
-  background: var(--kb-surface-glass);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid var(--kb-border);
-  border-radius: 0 0 var(--admin-radius) var(--admin-radius);
-}
-
-.admin-action-bar .left,
-.admin-action-bar .right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
 /* ---------------- 工具类 ---------------- */
 .admin-hidden { display: none !important; }
 .admin-muted { color: var(--kb-muted); }
@@ -1158,10 +1168,24 @@
 
 @media (max-width: 1024px) {
   .admin-layout {
-    grid-template-columns: 1fr;
+    /* minmax(0,1fr)：单列时不能让顶栏/内容的 min-content 把栅格撑得比视口还宽 */
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       'header'
       'main';
+  }
+
+  /* 窄屏顶栏可收缩：仓库胶囊最多占 8rem，其余元素允许被压缩 */
+  .admin-header {
+    gap: 10px;
+  }
+
+  .admin-header-right {
+    min-width: 0;
+  }
+
+  .admin-repo-branch {
+    max-width: 8rem;
   }
 
   .admin-sidebar {
@@ -1219,6 +1243,11 @@
   .editor-main {
     order: 1;
   }
+
+  .admin-page-head--sticky {
+    margin: -22px -18px 18px;
+    padding: 14px 18px 12px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1236,17 +1265,22 @@
     align-items: stretch;
   }
 
-  .admin-action-bar {
-    flex-direction: column;
-    align-items: stretch;
+  /* 移动端顶部操作区收紧：隐藏副标题，按钮铺满一行 */
+  .admin-page-head--sticky .title-block p {
+    display: none;
   }
 
-  .admin-action-bar .left,
-  .admin-action-bar .right {
-    justify-content: stretch;
+  .admin-page-head--sticky .admin-page-actions .admin-btn {
+    flex: 1 1 40%;
+    padding: 0 12px;
   }
 
-  .admin-action-bar .admin-btn {
+  .note-source-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .note-source-select {
     width: 100%;
   }
 
