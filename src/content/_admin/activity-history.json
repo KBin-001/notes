@@ -1,0 +1,1798 @@
+{
+  "generatedAt": "2026-10-10T09:12:27.438Z",
+  "generator": "scripts/sync-activity-history.ts",
+  "events": [
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/audio/index.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/audio/volume-key-waveform-issue.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/camera/camera-knowledge.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/camera/flash-calibration.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/camera/index.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/display/index.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/gms/add-gyroscope-declaration.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/gms/camera-fov.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/gms/index.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/gms/its-test-script.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/gms/multichannel-mixdown-test-fail.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/gms/remove-distance-sensor-declaration.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/gms/remove-earphone-simulation.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/gms/remove-gps-service.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/index.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/brightness-curve-adjustment.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/camera-direction-color-debug.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/camera-max-resolution.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/camera-power-sequence.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/charging-nodes.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/disable-platform-audio-effect.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/dsi-dynamic-refresh-rate.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/emr-tp-interaction.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/emr-tp-interference.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/front-camera.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/hall-driver.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/index.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/motor-driver-config.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/no-flashlight-icon.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/pa-shared-reset-issue.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/physical-resolution.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/poweramp-algorithm.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/remove-boot-text.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/remove-poweramp-effect-file.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/screen-color-saturation.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/screen-min-brightness.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/shutdown-animation.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/sipo-serial-keyboard-driver.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/thermal-config.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/usb-pd-high-current.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/templates/debug-template.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/templates/diff-template.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/templates/index.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/templates/issue-template.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/tools/adb-tool-guide.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/tools/android-knowledge.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/tools/charging-knowledge.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/tools/flashlight-knowledge.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/tools/g-sensor-silan.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/tools/index.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/tools/mtk-debug-keywords.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/tools/search-keyword-path.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/tools/serial-tablet-debug.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "2dd5aa6961e02b66d16769c6ad01f6aade967e5f",
+      "ts": "2026-06-06T23:51:58+08:00",
+      "action": "create",
+      "path": "src/content/docs/tools/vim-guide.mdx",
+      "title": "content: add driver knowledge notes",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/audio/index.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/audio/volume-key-waveform-issue.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/camera/camera-knowledge.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/camera/flash-calibration.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/camera/index.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/display/index.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/add-gyroscope-declaration.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/camera-fov.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/index.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/its-test-script.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/multichannel-mixdown-test-fail.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/remove-distance-sensor-declaration.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/remove-earphone-simulation.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/remove-gps-service.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/index.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/brightness-curve-adjustment.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/camera-direction-color-debug.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/camera-max-resolution.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/camera-power-sequence.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/charging-nodes.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/disable-platform-audio-effect.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/dsi-dynamic-refresh-rate.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/emr-tp-interaction.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/emr-tp-interference.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/front-camera.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/hall-driver.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/index.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/motor-driver-config.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/no-flashlight-icon.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/pa-shared-reset-issue.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/physical-resolution.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/poweramp-algorithm.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/remove-boot-text.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/remove-poweramp-effect-file.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/screen-color-saturation.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/screen-min-brightness.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/shutdown-animation.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/sipo-serial-keyboard-driver.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/thermal-config.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/usb-pd-high-current.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/templates/debug-template.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/templates/diff-template.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/templates/index.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/templates/issue-template.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/adb-tool-guide.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/android-knowledge.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/charging-knowledge.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/flashlight-knowledge.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/g-sensor-silan.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/index.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/mtk-debug-keywords.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/search-keyword-path.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/serial-tablet-debug.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "5b6563d8a3282075050b51bb16f478c13603e3d4",
+      "ts": "2026-06-07T03:35:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/vim-guide.mdx",
+      "title": "接入 Pagefind、搜索组件改成真实静态全文搜索、修复导航标题里的 **、右侧目录增加滚动高亮、页面顶部增加阅读进度条",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/audio/index.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/audio/volume-key-waveform-issue.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/camera/camera-knowledge.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/camera/flash-calibration.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/camera/index.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/display/index.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/add-gyroscope-declaration.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/camera-fov.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/index.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/its-test-script.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/multichannel-mixdown-test-fail.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/remove-distance-sensor-declaration.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/remove-earphone-simulation.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/remove-gps-service.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/index.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/brightness-curve-adjustment.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/camera-direction-color-debug.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/camera-max-resolution.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/camera-power-sequence.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/charging-nodes.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/disable-platform-audio-effect.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/dsi-dynamic-refresh-rate.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/emr-tp-interaction.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/emr-tp-interference.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/front-camera.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/hall-driver.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/index.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/motor-driver-config.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/no-flashlight-icon.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/pa-shared-reset-issue.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/physical-resolution.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/poweramp-algorithm.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/remove-boot-text.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/remove-poweramp-effect-file.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/screen-color-saturation.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/screen-min-brightness.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/shutdown-animation.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/sipo-serial-keyboard-driver.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/thermal-config.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/usb-pd-high-current.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/templates/debug-template.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/templates/diff-template.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/templates/index.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/templates/issue-template.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/adb-tool-guide.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/android-knowledge.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/charging-knowledge.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/flashlight-knowledge.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/g-sensor-silan.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/index.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/mtk-debug-keywords.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/search-keyword-path.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/serial-tablet-debug.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "f571adc27b4701b9bdcc9de8c49049adbc37fd21",
+      "ts": "2026-06-07T15:48:17+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/vim-guide.mdx",
+      "title": "Pagefind 搜索结果支持 hash 跳转，优先跳到命中的标题位置。 搜索弹窗点击结果后会关闭；同页 hash 会平滑滚动到目标标题。 桌面/移动导航、右侧目录都加了 data-pagefind-ignore / aria-hidden，避免重复进入搜索索引。 首页不再显示“当前页面暂无二级标题”。 首页、Sidebar、分类页统一使用同一套分类数据源。 /display/ 已正常显示 7 篇公开笔记，旧的“暂无 Notion 正文笔记”已移除。 Hall 页面目录已恢复为多个章节。 ADB TOOL 页面目录已恢复为多个章节。 normalize 脚本升级：补 sensitive、清理标签、转换中文编号标题、修复代码块语言和导入代码 fence。 代码块横向滚动，不会撑破页面。 暗色模式降低了图标亮度、hover 和高亮刺激。 README 已补充公开脱敏规范。 新增 scripts/check-sensitive.ts，构建时会警告 public 且 sensitive: true 的文章。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/audio/volume-key-waveform-issue.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/multichannel-mixdown-test-fail.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/remove-earphone-simulation.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/brightness-curve-adjustment.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/camera-direction-color-debug.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/camera-max-resolution.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/charging-nodes.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/dsi-dynamic-refresh-rate.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/emr-tp-interaction.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/front-camera.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/hall-driver.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/motor-driver-config.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/no-flashlight-icon.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/physical-resolution.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/remove-boot-text.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/remove-poweramp-effect-file.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/sipo-serial-keyboard-driver.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/thermal-config.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/usb-pd-high-current.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/templates/issue-template.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/adb-tool-guide.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "ef2d526862fa5e3fb852f08ff20428c5e71e570d",
+      "ts": "2026-06-07T16:46:29+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/g-sensor-silan.mdx",
+      "title": "fix: improve toc anchors and dark theme",
+      "author": "Kevin"
+    },
+    {
+      "commit": "95564611642a4b32e4b72acb6f31f02c040c3e65",
+      "ts": "2026-06-08T00:33:32+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/thermal-config.mdx",
+      "title": "右侧目录滚动同步：更新 toc-highlight.ts，现在用 IntersectionObserver + scroll fallback 自动高亮当前章节，也兼容 hash 跳转。 顶部阅读进度条：修复 Layout.astro 和 global.css，黄色主题下也会使用主题 token 正常显示。 DTS 高亮：在 astro.config.mjs 加了 dts -> c 别名，保留文章里的 dts 标记，同时不再触发 Shiki 降级 warning。 MDX 组件：新增 Badge、Collapse、CodeTabs，并完善 Callout，已在文章渲染页注册。 清洗脚本：更新 normalize-notes.ts，已有代码围栏的历史文章不再被激进重写；无围栏的新导入稿会保守识别 bash/log/xml/makefile/diff/dts/c 等片段。脚本已验证第二次运行 changed 0 files。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "95564611642a4b32e4b72acb6f31f02c040c3e65",
+      "ts": "2026-06-08T00:33:32+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/usb-pd-high-current.mdx",
+      "title": "右侧目录滚动同步：更新 toc-highlight.ts，现在用 IntersectionObserver + scroll fallback 自动高亮当前章节，也兼容 hash 跳转。 顶部阅读进度条：修复 Layout.astro 和 global.css，黄色主题下也会使用主题 token 正常显示。 DTS 高亮：在 astro.config.mjs 加了 dts -> c 别名，保留文章里的 dts 标记，同时不再触发 Shiki 降级 warning。 MDX 组件：新增 Badge、Collapse、CodeTabs，并完善 Callout，已在文章渲染页注册。 清洗脚本：更新 normalize-notes.ts，已有代码围栏的历史文章不再被激进重写；无围栏的新导入稿会保守识别 bash/log/xml/makefile/diff/dts/c 等片段。脚本已验证第二次运行 changed 0 files。",
+      "author": "Kevin"
+    },
+    {
+      "commit": "78689ef1c3a027d72c9370cc309490288f5ef341",
+      "ts": "2026-06-11T21:16:20+08:00",
+      "action": "create",
+      "path": "src/content/docs/templates/helloworld.mdx",
+      "title": "helloworld",
+      "author": "kaibin"
+    },
+    {
+      "commit": "77decf94f3f7a4d52593cfdb2947701d8da88219",
+      "ts": "2026-06-11T22:56:33+08:00",
+      "action": "update",
+      "path": "src/content/docs/camera/flash-calibration.mdx",
+      "title": "flash校准",
+      "author": "kaibin"
+    },
+    {
+      "commit": "980b25400ba1ee59e32d11c678f068b2118c2854",
+      "ts": "2026-06-11T22:56:51+08:00",
+      "action": "update",
+      "path": "src/content/docs/camera/flash-calibration.mdx",
+      "title": "flash校准",
+      "author": "kaibin"
+    },
+    {
+      "commit": "dfdd064542a3663a0db6a31338f2c831469904f8",
+      "ts": "2026-06-17T15:39:49+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/mt8781-aw36515-preloader-i2c7-pinmux-pull.mdx",
+      "title": "手电筒强制重启不灭的复盘记录",
+      "author": "kaibin"
+    },
+    {
+      "commit": "55f3d8b05175ac3bea3b99adec5a0f25c04632f5",
+      "ts": "2026-06-17T15:46:25+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/mt8781-aw36515-preloader-i2c7-pinmux-pull.mdx",
+      "title": "[MTK]手电筒强制重启不灭的复盘记录",
+      "author": "kaibin"
+    },
+    {
+      "commit": "c1279cd1c48ae4b361a2fdc000058e1172bbfaa8",
+      "ts": "2026-06-18T10:21:19+08:00",
+      "action": "update",
+      "path": "src/content/docs/audio/volume-key-waveform-issue.mdx",
+      "title": "音量按键波形异常",
+      "author": "kaibin"
+    },
+    {
+      "commit": "c1d132c00ae65f5cc052a801cc97b4ba1a39fb4c",
+      "ts": "2026-06-18T11:11:36+08:00",
+      "action": "update",
+      "path": "src/content/docs/audio/volume-key-waveform-issue.mdx",
+      "title": "音量按键波形异常",
+      "author": "kaibin"
+    },
+    {
+      "commit": "0a7c815e8e842929c887149a91a508a7df323eb6",
+      "ts": "2026-06-18T11:12:27+08:00",
+      "action": "update",
+      "path": "src/content/docs/audio/volume-key-waveform-issue.mdx",
+      "title": "音量按键波形异常",
+      "author": "kaibin"
+    },
+    {
+      "commit": "b42a3e128dd976939cebabdf06458d937a3d02fb",
+      "ts": "2026-06-18T11:13:05+08:00",
+      "action": "update",
+      "path": "src/content/docs/audio/volume-key-waveform-issue.mdx",
+      "title": "[MTK]音量按键波形异常",
+      "author": "kaibin"
+    },
+    {
+      "commit": "3bbe2ac65104d88c02ab318f0d9d6f17bd4d24e3",
+      "ts": "2026-06-18T11:17:59+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/disable-platform-audio-effect.mdx",
+      "title": "[MTK]确认是否关掉平台音效",
+      "author": "kaibin"
+    },
+    {
+      "commit": "5096aecc7dc9a99d7cecb1f752f0078dba22bae1",
+      "ts": "2026-06-25T09:53:58+08:00",
+      "action": "update",
+      "path": "src/content/docs/audio/index.mdx",
+      "title": "updata ui bug",
+      "author": "kevin"
+    },
+    {
+      "commit": "5096aecc7dc9a99d7cecb1f752f0078dba22bae1",
+      "ts": "2026-06-25T09:53:58+08:00",
+      "action": "update",
+      "path": "src/content/docs/camera/index.mdx",
+      "title": "updata ui bug",
+      "author": "kevin"
+    },
+    {
+      "commit": "5096aecc7dc9a99d7cecb1f752f0078dba22bae1",
+      "ts": "2026-06-25T09:53:58+08:00",
+      "action": "update",
+      "path": "src/content/docs/display/index.mdx",
+      "title": "updata ui bug",
+      "author": "kevin"
+    },
+    {
+      "commit": "5096aecc7dc9a99d7cecb1f752f0078dba22bae1",
+      "ts": "2026-06-25T09:53:58+08:00",
+      "action": "update",
+      "path": "src/content/docs/templates/index.mdx",
+      "title": "updata ui bug",
+      "author": "kevin"
+    },
+    {
+      "commit": "5096aecc7dc9a99d7cecb1f752f0078dba22bae1",
+      "ts": "2026-06-25T09:53:58+08:00",
+      "action": "update",
+      "path": "src/content/docs/tools/index.mdx",
+      "title": "updata ui bug",
+      "author": "kevin"
+    },
+    {
+      "commit": "7cdfdc4b1ea707da97811104712ab600d6189822",
+      "ts": "2026-06-25T14:51:52+08:00",
+      "action": "delete",
+      "path": "src/content/docs/templates/debug-template.mdx",
+      "title": "updata 首页 排版",
+      "author": "kevin"
+    },
+    {
+      "commit": "7cdfdc4b1ea707da97811104712ab600d6189822",
+      "ts": "2026-06-25T14:51:52+08:00",
+      "action": "delete",
+      "path": "src/content/docs/templates/diff-template.mdx",
+      "title": "updata 首页 排版",
+      "author": "kevin"
+    },
+    {
+      "commit": "7cdfdc4b1ea707da97811104712ab600d6189822",
+      "ts": "2026-06-25T14:51:52+08:00",
+      "action": "delete",
+      "path": "src/content/docs/templates/helloworld.mdx",
+      "title": "updata 首页 排版",
+      "author": "kevin"
+    },
+    {
+      "commit": "7cdfdc4b1ea707da97811104712ab600d6189822",
+      "ts": "2026-06-25T14:51:52+08:00",
+      "action": "delete",
+      "path": "src/content/docs/templates/index.mdx",
+      "title": "updata 首页 排版",
+      "author": "kevin"
+    },
+    {
+      "commit": "7cdfdc4b1ea707da97811104712ab600d6189822",
+      "ts": "2026-06-25T14:51:52+08:00",
+      "action": "delete",
+      "path": "src/content/docs/templates/issue-template.mdx",
+      "title": "updata 首页 排版",
+      "author": "kevin"
+    },
+    {
+      "commit": "61c973039bd5e111b3b8da5fddc3befcea4fe3e7",
+      "ts": "2026-06-26T10:48:55+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/remove-poweramp-effect-file.mdx",
+      "title": "[MTK]去除功放音效文件",
+      "author": "kaibin"
+    },
+    {
+      "commit": "cbe381a55d688b86cd6dd6a6258208049350aa1c",
+      "ts": "2026-06-26T10:51:38+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/add-gyroscope-declaration.mdx",
+      "title": "[GMS]增加陀螺仪声明",
+      "author": "kaibin"
+    },
+    {
+      "commit": "42066cf4893c8ef15464a649d98494b4432a13cf",
+      "ts": "2026-06-26T10:52:36+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/embedded-web-stackaaa.mdx",
+      "title": "测试",
+      "author": "kaibin"
+    },
+    {
+      "commit": "0789dd892773efea07d3c3961a881be2cc9fdb02",
+      "ts": "2026-06-26T11:46:31+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/embedded-web-stackaaa.mdx",
+      "title": "测试",
+      "author": "kaibin"
+    },
+    {
+      "commit": "56cde464ad94b30ae4ff23e63d410ca61b227bf3",
+      "ts": "2026-06-26T14:13:15+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/camera-max-resolution.mdx",
+      "title": "[MTK]添加摄像头最高分辨率",
+      "author": "kaibin"
+    },
+    {
+      "commit": "08d36c2bdbae801c49f6c29433c3d91a28378609",
+      "ts": "2026-07-06T10:33:01+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/multichannel-mixdown-test-fail.mdx",
+      "title": "[GMS] 解决 Multichannel Mixdown Test fail",
+      "author": "kaibin"
+    },
+    {
+      "commit": "cf6aa8efab88c003f443ff79c347ff3b4a4eea93",
+      "ts": "2026-07-06T16:27:27+08:00",
+      "action": "update",
+      "path": "src/content/docs/gms/remove-earphone-simulation.mdx",
+      "title": "[GMS]去除耳机模拟",
+      "author": "kaibin"
+    },
+    {
+      "commit": "bea9dcb92173d32d0f036a342952ae7cf4cc6228",
+      "ts": "2026-07-14T17:24:16+08:00",
+      "action": "delete",
+      "path": "src/content/docs/mtk/embedded-web-stackaaa.mdx",
+      "title": "测试",
+      "author": "kaibin"
+    },
+    {
+      "commit": "047b8749a395a9dc51d2157f005939076d421838",
+      "ts": "2026-07-14T17:27:48+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/hall-driver.mdx",
+      "title": "[MTK] 霍尔驱动（hall）",
+      "author": "kaibin"
+    },
+    {
+      "commit": "d294cb2bdc65ae84a70ddc153f0a779683498641",
+      "ts": "2026-07-14T17:28:05+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/hall-driver.mdx",
+      "title": "[MTK] 霍尔驱动（hall）",
+      "author": "kaibin"
+    },
+    {
+      "commit": "44de0ab446f9e6d68f4adb0bb005369244453423",
+      "ts": "2026-07-14T17:36:14+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/sipo-serial-keyboard-driver.mdx",
+      "title": "[MTK] SIPO 串口键盘驱动接入",
+      "author": "kaibin"
+    },
+    {
+      "commit": "1405311dc80ef827ab8b18a4a4daa75c4def0c9a",
+      "ts": "2026-07-15T16:10:56+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/mt8391-heif.mdx",
+      "title": "MT8391 相机 HEIF 照片分辨率降级问题",
+      "author": "kaibin"
+    },
+    {
+      "commit": "a7652e42d33db176ac7ae4244253a0bd502a8971",
+      "ts": "2026-07-20T10:47:10+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/dpixiugai.mdx",
+      "title": "[MTK]DPI 修改",
+      "author": "kaibin"
+    },
+    {
+      "commit": "8eb2f72c581033b16fbc6f8c470e516ee05294e2",
+      "ts": "2026-07-20T10:52:32+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/dpixiugai.mdx",
+      "title": "[MTK]系统方向旋转180°",
+      "author": "kaibin"
+    },
+    {
+      "commit": "5e2e1d05d3fc966b3bd44c8a9f5d870424f248f1",
+      "ts": "2026-07-20T10:53:16+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/dpixiugai.mdx",
+      "title": "[MTK]系统方向旋转180°",
+      "author": "kaibin"
+    },
+    {
+      "commit": "b0fd1d5d364a7616fc742d3e433d71c6efe512aa",
+      "ts": "2026-07-20T10:59:23+08:00",
+      "action": "create",
+      "path": "src/content/docs/mtk/dpixiugaile.mdx",
+      "title": "[MTK]DPI 修改",
+      "author": "kaibin"
+    },
+    {
+      "commit": "6752586eb25ab66031c618143688e38eba1b2fa1",
+      "ts": "2026-09-11T17:56:20+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/physical-resolution.mdx",
+      "title": "[MTK]修改物理分辨率",
+      "author": "kaibin"
+    },
+    {
+      "commit": "f831adf262440e73cc2d76aa65a9c479409b91ce",
+      "ts": "2026-09-11T18:00:57+08:00",
+      "action": "update",
+      "path": "src/content/docs/mtk/physical-resolution.mdx",
+      "title": "[MTK]屏幕帧率精确匹配",
+      "author": "kaibin"
+    }
+  ]
+}

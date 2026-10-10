@@ -1,120 +1,138 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import { ChevronLeft, ChevronRight } from '@lucide/astro';
 
-interface Props {
-  notes: CollectionEntry<'docs'>[];
-}
-
-const { notes } = Astro.props;
-
-const today = new Date();
-const year = today.getFullYear();
-const month = today.getMonth(); // 0-11
-const todayDate = today.getDate();
-
-const weekdayLabels = ['一', '二', '三', '四', '五', '六', '日'];
-
-// 本月第一天是星期几（调整为周一为 0）
-const firstDay = new Date(year, month, 1);
-let firstWeekday = firstDay.getDay() - 1; // 周日返回 -1
-if (firstWeekday < 0) firstWeekday = 6; // 周日 -> 6
-
-// 本月天数
-const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-// 从真实笔记数据构建活动日期集合（按 updated 日期统计本月每天更新篇数）
-const activitySet = new Map<number, number>();
-notes.forEach((note) => {
-  const d = note.data.updated;
-  if (d.getFullYear() === year && d.getMonth() === month) {
-    const day = d.getDate();
-    activitySet.set(day, (activitySet.get(day) ?? 0) + 1);
-  }
-});
-
-// 渲染格子：前导空格 + 本月天数
-const cells: Array<{ day: number | null; count: number; isToday: boolean }> = [];
-for (let i = 0; i < firstWeekday; i++) {
-  cells.push({ day: null, count: 0, isToday: false });
-}
-for (let d = 1; d <= daysInMonth; d++) {
-  cells.push({
-    day: d,
-    count: activitySet.get(d) ?? 0,
-    isToday: d === todayDate,
-  });
-}
+/**
+ * 月历视图（客户端渲染）。
+ *
+ * 这里只输出骨架与样式，具体日期、活动圆点、选中态、明细都由
+ * src/scripts/knowledge-calendar.ts 在浏览器里按用户本地时区填充 ——
+ * 避免构建机（UTC）的日期把活动标到错误的格子上。
+ *
+ * 注意：样式必须用 is:global。
+ * Astro 的 scoped 样式靠编译期给元素加 data-astro-cid-* 属性来生效，
+ * 而日期格子是运行期用 createElement 生成的，拿不到该属性，scoped 样式会完全失效。
+ * 因此这里统一改用全局样式，并把所有选择器都限定在 .mini-cal-* / .mini-calendar 前缀下，避免污染其它组件。
+ */
 ---
 
-<div class="mini-calendar" data-mini-calendar>
+<div class="mini-calendar" data-kw-cal>
   <div class="mini-cal-head">
-    <span class="mini-cal-month">{month + 1}月 {year}</span>
-    <span class="mini-cal-week-label">本周第 {Math.ceil((todayDate + firstWeekday) / 7)} 周</span>
+    <div class="mini-cal-nav">
+      <button type="button" class="mini-cal-nav-btn" data-kw-prev title="上一月" aria-label="上一月">
+        <ChevronLeft size={14} aria-hidden="true" />
+      </button>
+      <span class="mini-cal-month" data-kw-month aria-live="polite">—</span>
+      <button type="button" class="mini-cal-nav-btn" data-kw-next title="下一月" aria-label="下一月">
+        <ChevronRight size={14} aria-hidden="true" />
+      </button>
+    </div>
+    <button type="button" class="mini-cal-today-btn" data-kw-today-btn title="回到今天">今天</button>
   </div>
 
-  <div class="mini-cal-grid">
-    {weekdayLabels.map((w) => (
-      <span class="mini-cal-weekday">{w}</span>
-    ))}
-    {cells.map((cell) => (
-      <span
-        class:list={[
-          'mini-cal-cell',
-          cell.day === null ? 'is-empty' : '',
-          cell.isToday ? 'is-today' : '',
-          cell.count > 0 && !cell.isToday ? 'is-active' : '',
-        ]}
-        data-day={cell.day ?? ''}
-        data-count={cell.count}
-        title={cell.day ? `${year}-${String(month + 1).padStart(2, '0')}-${String(cell.day).padStart(2, '0')}${cell.count > 0 ? ` · ${cell.count} 篇` : ''}` : ''}
-      >
-        {cell.day}
-      </span>
-    ))}
-  </div>
+  <div class="mini-cal-grid" data-kw-grid role="group" aria-label="笔记活动日历"></div>
 
   <div class="mini-cal-legend">
     <span class="mini-cal-dot is-today-dot"></span>
     <span class="mini-cal-legend-text">今天</span>
     <span class="mini-cal-dot is-active-dot"></span>
-    <span class="mini-cal-legend-text">有笔记</span>
+    <span class="mini-cal-legend-text">有记录</span>
+    <span class="mini-cal-dot is-selected-dot"></span>
+    <span class="mini-cal-legend-text">已选中</span>
   </div>
+
+  <div class="mini-cal-detail" data-kw-detail hidden></div>
 </div>
 
-<style>
+<style is:global>
   .mini-calendar {
     margin-top: 12px;
+    position: relative;
+    z-index: 1;
   }
 
+  /* ---------- 头部：月份切换 ---------- */
   .mini-cal-head {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 6px;
     margin-bottom: 8px;
+  }
+
+  .mini-cal-nav {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .mini-cal-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--kb-subtle);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .mini-cal-nav-btn:hover {
+    background: var(--kb-surface-hover);
+    color: var(--kb-accent);
+  }
+
+  .mini-cal-nav-btn:focus-visible,
+  .mini-cal-today-btn:focus-visible {
+    outline: 2px solid var(--kb-focus-ring);
+    outline-offset: 1px;
   }
 
   .mini-cal-month {
     font-size: 0.78rem;
     font-weight: 600;
     color: var(--kb-heading);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
   }
 
-  .mini-cal-week-label {
-    font-size: 0.68rem;
+  .mini-cal-today-btn {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border: 1px solid var(--kb-border);
+    border-radius: 999px;
+    background: transparent;
     color: var(--kb-subtle);
+    font-size: 0.66rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.12s, color 0.12s, background 0.12s;
   }
 
+  .mini-cal-today-btn:hover {
+    border-color: var(--kb-accent-ring);
+    background: var(--kb-accent-soft);
+    color: var(--kb-accent);
+  }
+
+  /* ---------- 网格 ---------- */
   .mini-cal-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 2px;
+    min-height: 180px;
   }
 
   .mini-cal-weekday {
     text-align: center;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     color: var(--kb-subtle);
-    padding: 4px 0;
+    padding: 2px 0 4px;
     font-weight: 500;
   }
 
@@ -123,17 +141,21 @@ for (let d = 1; d <= daysInMonth; d++) {
     display: flex;
     align-items: center;
     justify-content: center;
-    aspect-ratio: 1;
+    height: 30px;
     font-size: 0.72rem;
     color: var(--kb-muted);
-    border-radius: 50%;
+    border-radius: 8px;
     cursor: default;
-    transition: background 0.12s, color 0.12s;
+    transition: background 0.12s, color 0.12s, box-shadow 0.12s;
   }
 
   .mini-cal-cell.is-empty {
     pointer-events: none;
-    opacity: 0;
+    visibility: hidden;
+  }
+
+  .mini-cal-cell.is-clickable {
+    cursor: pointer;
   }
 
   .mini-cal-cell:not(.is-empty):hover {
@@ -146,11 +168,11 @@ for (let d = 1; d <= daysInMonth; d++) {
     font-weight: 600;
   }
 
-  /* 有笔记的日期：底部橙色小圆点指示器 */
+  /* 有记录的日期：底部橙色小圆点 */
   .mini-cal-cell.is-active::after {
     content: '';
     position: absolute;
-    bottom: 3px;
+    bottom: 2px;
     left: 50%;
     transform: translateX(-50%);
     width: 4px;
@@ -159,30 +181,83 @@ for (let d = 1; d <= daysInMonth; d++) {
     background: var(--kb-accent);
   }
 
+  /* 选中历史日期：浅橙色背景 + 边框 */
+  .mini-cal-cell.is-selected {
+    background: var(--kb-accent-soft);
+    color: var(--kb-heading);
+    box-shadow: inset 0 0 0 1px var(--kb-accent-ring);
+  }
+
+  /* 今天：橙色实心圆。
+     圆用 ::before 画而不是给格子直接上背景色 —— 格子保持整列宽度（点击/悬停区域更大），
+     圆本身是正方形，才能真正成为「圆」而不是圆角矩形。
+     文字色用 --kb-bg 而不是 #fff：深色主题下 --kb-accent 是近白色，白字会完全看不见。 */
   .mini-cal-cell.is-today {
-    background: var(--kb-accent);
+    z-index: 0; /* 建立层叠上下文，使 ::before(z-index:-1) 落在数字下方而不是盖住数字 */
+    background: transparent;
     color: var(--kb-bg);
     font-weight: 700;
-    box-shadow: 0 0 0 2px color-mix(in oklab, var(--kb-accent) 35%, transparent);
+  }
+
+  .mini-cal-cell.is-today::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--kb-accent);
+    transition: background 0.12s, box-shadow 0.12s;
   }
 
   .mini-cal-cell.is-today:hover {
+    background: transparent;
+    color: var(--kb-bg);
+  }
+
+  .mini-cal-cell.is-today:hover::before {
     background: var(--kb-accent-hover);
   }
 
+  /* 今天 + 选中：描边加在圆上，避免出现「圆套在圆角方框里」 */
+  .mini-cal-cell.is-today.is-selected {
+    background: transparent;
+    box-shadow: none;
+    color: var(--kb-bg);
+  }
+
+  .mini-cal-cell.is-today.is-selected::before {
+    box-shadow: 0 0 0 2px var(--kb-accent-ring);
+  }
+
+  /* 今天是活跃日：圆点改用与数字同色的对比色，保证在实心圆上可见 */
+  .mini-cal-cell.is-today.is-active::after {
+    background: var(--kb-bg);
+  }
+
+  .mini-cal-cell:focus-visible {
+    outline: 2px solid var(--kb-focus-ring);
+    outline-offset: 1px;
+  }
+
+  /* ---------- 图例 ---------- */
   .mini-cal-legend {
     display: flex;
     align-items: center;
-    gap: 6px;
+    flex-wrap: wrap;
+    gap: 5px;
     margin-top: 10px;
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     color: var(--kb-subtle);
   }
 
   .mini-cal-dot {
     display: inline-block;
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
   }
 
@@ -194,7 +269,122 @@ for (let d = 1; d <= daysInMonth; d++) {
     background: var(--kb-accent);
   }
 
+  .mini-cal-dot.is-selected-dot {
+    background: var(--kb-accent-soft);
+    box-shadow: inset 0 0 0 1px var(--kb-accent-ring);
+  }
+
   .mini-cal-legend-text {
-    margin-right: 4px;
+    margin-right: 3px;
+  }
+
+  /* ---------- 某日明细 ---------- */
+  .mini-cal-detail {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--kb-border-subtle);
+  }
+
+  .mini-cal-detail[hidden] {
+    display: none;
+  }
+
+  .mini-cal-detail-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .mini-cal-detail-date {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--kb-heading);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mini-cal-detail-counts {
+    font-size: 0.66rem;
+    color: var(--kb-accent);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .mini-cal-detail-empty {
+    margin: 0;
+    font-size: 0.7rem;
+    color: var(--kb-subtle);
+  }
+
+  .mini-cal-detail-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    max-height: 148px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .mini-cal-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding: 3px 4px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    transition: background 0.12s;
+  }
+
+  .mini-cal-detail-item:hover {
+    background: var(--kb-surface-hover);
+  }
+
+  .mini-cal-detail-badge {
+    flex-shrink: 0;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .mini-cal-detail-badge.is-create {
+    background: var(--kb-accent-soft);
+    color: var(--kb-accent);
+  }
+
+  .mini-cal-detail-badge.is-update {
+    background: var(--kb-surface-hover);
+    color: var(--kb-muted);
+  }
+
+  .mini-cal-detail-time {
+    flex-shrink: 0;
+    color: var(--kb-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mini-cal-detail-title {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--kb-text);
+  }
+
+  .mini-cal-detail-title.is-link {
+    color: var(--kb-muted);
+    text-decoration: none;
+  }
+
+  .mini-cal-detail-title.is-link:hover {
+    color: var(--kb-accent);
+    text-decoration: underline;
   }
 </style>

@@ -50,9 +50,10 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     }
 
     const result = await putFile(context.env, auth.session!.token, path, content, message, note.sha);
-    const deploy = await triggerDeploy(context.env);
 
-    // 写入操作日志
+    // 写入操作日志（必须在触发部署之前）：
+    // 前台知识日历的数据来自仓库内的操作日志，部署 Hook 会立即拉取当前分支最新提交来构建。
+    // 若先触发部署再写日志，本次操作日志会晚于构建快照，导致「刚保存的笔记当天没有活跃标记」。
     await appendLog(context.env, auth.session!.token, {
       action: note.sha ? 'note.update' : 'note.create',
       actor: auth.session!.login,
@@ -60,6 +61,8 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
       title: note.title,
       commit: result?.commit?.sha,
     });
+
+    const deploy = await triggerDeploy(context.env);
 
     return json({ ok: true, path, commit: result.commit, content: result.content, deploy });
   } catch (error) {

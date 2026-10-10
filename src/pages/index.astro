@@ -8,11 +8,30 @@ import StatusBadge from '@/components/StatusBadge.astro';
 import Layout from '@/layouts/Layout.astro';
 import { categoryMeta, categoryOrder, displayTitle, docUrl, formatDate, getCategoryNotes, getTopicNotes, isIndexDoc, publicDocs, sortDocsByUpdated, topicMeta, topicOrder } from '@/lib/navigation';
 import { getSiteConfig } from '@/lib/site-config';
+import { buildActivityEvents, type NoteRef } from '@/lib/activity';
 
 const docs = publicDocs(await getCollection('docs'));
 const notes = docs.filter((doc) => !isIndexDoc(doc.id));
 const latest = sortDocsByUpdated(notes).slice(0, 6);
 const siteConfig = await getSiteConfig();
+
+/**
+ * 知识日历的活动数据。
+ * 只取「已公开」的笔记：私有 / 草稿笔记不会生成前台页面，若把它们的活动也嵌进来，
+ * 标题与路径就会泄露到公开页面上。这里用 docs（= publicDocs）作为白名单天然过滤。
+ */
+const noteRefs: NoteRef[] = docs.map((doc) => {
+  // filePath 可能是绝对路径或带 ./ 前缀，统一归一化成仓库相对路径（src/content/docs/...）
+  const raw = doc.filePath ?? '';
+  const normalized = raw.replace(/\\/g, '/').replace(/^\.\//, '');
+  const match = normalized.match(/src\/content\/docs\/.+$/);
+  return {
+    path: match ? match[0] : normalized,
+    url: docUrl(doc.id),
+    title: displayTitle(doc.data.title),
+  };
+});
+const activity = buildActivityEvents(noteRefs);
 ---
 
 <Layout title={siteConfig.siteTitle} description={siteConfig.siteDescription} currentId="index">
@@ -157,6 +176,6 @@ const siteConfig = await getSiteConfig();
       </section>
     </section>
 
-    <KnowledgeWorkspace notes={notes} />
+    <KnowledgeWorkspace notes={notes} activity={activity} />
   </div>
 </Layout>

@@ -1,55 +1,28 @@
 ---
 import { Calendar, Flame } from '@lucide/astro';
-import type { CollectionEntry } from 'astro:content';
+import type { CalendarActivityEvent } from '@/lib/activity';
 import MiniCalendar from './MiniCalendar.astro';
 
 interface Props {
-  notes: CollectionEntry<'docs'>[];
+  /**
+   * 真实活动事件（构建期由 src/lib/activity.ts 从操作日志 + Git 提交历史恢复）。
+   * 只包含「已公开」笔记的活动，避免私有笔记标题出现在公开页面上。
+   */
+  activity: CalendarActivityEvent[];
 }
 
-const { notes } = Astro.props;
+const { activity } = Astro.props;
 
-const today = new Date();
-const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-const weekdayZh = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-const weekday = weekdayZh[today.getDay()];
-
-// 从真实笔记数据计算统计
-const todayStr = dateStr;
-const weekStart = new Date(today);
-weekStart.setDate(today.getDate() - today.getDay()); // 周日为一周起点
-const weekStartStr = `${weekStart.getFullYear()}-${String(weekStart.getMonth() + 1).padStart(2, '0')}-${String(weekStart.getDate()).padStart(2, '0')}`;
-
-const todayNotes = notes.filter((n) => {
-  const d = n.data.updated;
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` === todayStr;
-}).length;
-
-const weekNotes = notes.filter((n) => {
-  const d = n.data.updated;
-  const dStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  return dStr >= weekStartStr && dStr <= todayStr;
-}).length;
-
-// 计算连续天数：从今天往前找，只要有笔记更新就+1
-let streakDays = 0;
-const checkDate = new Date(today);
-while (streakDays < 365) {
-  const checkStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
-  const hasNote = notes.some((n) => {
-    const d = n.data.updated;
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` === checkStr;
-  });
-  if (hasNote) {
-    streakDays++;
-    checkDate.setDate(checkDate.getDate() - 1);
-  } else {
-    break;
-  }
-}
+/**
+ * 把事件内嵌为 JSON 供浏览器渲染。
+ * 事件只带绝对时刻（ISO 8601），具体落在哪一天由浏览器按本地时区换算，
+ * 因此这里不需要、也不应该做任何按日期的预处理。
+ * 转义 `<` 以避免 `</script>` 提前闭合。
+ */
+const payload = JSON.stringify({ events: activity }).replace(/</g, '\\u003c');
 ---
 
-<div class="kw-card kw-today-card">
+<div class="kw-card kw-today-card" data-kw-calendar>
   <div class="kw-card-head">
     <span class="kw-card-icon"><Calendar size={15} /></span>
     <h3 class="kw-card-title">今日知识日历</h3>
@@ -57,34 +30,42 @@ while (streakDays < 365) {
 
   <div class="kw-today-date">
     <div class="kw-date-main">
-      <span class="kw-date-day">{dateStr}</span>
-      <span class="kw-date-week">{weekday}</span>
+      <span class="kw-date-day" data-kw-today-date>—</span>
+      <span class="kw-date-week" data-kw-today-week>—</span>
     </div>
     <div class="kw-streak">
       <Flame size={13} aria-hidden="true" />
-      <span>连续 {streakDays} 天</span>
+      <span data-kw-streak>连续 0 天</span>
     </div>
   </div>
 
   <div class="kw-today-stats">
     <div class="kw-stat-item">
-      <span class="kw-stat-num">{todayNotes}</span>
+      <span class="kw-stat-num" data-kw-stat-today>0</span>
       <span class="kw-stat-label">今日笔记</span>
     </div>
     <div class="kw-stat-divider"></div>
     <div class="kw-stat-item">
-      <span class="kw-stat-num">{weekNotes}</span>
+      <span class="kw-stat-num" data-kw-stat-week>0</span>
       <span class="kw-stat-label">本周整理</span>
     </div>
     <div class="kw-stat-divider"></div>
     <div class="kw-stat-item">
-      <span class="kw-stat-num">{streakDays}</span>
+      <span class="kw-stat-num" data-kw-stat-streak>0</span>
       <span class="kw-stat-label">连续天数</span>
     </div>
   </div>
 
-  <MiniCalendar notes={notes} />
+  <MiniCalendar />
+
+  <script type="application/json" data-kw-activity set:html={payload}></script>
 </div>
+
+<script>
+  import { mountKnowledgeCalendar } from '@/scripts/knowledge-calendar';
+
+  mountKnowledgeCalendar();
+</script>
 
 <style>
   .kw-today-card {

@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import type { CalendarActivityEvent } from '@/lib/activity';
 import TodayCalendarCard from './TodayCalendarCard.astro';
 import RecentUpdatesCard from './RecentUpdatesCard.astro';
 import PendingOrganizeCard from './PendingOrganizeCard.astro';
@@ -7,14 +8,16 @@ import RandomReviewCard from './RandomReviewCard.astro';
 
 interface Props {
   notes: CollectionEntry<'docs'>[];
+  /** 知识日历用的真实活动事件（已公开笔记） */
+  activity: CalendarActivityEvent[];
 }
 
-const { notes } = Astro.props;
+const { notes, activity } = Astro.props;
 ---
 
 <aside class="kw-workspace" data-pagefind-ignore aria-label="知识工作台">
   <div class="kw-workspace-inner">
-    <TodayCalendarCard notes={notes} />
+    <TodayCalendarCard activity={activity} />
     <RecentUpdatesCard notes={notes} />
     <PendingOrganizeCard notes={notes} />
     <RandomReviewCard notes={notes} />

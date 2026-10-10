@@ -1,0 +1,11 @@
+# Tasks
+- [x] Task 1: 修改 MiniCalendar.astro 移除绿色背景改用橙色圆点指示器
+  - [x] SubTask 1.1: 移除 `.mini-cal-cell.is-active` 的绿色 `color-mix(--kb-success)` 背景，改为透明背景
+  - [x] SubTask 1.2: 为 active 单元格新增底部 4px 橙色圆点 `::after` 伪元素
+  - [x] SubTask 1.3: 今日单元格（is-today）不显示圆点（避免与橙色背景重复）
+  - [x] SubTask 1.4: 修改 hover 态：active hover 不再使用深绿色，统一使用 `--kb-surface-hover`
+  - [x] SubTask 1.5: 更新图例 `is-active-dot` 颜色由绿色改为橙色 `--kb-accent`
+- [x] Task 2: 验证 dark 主题与 claude 主题下渲染效果
+  - [x] SubTask 2.1: 验证 dark 主题下 active 日期仅显示橙色圆点，无绿色
+  - [x] SubTask 2.2: 验证 claude 主题下 active 日期显示品牌橙圆点，无灰绿
+  - [x] SubTask 2.3: 验证今日高亮在两主题下均正常
