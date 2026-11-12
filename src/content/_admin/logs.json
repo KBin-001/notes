@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": "mwd6p8eg-dxk63j",
+      "ts": "2026-11-12T06:46:00.136Z",
+      "action": "note.create",
+      "actor": "KBin-001",
+      "target": "src/content/docs/mtk/zhilingsucha.mdx",
+      "title": "📋 指令速查手册",
+      "commit": "288133891161752da5e3ee8071ff390292415d8d"
+    },
+    {
       "id": "mv0sozkw-262nx2",
       "ts": "2026-10-09T10:00:57.632Z",
       "action": "note.create",
